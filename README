@@ -1,0 +1,65 @@
+Interpolated eXperimental xpilot
+
+This is the xpilot-fxi distribution -the hunt for lost playability
+
+The aim of this project is to bring a more decent server 
+for the players. The client is also optimized, but we leave
+the choice of client to the player. The client in this
+release works best on outdated hardware.
+
+This distribution is based on the old xpilot-fix series, but here we
+have a new autoconfig package, and a cleaned up distribution.
+
+
+Note that the technical performance of xpilot playing is heavily 
+dependent on proper equipment, both hardware and software.
+Having a good link is only one of the several factors that affects
+quality of gameplay seriously. It cannot be stressed enough that 
+a high quality mouse and mousepad is essential for top performance. 
+It's a part of the goodness of an xpilot player to be able to assess
+and use best equipment, so I will not reveal here which equipment
+is known to be the best. As a clue, I can reveal that playing
+on a Linux system with a logitech optical mouse is certainly not
+among the best combinations. 
+
+
+*** NOTE: Support for anything other than Blood's style
+    maps & dodgers has been totally removed (useless). In 
+    particular, targets, cannons, items, wormholes and weapons 
+    anything other than a single machine gun is not 
+    supported any longer. Also windows support is completely
+    removed, as is support for all other suspicious and outdated 
+    platforms. Sound support is also removed. For what reason?
+    The codebase is now managable, and free of lots and lots
+    of dirty and unused hacks. This will result in speedups
+    for server performance, and make it a canonical and clean
+    distribution for a professional Blood's music player. It
+    is also meant a research platform for making even better
+    servers with new and revolutionary techniques. Unfortunately,
+    not many even bother to notice the improvements it brings,
+    but I hope that some day there will pop up a few exceptionally
+    talented players who will realize the value of it. If not,
+    the author has at least and at last one decent server for his 
+    own use.
+    This release is meant to be used with Linux 2.4, 2.6,
+    FreeBSD, Digital Unix, and perhaps IRIX and Solaris.
+***
+
+SERVER CHANGES
+- look in ChangeLog
+
+OBSERVATIONS
+- note that sending frames wrongly will affect the steering at the client side. Even
+  if the server does computations right, it will be experienced as a bad steering if
+  wrong frames are sent to client. This could result e.g. because of wrong 
+  synchronization or wrongly implemented frame_update sending.
+
+2.x.xfinal
+- rewrite packet protocol, delete unused stuff in packets
+- add all necessary features like more paused players
+- try the system specified in my xpilot technical writings,
+  IssueX.txt (available in same dir as this release). 
+
+The end result should be a server, which one can use in teamcups,
+and more serious games. The old walls code will be used throughout
+all releases unless someone can come up with something better.

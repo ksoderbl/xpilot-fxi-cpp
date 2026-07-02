@@ -1,0 +1,1 @@
+/usr/local/bin/xpilot-fxi-server -noquit -password buu -map /usr/local/share/xpilot-fxi/maps/teamcup.xp -initialFuel 500 -robotteam 4 -maxrobots 4 -gamespeed 12 -allowviewing -internalFps 20 -frameDivisor 2 -rankFileName buu -shipmass 10 -rankwebpage rank.html

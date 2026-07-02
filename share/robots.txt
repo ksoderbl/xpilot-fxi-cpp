@@ -1,0 +1,20 @@
+
+type:	default
+para:	85 60
+ship:	(5,1,4)(8,0)(-8,5)(2,-8)(2,8)(-8,-5)
+name:	R0
+
+type:	default
+para:	85 60
+ship:	(5,1,4)(8,0)(-8,5)(2,-8)(2,8)(-8,-5)
+name:	R1
+
+type:	default
+para:	95 5
+ship:	(5,1,4)(8,0)(-8,5)(2,-8)(2,8)(-8,-5)
+name:	R2
+
+type:	default
+para:	95 5
+ship:	(5,1,4)(8,0)(-8,5)(2,-8)(2,8)(-8,-5)
+name:	R3

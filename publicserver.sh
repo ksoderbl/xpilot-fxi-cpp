@@ -1,0 +1,1 @@
+/usr/local/bin/xpilot-fxi-server -noquit -password buu -map /usr/local/share/xpilot-fxi/maps/teamcup.xp -allowviewing -internalfps 50 -framedivisor 4 -rankFileName rank.txt -rankwebpage rank.html

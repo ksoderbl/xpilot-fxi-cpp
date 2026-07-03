@@ -38,7 +38,7 @@ check_function_exists(strncasecmp HAVE_STRNCASECMP)
 
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/cmake/config.h.in
-    ${CMAKE_CURRENT_BINARY_DIR}/config.h
+    ${CMAKE_CURRENT_BINARY_DIR}/generated/config.h
     @ONLY
 )
 

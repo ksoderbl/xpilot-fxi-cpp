@@ -28,7 +28,7 @@
 #include "types.h"
 
 #include "structs.h"
-#include "walls.h"
+#include "walls1.h"
 
 #define ED_SHOT (-0.2 * FUEL_SCALE_FACT)
 #define ED_SHIELD (-0.20 * FUEL_SCALE_FACT)

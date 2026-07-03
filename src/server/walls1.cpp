@@ -39,7 +39,7 @@
 #include "netserver.h"
 #include "pack.h"
 #include "xperror.h"
-#include "walls.h"
+#include "walls1.h"
 #include "objpos.h"
 #include "rank.h"
 #include "frame.h"

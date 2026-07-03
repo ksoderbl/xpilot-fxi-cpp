@@ -27,7 +27,7 @@
 
 #include "serverconst.h"
 #include "global.h"
-#include "error.h"
+#include "xperror.h"
 #include "commonproto.h"
 
 #include "proto.h"
@@ -42,7 +42,6 @@
 #include "server.h"
 #include "robot.h"
 
-
 void tuner_plock(void)
 {
 	pLockServer = (plock_server(pLockServer) == 1) ? true : false;
@@ -52,7 +51,8 @@ void tuner_shotsmax(void)
 {
 	int32_t i;
 
-	for (i = 0; i < NumPlayers; i++) {
+	for (i = 0; i < NumPlayers; i++)
+	{
 		Players[i]->shot_max = ShotsMax;
 	}
 }
@@ -61,7 +61,8 @@ void tuner_shipmass(void)
 {
 	int32_t i;
 
-	for (i = 0; i < NumPlayers; i++) {
+	for (i = 0; i < NumPlayers; i++)
+	{
 		Players[i]->emptymass = ShipMass;
 	}
 }
@@ -70,8 +71,10 @@ void tuner_ballmass(void)
 {
 	int32_t i;
 
-	for (i = 0; i < NumObjs; i++) {
-		if (Object_is_type(Obj[i], OBJ_BALL)) {
+	for (i = 0; i < NumObjs; i++)
+	{
+		if (Object_is_type(Obj[i], OBJ_BALL))
+		{
 			Obj[i]->mass = ballMass;
 		}
 	}
@@ -79,7 +82,8 @@ void tuner_ballmass(void)
 
 void tuner_maxrobots(void)
 {
-	if (maxRobots < 0) {
+	if (maxRobots < 0)
+	{
 		maxRobots = World.NumBases;
 	}
 }
@@ -98,13 +102,15 @@ void tuner_worldlives(void)
 
 	Set_world_rules();
 
-	if (BIT(World.rules->mode, LIMITED_LIVES)) {
+	if (BIT(World.rules->mode, LIMITED_LIVES))
+	{
 		Players_reset();
 
 		Objects_time_out();
 
 		/* Reset the teams */
-		for (i = 0; i < MAX_TEAMS; i++) {
+		for (i = 0; i < MAX_TEAMS; i++)
+		{
 			World.teams[i].TreasuresDestroyed = 0;
 			World.teams[i].TreasuresLeft = World.teams[i].NumTreasures;
 		}

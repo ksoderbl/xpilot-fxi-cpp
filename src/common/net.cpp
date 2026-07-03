@@ -22,7 +22,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef	_WINDOWS
+#ifndef _WINDOWS
 #include <unistd.h>
 #endif
 #include <stdlib.h>
@@ -44,7 +44,7 @@
 #include <netinet/in.h>
 #endif
 
-#ifndef	_WINDOWS
+#ifndef _WINDOWS
 #include <netdb.h>
 #endif
 
@@ -52,16 +52,16 @@
 #include <bstring.h>
 #endif
 
-#ifdef	_WINDOWS
-#undef	va_start		/* there are bad versions in windows.h's "stdarg.h" */
-#undef	va_end
+#ifdef _WINDOWS
+#undef va_start /* there are bad versions in windows.h's "stdarg.h" */
+#undef va_end
 #include <varargs.h>
 #endif
 
 #include "version.h"
 #include "config.h"
 #include "const.h"
-#include "error.h"
+#include "xperror.h"
 #include "net.h"
 #include "packet.h"
 #include "bit.h"
@@ -73,7 +73,8 @@ int32_t last_packet_of_frame;
 
 int32_t Sockbuf_init(sockbuf_t *sbuf, int32_t sock, int32_t size, int32_t state)
 {
-	if ((sbuf->buf = sbuf->ptr = (char *) malloc(size)) == NULL) {
+	if ((sbuf->buf = sbuf->ptr = (char *)malloc(size)) == NULL)
+	{
 		return -1;
 	}
 	sbuf->sock = sock;
@@ -87,7 +88,8 @@ int32_t Sockbuf_init(sockbuf_t *sbuf, int32_t sock, int32_t size, int32_t state)
 
 int32_t Sockbuf_cleanup(sockbuf_t *sbuf)
 {
-	if (sbuf->buf != NULL) {
+	if (sbuf->buf != NULL)
+	{
 		free(sbuf->buf);
 	}
 	sbuf->buf = sbuf->ptr = NULL;
@@ -108,51 +110,62 @@ int32_t Sockbuf_advance(sockbuf_t *sbuf, int32_t len)
 	/*
 	 * First do a few buffer consistency checks.
 	 */
-	if (sbuf->ptr > sbuf->buf + sbuf->len) {
+	if (sbuf->ptr > sbuf->buf + sbuf->len)
+	{
 		errno = 0;
 		error("Sockbuf pointer too far");
 		sbuf->ptr = sbuf->buf + sbuf->len;
 	}
-	if (sbuf->ptr < sbuf->buf) {
+	if (sbuf->ptr < sbuf->buf)
+	{
 		errno = 0;
 		error("Sockbuf pointer bad");
 		sbuf->ptr = sbuf->buf;
 	}
-	if (sbuf->len > sbuf->size) {
+	if (sbuf->len > sbuf->size)
+	{
 		errno = 0;
 		error("Sockbuf len too far");
 		sbuf->len = sbuf->size;
 	}
-	if (sbuf->len < 0) {
+	if (sbuf->len < 0)
+	{
 		errno = 0;
 		error("Sockbuf len bad");
 		sbuf->len = 0;
 	}
-	if (len <= 0) {
-		if (len < 0) {
+	if (len <= 0)
+	{
+		if (len < 0)
+		{
 			errno = 0;
 			error("Sockbuf advance negative (%d)", len);
 		}
 	}
-	else if (len >= sbuf->len) {
-		if (len > sbuf->len) {
+	else if (len >= sbuf->len)
+	{
+		if (len > sbuf->len)
+		{
 			errno = 0;
 			error("Sockbuf advancing too far");
 		}
 		sbuf->len = 0;
 		sbuf->ptr = sbuf->buf;
 	}
-	else {
+	else
+	{
 #if defined(__hpux) || defined(VMS) || defined(__apollo) || defined(SVR4) || defined(_SEQUENT_) || defined(SYSV) || defined(_WINDOWS)
 		memmove(sbuf->buf, sbuf->buf + len, sbuf->len - len);
 #else
 		bcopy(sbuf->buf + len, sbuf->buf, sbuf->len - len);
 #endif
 		sbuf->len -= len;
-		if (sbuf->ptr - sbuf->buf <= len) {
+		if (sbuf->ptr - sbuf->buf <= len)
+		{
 			sbuf->ptr = sbuf->buf;
 		}
-		else {
+		else
+		{
 			sbuf->ptr -= len;
 		}
 	}
@@ -163,24 +176,28 @@ int32_t Sockbuf_flush(sockbuf_t *sbuf)
 {
 	int32_t len, i;
 
-	if (BIT(sbuf->state, SOCKBUF_WRITE) == 0) {
+	if (BIT(sbuf->state, SOCKBUF_WRITE) == 0)
+	{
 		errno = 0;
 		error("No flush on non-writable socket buffer");
 		error("(state=%02x,buf=%08x,ptr=%08x,size=%d,len=%d,sock=%d)",
-				sbuf->state, sbuf->buf, sbuf->ptr, sbuf->size,
-				sbuf->len, sbuf->sock);
+			  sbuf->state, sbuf->buf, sbuf->ptr, sbuf->size,
+			  sbuf->len, sbuf->sock);
 		return -1;
 	}
 	/*Trace("Sockbuf_flush: state=%02x,buf=%08x,ptr=%08x,size=%d,len=%d,sock=%d\n",
 	 sbuf->state, sbuf->buf, sbuf->ptr, sbuf->size, sbuf->len,
 	 sbuf->sock); */
-	if (BIT(sbuf->state, SOCKBUF_LOCK) != 0) {
+	if (BIT(sbuf->state, SOCKBUF_LOCK) != 0)
+	{
 		errno = 0;
 		error("No flush on locked socket buffer (0x%02x)", sbuf->state);
 		return -1;
 	}
-	if (sbuf->len <= 0) {
-		if (sbuf->len < 0) {
+	if (sbuf->len <= 0)
+	{
+		if (sbuf->len < 0)
+		{
 			errno = 0;
 			error("Write socket buffer length negative");
 			sbuf->len = 0;
@@ -206,7 +223,8 @@ int32_t Sockbuf_flush(sockbuf_t *sbuf)
 	}
 #endif
 
-	if (BIT(sbuf->state, SOCKBUF_DGRAM) != 0) {
+	if (BIT(sbuf->state, SOCKBUF_DGRAM) != 0)
+	{
 		errno = 0;
 		i = 0;
 #if 0
@@ -214,12 +232,15 @@ int32_t Sockbuf_flush(sockbuf_t *sbuf)
 		len = sbuf->len;
 		else
 #endif
-		while ((len = send(sbuf->sock, sbuf->buf, sbuf->len, 0)) <= 0) {
-			if (len == 0 || errno == EWOULDBLOCK || errno == EAGAIN) {
+		while ((len = send(sbuf->sock, sbuf->buf, sbuf->len, 0)) <= 0)
+		{
+			if (len == 0 || errno == EWOULDBLOCK || errno == EAGAIN)
+			{
 				Sockbuf_clear(sbuf);
 				return 0;
 			}
-			if (errno == EINTR) {
+			if (errno == EINTR)
+			{
 				errno = 0;
 				continue;
 			}
@@ -230,40 +251,47 @@ int32_t Sockbuf_flush(sockbuf_t *sbuf)
 				return -1;
 			}
 #endif
-			if (++i > MAX_SOCKBUF_RETRIES) {
+			if (++i > MAX_SOCKBUF_RETRIES)
+			{
 				error("Can't send on socket (%d,%d)",
-						sbuf->sock, sbuf->len);
+					  sbuf->sock, sbuf->len);
 				Sockbuf_clear(sbuf);
 				return -1;
 			}
 			{
 				static int32_t send_err;
-				if ((send_err++ & 0x3F) == 0) {
+				if ((send_err++ & 0x3F) == 0)
+				{
 					error("send (%d)", i);
 				}
 			}
-			if (GetSocketError(sbuf->sock) == -1) {
+			if (GetSocketError(sbuf->sock) == -1)
+			{
 				error("GetSocketError send");
 				return -1;
 			}
 			errno = 0;
 		}
-		if (len != sbuf->len) {
+		if (len != sbuf->len)
+		{
 			errno = 0;
 			error("Can't write complete datagram (%d,%d)", len,
-					sbuf->len);
+				  sbuf->len);
 		}
 		Sockbuf_clear(sbuf);
 	}
-	else {
+	else
+	{
 		errno = 0;
-		while ((len = DgramWrite(sbuf->sock, sbuf->buf, sbuf->len))
-				<= 0) {
-			if (errno == EINTR) {
+		while ((len = DgramWrite(sbuf->sock, sbuf->buf, sbuf->len)) <= 0)
+		{
+			if (errno == EINTR)
+			{
 				errno = 0;
 				continue;
 			}
-			if (errno != EWOULDBLOCK && errno != EAGAIN) {
+			if (errno != EWOULDBLOCK && errno != EAGAIN)
+			{
 				error("Can't write on socket");
 				return -1;
 			}
@@ -276,22 +304,27 @@ int32_t Sockbuf_flush(sockbuf_t *sbuf)
 
 int32_t Sockbuf_write(sockbuf_t *sbuf, char *buf, int32_t len)
 {
-	if (BIT(sbuf->state, SOCKBUF_WRITE) == 0) {
+	if (BIT(sbuf->state, SOCKBUF_WRITE) == 0)
+	{
 		errno = 0;
 		error("No write to non-writable socket buffer");
 		return -1;
 	}
-	if (sbuf->size - sbuf->len < len) {
-		if (BIT(sbuf->state, SOCKBUF_LOCK | SOCKBUF_DGRAM) != 0) {
+	if (sbuf->size - sbuf->len < len)
+	{
+		if (BIT(sbuf->state, SOCKBUF_LOCK | SOCKBUF_DGRAM) != 0)
+		{
 			errno = 0;
 			error("No write to locked socket buffer (%d,%d,%d,%d)",
-					sbuf->state, sbuf->size, sbuf->len, len);
+				  sbuf->state, sbuf->size, sbuf->len, len);
 			return -1;
 		}
-		if (Sockbuf_flush(sbuf) == -1) {
+		if (Sockbuf_flush(sbuf) == -1)
+		{
 			return -1;
 		}
-		if (sbuf->size - sbuf->len < len) {
+		if (sbuf->size - sbuf->len < len)
+		{
 			return 0;
 		}
 	}
@@ -305,28 +338,34 @@ int32_t Sockbuf_read(sockbuf_t *sbuf)
 {
 	int32_t max, i, len;
 
-	if (BIT(sbuf->state, SOCKBUF_READ) == 0) {
+	if (BIT(sbuf->state, SOCKBUF_READ) == 0)
+	{
 		errno = 0;
 		error("No read from non-readable socket buffer (%d)",
-				sbuf->state);
+			  sbuf->state);
 		return -1;
 	}
-	if (BIT(sbuf->state, SOCKBUF_LOCK) != 0) {
+	if (BIT(sbuf->state, SOCKBUF_LOCK) != 0)
+	{
 		return 0;
 	}
-	if (sbuf->ptr > sbuf->buf) {
+	if (sbuf->ptr > sbuf->buf)
+	{
 		Sockbuf_advance(sbuf, sbuf->ptr - sbuf->buf);
 	}
-	if ((max = sbuf->size - sbuf->len) <= 0) {
+	if ((max = sbuf->size - sbuf->len) <= 0)
+	{
 		static int32_t before;
-		if (before++ == 0) {
+		if (before++ == 0)
+		{
 			errno = 0;
 			error("Read socket buffer not big enough (%d,%d)",
-					sbuf->size, sbuf->len);
+				  sbuf->size, sbuf->len);
 		}
 		return -1;
 	}
-	if (BIT(sbuf->state, SOCKBUF_DGRAM) != 0) {
+	if (BIT(sbuf->state, SOCKBUF_DGRAM) != 0)
+	{
 		errno = 0;
 		i = 0;
 #if 0
@@ -334,19 +373,22 @@ int32_t Sockbuf_read(sockbuf_t *sbuf)
 		len = sbuf->len;
 		else
 #endif
-		while ((len = DgramRead(sbuf->sock, sbuf->buf + sbuf->len, max))
-				<= 0) {
-			if (len == 0) {
+		while ((len = DgramRead(sbuf->sock, sbuf->buf + sbuf->len, max)) <= 0)
+		{
+			if (len == 0)
+			{
 				return 0;
 			}
-#ifdef	_WINDOWS
+#ifdef _WINDOWS
 			errno = WSAGetLastError();
 #endif
-			if (errno == EINTR) {
+			if (errno == EINTR)
+			{
 				errno = 0;
 				continue;
 			}
-			if (errno == EWOULDBLOCK || errno == EAGAIN) {
+			if (errno == EWOULDBLOCK || errno == EAGAIN)
+			{
 				return 0;
 			}
 #if 0
@@ -359,17 +401,20 @@ int32_t Sockbuf_read(sockbuf_t *sbuf)
 			 Trace("errno=%d (%s) len = %d during DgramRead\n",
 			 errno, _GetWSockErrText(errno), len);
 			 */
-			if (++i > MAX_SOCKBUF_RETRIES) {
+			if (++i > MAX_SOCKBUF_RETRIES)
+			{
 				error("Can't recv on socket");
 				return -1;
 			}
 			{
 				static int32_t recv_err;
-				if ((recv_err++ & 0x3F) == 0) {
+				if ((recv_err++ & 0x3F) == 0)
+				{
 					error("recv (%d)", i);
 				}
 			}
-			if (GetSocketError(sbuf->sock) == -1) {
+			if (GetSocketError(sbuf->sock) == -1)
+			{
 				error("GetSocketError recv");
 				return -1;
 			}
@@ -377,18 +422,22 @@ int32_t Sockbuf_read(sockbuf_t *sbuf)
 		}
 		sbuf->len += len;
 	}
-	else {
+	else
+	{
 		errno = 0;
-		while ((len = DgramRead(sbuf->sock, sbuf->buf + sbuf->len, max))
-				<= 0) {
-			if (len == 0) {
+		while ((len = DgramRead(sbuf->sock, sbuf->buf + sbuf->len, max)) <= 0)
+		{
+			if (len == 0)
+			{
 				return 0;
 			}
-			if (errno == EINTR) {
+			if (errno == EINTR)
+			{
 				errno = 0;
 				continue;
 			}
-			if (errno != EWOULDBLOCK && errno != EAGAIN) {
+			if (errno != EWOULDBLOCK && errno != EAGAIN)
+			{
 				error("Can't read on socket");
 				return -1;
 			}
@@ -403,12 +452,14 @@ int32_t Sockbuf_read(sockbuf_t *sbuf)
 
 int32_t Sockbuf_copy(sockbuf_t *dest, sockbuf_t *src, int32_t len)
 {
-	if (len < dest->size - dest->len) {
+	if (len < dest->size - dest->len)
+	{
 		errno = 0;
 		error("Not enough room in destination copy socket buffer");
 		return -1;
 	}
-	if (len < src->len) {
+	if (len < src->len)
+	{
 		errno = 0;
 		error("Not enough data in source copy socket buffer");
 		return -1;
@@ -423,12 +474,12 @@ int32_t Sockbuf_copy(sockbuf_t *dest, sockbuf_t *src, int32_t len)
 int32_t Packet_printf(sockbuf_t *sbuf, const char *fmt, ...)
 #else
 int32_t Packet_printf(va_alist)
-va_dcl
+	va_dcl
 #endif
 {
-#define PRINTF_FMT	1
-#define PRINTF_IO	2
-#define PRINTF_SIZE	3
+#define PRINTF_FMT 1
+#define PRINTF_IO 2
+#define PRINTF_SIZE 3
 
 	int32_t i, cval, ival, count, failure = 0, max_str_size;
 	uint32_t uval;
@@ -464,15 +515,20 @@ va_dcl
 	 * our available buffer space.
 	 */
 	end = sbuf->buf + sbuf->size;
-	if (last_packet_of_frame != 1) {
+	if (last_packet_of_frame != 1)
+	{
 		end -= SOCKBUF_WRITE_SPARE;
 	}
 	buf = sbuf->buf + sbuf->len;
-	for (i = 0; failure == 0 && fmt[i] != '\0'; i++) {
-		if (fmt[i] == '%') {
-			switch (fmt[++i]) {
+	for (i = 0; failure == 0 && fmt[i] != '\0'; i++)
+	{
+		if (fmt[i] == '%')
+		{
+			switch (fmt[++i])
+			{
 			case 'c':
-				if (buf + 1 >= end) {
+				if (buf + 1 >= end)
+				{
 					failure = PRINTF_SIZE;
 					break;
 				}
@@ -480,7 +536,8 @@ va_dcl
 				*buf++ = cval;
 				break;
 			case 'd':
-				if (buf + 4 >= end) {
+				if (buf + 4 >= end)
+				{
 					failure = PRINTF_SIZE;
 					break;
 				}
@@ -491,7 +548,8 @@ va_dcl
 				*buf++ = ival;
 				break;
 			case 'u':
-				if (buf + 4 >= end) {
+				if (buf + 4 >= end)
+				{
 					failure = PRINTF_SIZE;
 					break;
 				}
@@ -502,20 +560,22 @@ va_dcl
 				*buf++ = uval;
 				break;
 			case 'h':
-				if (buf + 2 >= end) {
+				if (buf + 2 >= end)
+				{
 					failure = PRINTF_SIZE;
 					break;
 				}
-				switch (fmt[++i]) {
+				switch (fmt[++i])
+				{
 				case 'd':
 					sval = va_arg(ap, int32_t);
 					*buf++ = sval >> 8;
-					*buf++ = (char) sval;
+					*buf++ = (char)sval;
 					break;
 				case 'u':
 					usval = va_arg(ap, uint32_t);
 					*buf++ = usval >> 8;
-					*buf++ = (char) usval;
+					*buf++ = (char)usval;
 					break;
 				default:
 					failure = PRINTF_FMT;
@@ -523,24 +583,26 @@ va_dcl
 				}
 				break;
 			case 'l':
-				if (buf + 4 >= end) {
+				if (buf + 4 >= end)
+				{
 					failure = PRINTF_SIZE;
 					break;
 				}
-				switch (fmt[++i]) {
+				switch (fmt[++i])
+				{
 				case 'd':
 					lval = va_arg(ap, int32_t);
-					*buf++ = (char) (lval >> 24);
-					*buf++ = (char) (lval >> 16);
-					*buf++ = (char) (lval >> 8);
-					*buf++ = (char) lval;
+					*buf++ = (char)(lval >> 24);
+					*buf++ = (char)(lval >> 16);
+					*buf++ = (char)(lval >> 8);
+					*buf++ = (char)lval;
 					break;
 				case 'u':
 					ulval = va_arg(ap, uint32_t);
-					*buf++ = (char) (ulval >> 24);
-					*buf++ = (char) (ulval >> 16);
-					*buf++ = (char) (ulval >> 8);
-					*buf++ = (char) ulval;
+					*buf++ = (char)(ulval >> 24);
+					*buf++ = (char)(ulval >> 16);
+					*buf++ = (char)(ulval >> 8);
+					*buf++ = (char)ulval;
 					break;
 				default:
 					failure = PRINTF_FMT;
@@ -550,21 +612,26 @@ va_dcl
 			case 'S': /* Big strings */
 			case 's': /* Small strings */
 				max_str_size = (fmt[i] == 'S') ? MSG_LEN
-						: MAX_CHARS;
+											   : MAX_CHARS;
 				str = va_arg(ap, char *);
-				if (buf + max_str_size >= end) {
+				if (buf + max_str_size >= end)
+				{
 					stop = end;
 				}
-				else {
+				else
+				{
 					stop = buf + max_str_size;
 				}
 				/* Send the nul byte too */
-				do {
-					if (buf >= stop) {
+				do
+				{
+					if (buf >= stop)
+					{
 						break;
 					}
 				} while ((*buf++ = *str++) != '\0');
-				if (buf > stop) {
+				if (buf > stop)
+				{
 					failure = PRINTF_SIZE;
 				}
 				break;
@@ -573,13 +640,16 @@ va_dcl
 				break;
 			}
 		}
-		else {
+		else
+		{
 			failure = PRINTF_FMT;
 		}
 	}
-	if (failure != 0) {
+	if (failure != 0)
+	{
 		count = -1;
-		if (failure == PRINTF_SIZE) {
+		if (failure == PRINTF_SIZE)
+		{
 #if 0
 			static int32_t before;
 			if ((before++ & 0x0F) == 0) {
@@ -587,17 +657,20 @@ va_dcl
 						sbuf->size, sbuf->len, fmt);
 			}
 #endif
-			if (BIT(sbuf->state, SOCKBUF_DGRAM) != 0) {
+			if (BIT(sbuf->state, SOCKBUF_DGRAM) != 0)
+			{
 				count = 0;
 				failure = 0;
 			}
 		}
-		else if (failure == PRINTF_FMT) {
+		else if (failure == PRINTF_FMT)
+		{
 			errno = 0;
 			error("Error in format string (\"%s\")", fmt);
 		}
 	}
-	else {
+	else
+	{
 		count = buf - (sbuf->buf + sbuf->len);
 		sbuf->len += count;
 	}
@@ -611,7 +684,7 @@ va_dcl
 inline int32_t Packet_scanf(sockbuf_t *sbuf, const char *fmt, ...)
 #else
 inline int32_t Packet_scanf(va_alist)
-va_dcl
+	va_dcl
 #endif
 {
 	int32_t i, j, k, *iptr, count = 0, failure = 0, max_str_size;
@@ -633,23 +706,28 @@ va_dcl
 	va_start(ap, fmt);
 #endif
 
-	for (i = j = 0; failure == 0 && fmt[i] != '\0'; i++) {
-		if (fmt[i] == '%') {
+	for (i = j = 0; failure == 0 && fmt[i] != '\0'; i++)
+	{
+		if (fmt[i] == '%')
+		{
 			count++;
-			switch (fmt[++i]) {
+			switch (fmt[++i])
+			{
 			case 'c':
-				if (&sbuf->buf[sbuf->len] < &sbuf->ptr[j + 1]) {
-					if (BIT(sbuf->state, SOCKBUF_DGRAM | SOCKBUF_LOCK)
-							!= 0) {
+				if (&sbuf->buf[sbuf->len] < &sbuf->ptr[j + 1])
+				{
+					if (BIT(sbuf->state, SOCKBUF_DGRAM | SOCKBUF_LOCK) != 0)
+					{
 						failure = 3;
 						break;
 					}
-					if (Sockbuf_read(sbuf) == -1) {
+					if (Sockbuf_read(sbuf) == -1)
+					{
 						failure = 2;
 						break;
 					}
-					if (&sbuf->buf[sbuf->len]
-							< &sbuf->ptr[j + 1]) {
+					if (&sbuf->buf[sbuf->len] < &sbuf->ptr[j + 1])
+					{
 						failure = 3;
 						break;
 					}
@@ -658,18 +736,20 @@ va_dcl
 				*cptr = sbuf->ptr[j++];
 				break;
 			case 'd':
-				if (&sbuf->buf[sbuf->len] < &sbuf->ptr[j + 4]) {
-					if (BIT(sbuf->state, SOCKBUF_DGRAM | SOCKBUF_LOCK)
-							!= 0) {
+				if (&sbuf->buf[sbuf->len] < &sbuf->ptr[j + 4])
+				{
+					if (BIT(sbuf->state, SOCKBUF_DGRAM | SOCKBUF_LOCK) != 0)
+					{
 						failure = 3;
 						break;
 					}
-					if (Sockbuf_read(sbuf) == -1) {
+					if (Sockbuf_read(sbuf) == -1)
+					{
 						failure = 2;
 						break;
 					}
-					if (&sbuf->buf[sbuf->len]
-							< &sbuf->ptr[j + 4]) {
+					if (&sbuf->buf[sbuf->len] < &sbuf->ptr[j + 4])
+					{
 						failure = 3;
 						break;
 					}
@@ -681,18 +761,20 @@ va_dcl
 				*iptr |= (sbuf->ptr[j++] & 0xFF);
 				break;
 			case 'u':
-				if (&sbuf->buf[sbuf->len] < &sbuf->ptr[j + 4]) {
-					if (BIT(sbuf->state, SOCKBUF_DGRAM | SOCKBUF_LOCK)
-							!= 0) {
+				if (&sbuf->buf[sbuf->len] < &sbuf->ptr[j + 4])
+				{
+					if (BIT(sbuf->state, SOCKBUF_DGRAM | SOCKBUF_LOCK) != 0)
+					{
 						failure = 3;
 						break;
 					}
-					if (Sockbuf_read(sbuf) == -1) {
+					if (Sockbuf_read(sbuf) == -1)
+					{
 						failure = 2;
 						break;
 					}
-					if (&sbuf->buf[sbuf->len]
-							< &sbuf->ptr[j + 4]) {
+					if (&sbuf->buf[sbuf->len] < &sbuf->ptr[j + 4])
+					{
 						failure = 3;
 						break;
 					}
@@ -704,23 +786,26 @@ va_dcl
 				*uptr |= (sbuf->ptr[j++] & 0xFF);
 				break;
 			case 'h':
-				if (&sbuf->buf[sbuf->len] < &sbuf->ptr[j + 2]) {
-					if (BIT(sbuf->state, SOCKBUF_DGRAM | SOCKBUF_LOCK)
-							!= 0) {
+				if (&sbuf->buf[sbuf->len] < &sbuf->ptr[j + 2])
+				{
+					if (BIT(sbuf->state, SOCKBUF_DGRAM | SOCKBUF_LOCK) != 0)
+					{
 						failure = 3;
 						break;
 					}
-					if (Sockbuf_read(sbuf) == -1) {
+					if (Sockbuf_read(sbuf) == -1)
+					{
 						failure = 2;
 						break;
 					}
-					if (&sbuf->buf[sbuf->len]
-							< &sbuf->ptr[j + 2]) {
+					if (&sbuf->buf[sbuf->len] < &sbuf->ptr[j + 2])
+					{
 						failure = 3;
 						break;
 					}
 				}
-				switch (fmt[++i]) {
+				switch (fmt[++i])
+				{
 				case 'd':
 					sptr = va_arg(ap, int16_t *);
 					*sptr = sbuf->ptr[j++] << 8;
@@ -737,23 +822,26 @@ va_dcl
 				}
 				break;
 			case 'l':
-				if (&sbuf->buf[sbuf->len] < &sbuf->ptr[j + 4]) {
-					if (BIT(sbuf->state, SOCKBUF_DGRAM | SOCKBUF_LOCK)
-							!= 0) {
+				if (&sbuf->buf[sbuf->len] < &sbuf->ptr[j + 4])
+				{
+					if (BIT(sbuf->state, SOCKBUF_DGRAM | SOCKBUF_LOCK) != 0)
+					{
 						failure = 3;
 						break;
 					}
-					if (Sockbuf_read(sbuf) == -1) {
+					if (Sockbuf_read(sbuf) == -1)
+					{
 						failure = 2;
 						break;
 					}
-					if (&sbuf->buf[sbuf->len]
-							< &sbuf->ptr[j + 4]) {
+					if (&sbuf->buf[sbuf->len] < &sbuf->ptr[j + 4])
+					{
 						failure = 3;
 						break;
 					}
 				}
-				switch (fmt[++i]) {
+				switch (fmt[++i])
+				{
 				case 'd':
 					lptr = va_arg(ap, int32_t *);
 					*lptr = sbuf->ptr[j++] << 24;
@@ -776,32 +864,35 @@ va_dcl
 			case 'S': /* Big strings */
 			case 's': /* Small strings */
 				max_str_size = (fmt[i] == 'S') ? MSG_LEN
-						: MAX_CHARS;
+											   : MAX_CHARS;
 				str = va_arg(ap, char *);
 				k = 0;
-				for (;;) {
-					if (&sbuf->buf[sbuf->len]
-							< &sbuf->ptr[j + 1]) {
-						if (BIT(sbuf->state, SOCKBUF_DGRAM | SOCKBUF_LOCK)
-								!= 0) {
+				for (;;)
+				{
+					if (&sbuf->buf[sbuf->len] < &sbuf->ptr[j + 1])
+					{
+						if (BIT(sbuf->state, SOCKBUF_DGRAM | SOCKBUF_LOCK) != 0)
+						{
 							failure = 3;
 							break;
 						}
-						if (Sockbuf_read(sbuf) == -1) {
+						if (Sockbuf_read(sbuf) == -1)
+						{
 							failure = 2;
 							break;
 						}
-						if (&sbuf->buf[sbuf->len]
-								< &sbuf->ptr[j
-										+ 1]) {
+						if (&sbuf->buf[sbuf->len] < &sbuf->ptr[j + 1])
+						{
 							failure = 3;
 							break;
 						}
 					}
-					if ((str[k++] = sbuf->ptr[j++]) == '\0') {
+					if ((str[k++] = sbuf->ptr[j++]) == '\0')
+					{
 						break;
 					}
-					else if (k >= max_str_size) {
+					else if (k >= max_str_size)
+					{
 						/*
 						 * What to do now is unclear to me.
 						 * The server should drop the packet, but
@@ -810,16 +901,19 @@ va_dcl
 						 */
 						errno = 0;
 						error("String overflow while scanning (%d,%d)", k, max_str_size);
-						if (BIT(sbuf->state, SOCKBUF_LOCK) != 0) {
+						if (BIT(sbuf->state, SOCKBUF_LOCK) != 0)
+						{
 							failure = 2;
 						}
-						else {
+						else
+						{
 							failure = 3;
 						}
 						break;
 					}
 				}
-				if (failure != 0) {
+				if (failure != 0)
+				{
 					strcpy(str, "ErRoR");
 				}
 				break;
@@ -828,26 +922,32 @@ va_dcl
 				break;
 			}
 		}
-		else {
+		else
+		{
 			failure = 1;
 		}
 	}
-	if (failure == 1) {
+	if (failure == 1)
+	{
 		errno = 0;
 		error("Error in format string (%s)", fmt);
 	}
-	else if (failure == 3) {
+	else if (failure == 3)
+	{
 		/* Not enough input for one complete packet */
 		count = 0;
 		failure = 0;
 	}
-	else if (failure == 0) {
-		if (&sbuf->buf[sbuf->len] < &sbuf->ptr[j]) {
+	else if (failure == 0)
+	{
+		if (&sbuf->buf[sbuf->len] < &sbuf->ptr[j])
+		{
 			errno = 0;
 			error("Input buffer exceeded (%s)", fmt);
 			failure = 1;
 		}
-		else {
+		else
+		{
 			sbuf->ptr += j;
 		}
 	}
@@ -856,4 +956,3 @@ va_dcl
 
 	return (failure) ? -1 : count;
 }
-

@@ -34,7 +34,7 @@
 #include "debug.h"
 #include "bit.h"
 #include "proto.h"
-#include "error.h"
+#include "xperror.h"
 #include "objpos.h"
 
 #include "player.h"

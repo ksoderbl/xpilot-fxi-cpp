@@ -35,14 +35,13 @@
 #include "global.h"
 #include "proto.h"
 #include "defaults.h"
-#include "error.h"
+#include "xperror.h"
 #include "portability.h"
 #include "checknames.h"
 #include "commonproto.h"
 #include "fileparser.h"
 #include "parser.h"
 #include "map.h"
-
 
 char parser_version[] = VERSION;
 
@@ -62,59 +61,67 @@ static void Parse_help(char *progname)
 	options = Get_option_descs(&option_count);
 
 	printf("Usage: %s [ options ]\n"
-		"\n", progname);
+		   "\n",
+		   progname);
 	printf(
-			"Option flags specify where an option can be used and whether it\n"
-				"is visible or not.  Default flags are \"any\" if not otherwise\n"
-				"specified by one or more of these keywords:\n"
-				"\n");
+		"Option flags specify where an option can be used and whether it\n"
+		"is visible or not.  Default flags are \"any\" if not otherwise\n"
+		"specified by one or more of these keywords:\n"
+		"\n");
 	printf("command       May be specified on the command-line.\n"
-		"passwordfile  May be specified in the password file.\n"
-		"defaults      May be specified in the defaults file.\n"
-		"any           May be specified in the map file, defaults file,\n"
-		"              or on the command line.\n"
-		"invisible     Is not displayed when a list of options is\n"
-		"              requested from the server by an operator.\n"
-		"\n");
+		   "passwordfile  May be specified in the password file.\n"
+		   "defaults      May be specified in the defaults file.\n"
+		   "any           May be specified in the map file, defaults file,\n"
+		   "              or on the command line.\n"
+		   "invisible     Is not displayed when a list of options is\n"
+		   "              requested from the server by an operator.\n"
+		   "\n");
 	printf("The possible options include:\n"
-		"\n");
-	for (j = 0; j < option_count; j++) {
+		   "\n");
+	for (j = 0; j < option_count; j++)
+	{
 		printf("    %s%s", options[j].type == valBool ? "-/+" : "-",
-				options[j].name);
+			   options[j].name);
 		if (strcasecmp(options[j].commandLineOption, options[j].name))
 			xpprintf(" or %s", options[j].commandLineOption);
 		printf(
-				" %s\n",
-				options[j].type == valInt ? "<integer>"
-						: options[j].type == valReal ? "<real>"
-								: options[j].type
-										== valString ? "<string>"
-										: options[j].type
-												== valList ? "<list>"
-												: "");
-		for (str = options[j].helpLine; *str; str++) {
-			if (str == options[j].helpLine || str[-1] == '\n') {
+			" %s\n",
+			options[j].type == valInt	   ? "<integer>"
+			: options[j].type == valReal   ? "<real>"
+			: options[j].type == valString ? "<string>"
+			: options[j].type == valList   ? "<list>"
+										   : "");
+		for (str = options[j].helpLine; *str; str++)
+		{
+			if (str == options[j].helpLine || str[-1] == '\n')
+			{
 				putchar('\t');
 			}
 			putchar(*str);
 		}
-		if (str > options[j].helpLine && str[-1] != '\n') {
+		if (str > options[j].helpLine && str[-1] != '\n')
+		{
 			putchar('\n');
 		}
 		flags = options[j].flags;
 		all_flags = (OPT_ORIGIN_ANY | OPT_VISIBLE);
-		if ((flags & all_flags) != all_flags && flags != 0) {
+		if ((flags & all_flags) != all_flags && flags != 0)
+		{
 			strlcpy(msg, "[ Flags: command, ", sizeof(msg));
-			if ((flags & OPT_PASSWORD) != 0) {
+			if ((flags & OPT_PASSWORD) != 0)
+			{
 				strlcat(msg, "passwordfile, ", sizeof(msg));
 			}
-			if ((flags & (OPT_DEFAULTS | OPT_MAP)) == OPT_DEFAULTS) {
+			if ((flags & (OPT_DEFAULTS | OPT_MAP)) == OPT_DEFAULTS)
+			{
 				strlcat(msg, "defaults, ", sizeof(msg));
 			}
-			if ((flags & OPT_MAP) != 0) {
+			if ((flags & OPT_MAP) != 0)
+			{
 				strlcat(msg, "any, ", sizeof(msg));
 			}
-			if ((flags & OPT_VISIBLE) == 0) {
+			if ((flags & OPT_VISIBLE) == 0)
+			{
 				strlcat(msg, "invisible, ", sizeof(msg));
 			}
 			msg[strlen(msg) - 2] = '\0';
@@ -124,12 +131,12 @@ static void Parse_help(char *progname)
 		putchar('\n');
 	}
 	printf("    \n"
-		"    The probabilities are in the range [0.0-1.0] and they refer to the\n"
-		"    probability that an event will occur in a block per second.\n"
-		"    Boolean options are turned off by using +<option>.\n"
-		"    \n"
-		"    Please refer to the manual pages, xpilots(6) and xpilot(6),\n"
-		"    for more specific help.\n");
+		   "    The probabilities are in the range [0.0-1.0] and they refer to the\n"
+		   "    probability that an event will occur in a block per second.\n"
+		   "    Boolean options are turned off by using +<option>.\n"
+		   "    \n"
+		   "    Please refer to the manual pages, xpilots(6) and xpilot(6),\n"
+		   "    for more specific help.\n");
 }
 
 /*
@@ -143,16 +150,18 @@ static void Parser_dump_options(char *progname)
 
 	options = Get_option_descs(&option_count);
 
-	for (j = 0; j < option_count; j++) {
-		if (options[j].type != valVoid) {
+	for (j = 0; j < option_count; j++)
+	{
+		if (options[j].type != valVoid)
+		{
 			int32_t len = strlen(options[j].name);
 			xpprintf(
-					"%s:%*s%s\n",
-					options[j].name,
-					(len < 40) ? (40 - len) : 1,
-					"",
-					(options[j].defaultValue != NULL) ? ((const char *)(options[j].defaultValue))
-							: "");
+				"%s:%*s%s\n",
+				options[j].name,
+				(len < 40) ? (40 - len) : 1,
+				"",
+				(options[j].defaultValue != NULL) ? ((const char *)(options[j].defaultValue))
+												  : "");
 		}
 	}
 	xpprintf("\n");
@@ -170,30 +179,36 @@ static void Parser_dump_flags(char *progname)
 
 	options = Get_option_descs(&option_count);
 
-	for (j = 0; j < option_count; j++) {
+	for (j = 0; j < option_count; j++)
+	{
 		int32_t len = strlen(options[j].name);
 		strlcpy(msg, "{", sizeof(msg));
-		if ((options[j].flags & OPT_COMMAND) != 0) {
+		if ((options[j].flags & OPT_COMMAND) != 0)
+		{
 			strlcat(msg, "command, ", sizeof(msg));
 		}
-		if ((options[j].flags & OPT_PASSWORD) != 0) {
+		if ((options[j].flags & OPT_PASSWORD) != 0)
+		{
 			strlcat(msg, "passwordfile, ", sizeof(msg));
 		}
-		if ((options[j].flags & OPT_DEFAULTS) != 0) {
+		if ((options[j].flags & OPT_DEFAULTS) != 0)
+		{
 			strlcat(msg, "defaults, ", sizeof(msg));
 		}
-		if ((options[j].flags & OPT_MAP) != 0) {
+		if ((options[j].flags & OPT_MAP) != 0)
+		{
 			strlcat(msg, "map, ", sizeof(msg));
 		}
-		if ((options[j].flags & OPT_VISIBLE) != 0) {
+		if ((options[j].flags & OPT_VISIBLE) != 0)
+		{
 			strlcat(msg, "visible, ", sizeof(msg));
 		}
-		if ((strlen(msg) >= 2)) {
+		if ((strlen(msg) >= 2))
+		{
 			msg[strlen(msg) - 2] = '\0';
 		}
 		strlcat(msg, "}", sizeof(msg));
-		xpprintf("%s:%*s%s\n", options[j].name, (len < 40) ? (40 - len)
-				: 1, "", msg);
+		xpprintf("%s:%*s%s\n", options[j].name, (len < 40) ? (40 - len) : 1, "", msg);
 	}
 	xpprintf("\n");
 }
@@ -246,50 +261,59 @@ int32_t Parser_list_option(int32_t *index, char *buf)
 
 	options = Get_option_descs(&option_count);
 
-	if (i < 0 || i >= option_count) {
+	if (i < 0 || i >= option_count)
+	{
 		return -1;
 	}
-	if (options[i].defaultValue == NULL) {
+	if (options[i].defaultValue == NULL)
+	{
 		return 0;
 	}
-	if ((options[i].flags & OPT_VISIBLE) == 0) {
+	if ((options[i].flags & OPT_VISIBLE) == 0)
+	{
 		return 0;
 	}
-	switch (options[i].type) {
+	switch (options[i].type)
+	{
 	case valInt:
 		sprintf(buf, "%s:%d", options[i].name,
-				*(int32_t *) options[i].variable);
+				*(int32_t *)options[i].variable);
 		break;
 	case valReal:
 		sprintf(buf, "%s:%g", options[i].name,
-				*(DFLOAT *) options[i].variable);
+				*(DFLOAT *)options[i].variable);
 		break;
 	case valBool:
 		sprintf(buf, "%s:%s", options[i].name,
-				*(bool *) options[i].variable ? "yes" : "no");
+				*(bool *)options[i].variable ? "yes" : "no");
 		break;
 	case valString:
 		sprintf(buf, "%s:%s", options[i].name,
-				*(char **) options[i].variable);
+				*(char **)options[i].variable);
 		break;
-	case valList: {
-		TList list = *(TList *) options[i].variable;
+	case valList:
+	{
+		TList list = *(TList *)options[i].variable;
 		sprintf(buf, "%s:", options[i].name);
-		if (list) {
+		if (list)
+		{
 			TListIter iter;
 			for (iter = LIST_GetFirstItem(list); iter != LIST_GetLastItem(list); LI_FORWARD(
-					iter)) {
+					 iter))
+			{
 				char *str = LI_DATA(iter);
-				if (iter != LIST_GetFirstItem(list)) {
+				if (iter != LIST_GetFirstItem(list))
+				{
 					strlcat(buf, ",", MSG_LEN);
 				}
-				if (strlcat(buf, str, MSG_LEN) >= MSG_LEN) {
+				if (strlcat(buf, str, MSG_LEN) >= MSG_LEN)
+				{
 					break;
 				}
 			}
 		}
 	}
-		break;
+	break;
 	default:
 		return 0;
 	}
@@ -304,31 +328,38 @@ static bool Parse_check_info_request(char **argv, int32_t i)
 {
 	char *arg = argv[i];
 
-	if (arg[0] == '-' && arg[1] == '-') {
+	if (arg[0] == '-' && arg[1] == '-')
+	{
 		/* when arg starts with two dashes skip first one */
 		arg++;
 	}
-	if (strcmp(arg, "-help") == 0 || strcmp(arg, "-h") == 0) {
+	if (strcmp(arg, "-help") == 0 || strcmp(arg, "-h") == 0)
+	{
 		Parse_help(*argv);
 		return true;
 	}
-	if (strcmp(arg, "-dump") == 0) {
+	if (strcmp(arg, "-dump") == 0)
+	{
 		Parser_dump_all(*argv);
 		return true;
 	}
-	if (strcmp(arg, "-dumpMan") == 0) {
+	if (strcmp(arg, "-dumpMan") == 0)
+	{
 		Parser_dump_options(*argv);
 		return true;
 	}
-	if (strcmp(arg, "-dumpWindows") == 0) {
+	if (strcmp(arg, "-dumpWindows") == 0)
+	{
 		Parser_dump_options(*argv);
 		return true;
 	}
-	if (strcmp(arg, "-dumpFlags") == 0) {
+	if (strcmp(arg, "-dumpFlags") == 0)
+	{
 		Parser_dump_flags(*argv);
 		return true;
 	}
-	if (strcmp(arg, "-version") == 0 || strcmp(arg, "-v") == 0) {
+	if (strcmp(arg, "-version") == 0 || strcmp(arg, "-v") == 0)
+	{
 		puts(TITLE);
 		return true;
 	}
@@ -348,51 +379,65 @@ bool Parser(int32_t argc, char **argv)
 	char *fname;
 	option_desc *desc;
 
-	if (Init_options() == false) {
+	if (Init_options() == false)
+	{
 		return false;
 	}
 
-	for (i = 1; i < argc; i++) {
-		if (Parse_check_info_request(argv, i) == true) {
+	for (i = 1; i < argc; i++)
+	{
+		if (Parse_check_info_request(argv, i) == true)
+		{
 			return false;
 		}
 
-		if (argv[i][0] == '-' || argv[i][0] == '+') {
+		if (argv[i][0] == '-' || argv[i][0] == '+')
+		{
 			desc = Find_option_by_name(argv[i] + 1);
-			if (desc != NULL) {
-				if (desc->type == valBool) {
+			if (desc != NULL)
+			{
+				if (desc->type == valBool)
+				{
 					const char *bool_value;
-					if (argv[i][0] == '-') {
+					if (argv[i][0] == '-')
+					{
 						bool_value = "true";
 					}
-					else {
+					else
+					{
 						bool_value = "false";
 					}
 					Option_set_value(desc->name,
-							bool_value, 1,
-							OPT_COMMAND);
+									 bool_value, 1,
+									 OPT_COMMAND);
 				}
-				else if (desc->type == valVoid) {
+				else if (desc->type == valVoid)
+				{
 				}
-				else {
-					if (i + 1 == argc) {
+				else
+				{
+					if (i + 1 == argc)
+					{
 						warn(
-								"Option '%s' needs an argument",
-								argv[i]);
+							"Option '%s' needs an argument",
+							argv[i]);
 					}
-					else {
+					else
+					{
 						i++;
 						Option_set_value(desc->name,
-								argv[i], 1,
-								OPT_COMMAND);
+										 argv[i], 1,
+										 OPT_COMMAND);
 					}
 				}
 			}
-			else {
+			else
+			{
 				warn("Unknown option '%s'", argv[i]);
 			}
 		}
-		else {
+		else
+		{
 			warn("Unknown option '%s'", argv[i]);
 		}
 	}
@@ -400,20 +445,24 @@ bool Parser(int32_t argc, char **argv)
 	/*
 	 * Read local defaults file
 	 */
-	if ((fname = Option_get_value("defaultsFileName", NULL)) != NULL) {
+	if ((fname = Option_get_value("defaultsFileName", NULL)) != NULL)
+	{
 		parseDefaultsFile(fname);
 	}
-	else {
+	else
+	{
 		parseDefaultsFile(Conf_defaults_file_name());
 	}
 
 	/*
 	 * Read local password file
 	 */
-	if ((fname = Option_get_value("passwordFileName", NULL)) != NULL) {
+	if ((fname = Option_get_value("passwordFileName", NULL)) != NULL)
+	{
 		parsePasswordFile(fname);
 	}
-	else {
+	else
+	{
 		parsePasswordFile(Conf_password_file_name());
 	}
 
@@ -423,24 +472,30 @@ bool Parser(int32_t argc, char **argv)
 	 * If "mapFileName" is defined and it is not equal to "wild"
 	 * then read it's contents from file.  Else read a default map.
 	 */
-	if (!(fname = Option_get_value("mapData", NULL))) {
-		if ((fname = Option_get_value("mapFileName", NULL)) != NULL) {
-			if (strcasecmp(fname, "wild") && !parseMapFile(fname)) {
+	if (!(fname = Option_get_value("mapData", NULL)))
+	{
+		if ((fname = Option_get_value("mapFileName", NULL)) != NULL)
+		{
+			if (strcasecmp(fname, "wild") && !parseMapFile(fname))
+			{
 				xpprintf(
-						"Unable to read %s, trying to open %s\n",
-						fname, Conf_default_map());
-				if (!parseMapFile(Conf_default_map())) {
+					"Unable to read %s, trying to open %s\n",
+					fname, Conf_default_map());
+				if (!parseMapFile(Conf_default_map()))
+				{
 					xpprintf("Unable to read %s\n",
-							Conf_default_map());
+							 Conf_default_map());
 				}
 			}
 		}
-		else {
+		else
+		{
 			xpprintf("Map not specified, trying to open %s\n",
-					Conf_default_map());
-			if (!parseMapFile(Conf_default_map())) {
+					 Conf_default_map());
+			if (!parseMapFile(Conf_default_map()))
+			{
 				xpprintf("Unable to read %s\n",
-						Conf_default_map());
+						 Conf_default_map());
 			}
 		}
 	}
@@ -475,50 +530,61 @@ int32_t Tune_option(char *name, char *val)
 	DFLOAT fval;
 	option_desc *opt;
 
-	if (!(opt = Find_option_by_name(name))) {
+	if (!(opt = Find_option_by_name(name)))
+	{
 		return -2; /* Variable not found */
 	}
 
-	if (opt->tuner == tuner_none) {
+	if (opt->tuner == tuner_none)
+	{
 		return -1; /* Operation undefined */
 	}
 
-	switch (opt->type) {
+	switch (opt->type)
+	{
 	case valInt:
-		if (Convert_string_to_int(val, &ival) != true) {
+		if (Convert_string_to_int(val, &ival) != true)
+		{
 			return 0;
 		}
-		*(int32_t *) opt->variable = ival;
+		*(int32_t *)opt->variable = ival;
 		(*opt->tuner)();
 		return 1;
 	case valBool:
-		if (string_is_true(val)) {
-			*(bool *) opt->variable = true;
+		if (string_is_true(val))
+		{
+			*(bool *)opt->variable = true;
 		}
-		else if (string_is_false(val)) {
-			*(bool *) opt->variable = false;
+		else if (string_is_false(val))
+		{
+			*(bool *)opt->variable = false;
 		}
-		else {
+		else
+		{
 			return 0;
 		}
 		(*opt->tuner)();
 		return 1;
 	case valReal:
-		if (Convert_string_to_float(val, &fval) != true) {
+		if (Convert_string_to_float(val, &fval) != true)
+		{
 			return 0;
 		}
-		*(DFLOAT *) opt->variable = fval;
+		*(DFLOAT *)opt->variable = fval;
 		(*opt->tuner)();
 		return 1;
-	case valString: {
+	case valString:
+	{
 		char *s = xp_strdup(val);
-		if (!s) {
+		if (!s)
+		{
 			return 0;
 		}
-		if (*(char **) (opt->variable) != opt->defaultValue) {
-			free(*(char **) opt->variable);
+		if (*(char **)(opt->variable) != opt->defaultValue)
+		{
+			free(*(char **)opt->variable);
 		}
-		*(char **) opt->variable = s;
+		*(char **)opt->variable = s;
 		(*opt->tuner)();
 		return 1;
 	}
@@ -531,32 +597,34 @@ int32_t Get_option_value(const char *name, char *value, uint32_t size)
 {
 	option_desc *opt;
 
-	if (size < 12) {
+	if (size < 12)
+	{
 		return -1; /* Generic error. */
 	}
 
-	if (!(opt = Find_option_by_name(name))) {
+	if (!(opt = Find_option_by_name(name)))
+	{
 		return -2; /* Variable not found */
 	}
 
 	if ((opt->flags & OPT_VISIBLE) == 0)
 		return -3;
 
-	switch (opt->type) {
+	switch (opt->type)
+	{
 	case valInt:
-		sprintf(value, "%d", *((int32_t *) opt->variable));
+		sprintf(value, "%d", *((int32_t *)opt->variable));
 		break;
 	case valReal:
-		sprintf(value, "%g", *((DFLOAT *) opt->variable));
+		sprintf(value, "%g", *((DFLOAT *)opt->variable));
 		break;
 	case valBool:
-		sprintf(value, "%s", *((bool *) opt->variable) ? "true"
-				: "false");
+		sprintf(value, "%s", *((bool *)opt->variable) ? "true" : "false");
 		break;
 	case valString:
-		if (*((char **) opt->variable) == NULL)
+		if (*((char **)opt->variable) == NULL)
 			return -4;
-		strlcpy(value, *((char **) opt->variable), size);
+		strlcpy(value, *((char **)opt->variable), size);
 		break;
 	default:
 		return -1; /* Generic error. */
@@ -564,4 +632,3 @@ int32_t Get_option_value(const char *name, char *value, uint32_t size)
 
 	return 1; /* Success. */
 }
-

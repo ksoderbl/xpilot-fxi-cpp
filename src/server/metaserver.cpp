@@ -42,23 +42,24 @@
 #include "map.h"
 #include "pack.h"
 #include "metaserver.h"
-#include "error.h"
+#include "xperror.h"
 #include "netserver.h"
 #include "player.h"
 #include "player_inline.h"
 #include "server.h"
 
-#define META_VERSION	VERSION
+#define META_VERSION VERSION
 
 char metaserver_version[] = VERSION;
 
-struct MetaServer {
+struct MetaServer
+{
 	char name[64];
 	char addr[16];
 };
 struct MetaServer meta_servers[2] = {
-		{ META_HOST, META_IP },
-		{ META_HOST_TWO, META_IP_TWO },
+	{META_HOST, META_IP},
+	{META_HOST_TWO, META_IP_TWO},
 };
 
 static int32_t Socket = -1;
@@ -68,17 +69,19 @@ double meta_update_count = 0.0;
 
 extern time_t serverStartTime;
 
-
 void Meta_send(char *mesg, int32_t len)
 {
 	int32_t i;
 
-	if (!reportToMetaServer) {
+	if (!reportToMetaServer)
+	{
 		return;
 	}
 
-	for (i = 0; i < NELEM(meta_servers); i++) {
-		if (DgramSend(Socket, meta_servers[i].addr, META_PORT, mesg, len) != len) {
+	for (i = 0; i < NELEM(meta_servers); i++)
+	{
+		if (DgramSend(Socket, meta_servers[i].addr, META_PORT, mesg, len) != len)
+		{
 			GetSocketError(Socket);
 			DgramSend(Socket, meta_servers[i].addr, META_PORT, mesg, len);
 		}
@@ -89,8 +92,10 @@ int32_t Meta_from(char *addr, int32_t port)
 {
 	int32_t i;
 
-	for (i = 0; i < NELEM(meta_servers); i++) {
-		if (!strcmp(addr, meta_servers[i].addr)) {
+	for (i = 0; i < NELEM(meta_servers); i++)
+	{
+		if (!strcmp(addr, meta_servers[i].addr))
+		{
 			return (port == META_PORT);
 		}
 	}
@@ -99,7 +104,8 @@ int32_t Meta_from(char *addr, int32_t port)
 
 void Meta_gone(void)
 {
-	if (reportToMetaServer) {
+	if (reportToMetaServer)
+	{
 		sprintf(msg, "server %s\nremove", Server.host);
 		Meta_send(msg, strlen(msg) + 1);
 	}
@@ -112,32 +118,38 @@ void Meta_init(int32_t fd)
 
 	Socket = fd;
 
-	if (!reportToMetaServer) {
+	if (!reportToMetaServer)
+	{
 		return;
 	}
 
 	xpprintf("%s Locating Internet Meta server... ", showtime());
 	fflush(stdout);
 
-	for (i = 0; i < NELEM(meta_servers); i++) {
+	for (i = 0; i < NELEM(meta_servers); i++)
+	{
 		addr = GetAddrByName(meta_servers[i].name);
-		if (addr) {
+		if (addr)
+		{
 			strncpy(meta_servers[i].addr, addr,
 					sizeof(meta_servers[i].addr));
-			meta_servers[i].addr[sizeof(meta_servers[i].addr) - 1]
-					= '\0';
+			meta_servers[i].addr[sizeof(meta_servers[i].addr) - 1] = '\0';
 		}
 
-		if (addr) {
+		if (addr)
+		{
 			xpprintf("found %d", i + 1);
 		}
-		else {
+		else
+		{
 			xpprintf("%d not found", i + 1);
 		}
-		if (i + 1 == NELEM(meta_servers)) {
+		if (i + 1 == NELEM(meta_servers))
+		{
 			xpprintf("\n");
 		}
-		else {
+		else
+		{
 			xpprintf("... ");
 		}
 		fflush(stdout);
@@ -147,7 +159,7 @@ void Meta_init(int32_t fd)
 void Meta_update(void)
 {
 
-#define SOUND_SUPPORT_STR	"no"
+#define SOUND_SUPPORT_STR "no"
 
 	char string[MAX_STR_LEN];
 	char status[MAX_STR_LEN];
@@ -159,7 +171,8 @@ void Meta_update(void)
 	int32_t active_per_team[MAX_TEAMS];
 	player_t *pl;
 
-	if (!reportToMetaServer) {
+	if (!reportToMetaServer)
+	{
 		return;
 	}
 
@@ -168,13 +181,16 @@ void Meta_update(void)
 	/* Find out the number of active players. */
 	num_active_players = 0;
 	memset(active_per_team, 0, sizeof active_per_team);
-	for (i = 0; i < NumPlayers; i++) {
+	for (i = 0; i < NumPlayers; i++)
+	{
 		pl = Players[i];
 
 		/* Report only human players who are currently in game, dead or waiting */
-		if (Player_is_human(pl) && (Player_is_active(pl))) {
+		if (Player_is_human(pl) && (Player_is_active(pl)))
+		{
 			num_active_players++;
-			if (BIT(World.rules->mode, TEAM_PLAY)) {
+			if (BIT(World.rules->mode, TEAM_PLAY))
+			{
 				active_per_team[i]++;
 			}
 		}
@@ -184,57 +200,66 @@ void Meta_update(void)
 
 	/* calculate number of available homebases per team. */
 	freebases[0] = '\0';
-	if (BIT(World.rules->mode, TEAM_PLAY)) {
+	if (BIT(World.rules->mode, TEAM_PLAY))
+	{
 		j = 0;
-		for (i = 0; i < MAX_TEAMS; i++) {
-			if (i == robotTeam && reserveRobotTeam) {
+		for (i = 0; i < MAX_TEAMS; i++)
+		{
+			if (i == robotTeam && reserveRobotTeam)
+			{
 				continue;
 			}
-			if (World.teams[i].NumBases > 0) {
+			if (World.teams[i].NumBases > 0)
+			{
 				sprintf(&freebases[j], "%d=%d,", i, World.teams[i].NumBases - active_per_team[i]);
 				j += strlen(&freebases[j]);
 			}
 		}
 		/* strip trailing comma. */
-		if (j) {
+		if (j)
+		{
 			freebases[j - 1] = '\0';
 		}
 	}
-	else {
+	else
+	{
 		sprintf(freebases, "=%d", World.NumBases - num_active_players - login_in_progress);
 	}
 
 	sprintf(string, "add server %s\n"
-		"add users %d\n"
-		"add version %s\n"
-		"add map %s\n"
-		"add sizeMap %3dx%3d\n"
-		"add author %s\n"
-		"add bases %d\n"
-		"add fps %d\n"
-		"add port %d\n"
-		"add mode %s\n"
-		"add teams %d\n"
-		"add free %s\n"
-		"add timing %d\n"
-		"add stime %d\n"
-		"add queue %d\n"
-		"add sound " SOUND_SUPPORT_STR "\n", Server.host,
+					"add users %d\n"
+					"add version %s\n"
+					"add map %s\n"
+					"add sizeMap %3dx%3d\n"
+					"add author %s\n"
+					"add bases %d\n"
+					"add fps %d\n"
+					"add port %d\n"
+					"add mode %s\n"
+					"add teams %d\n"
+					"add free %s\n"
+					"add timing %d\n"
+					"add stime %d\n"
+					"add queue %d\n"
+					"add sound " SOUND_SUPPORT_STR "\n",
+			Server.host,
 			num_active_players, META_VERSION, World.name, World.x,
 			World.y, World.author, World.NumBases, fps,
 			contactPort, game_mode, World.NumTeamBases, freebases,
-			0, (int32_t) (time(NULL) - serverStartTime), NumQueuedPlayers);
+			0, (int32_t)(time(NULL) - serverStartTime), NumQueuedPlayers);
 
-	for (i = 0; i < NumPlayers; i++) {
+	for (i = 0; i < NumPlayers; i++)
+	{
 		pl = Players[i];
 
-		if (Player_is_human(pl)
-				&& (Player_is_alive(pl) || Player_is_appearing(pl) || Player_is_waiting(pl) || Player_is_dead(pl))) {
+		if (Player_is_human(pl) && (Player_is_alive(pl) || Player_is_appearing(pl) || Player_is_waiting(pl) || Player_is_dead(pl)))
+		{
 			sprintf(string + strlen(string), "%s%s=%s@%s",
 					(first) ? "add players " : ",",
 					pl->name, pl->realname,
 					pl->hostname);
-			if (BIT(World.rules->mode, TEAM_PLAY)) {
+			if (BIT(World.rules->mode, TEAM_PLAY))
+			{
 				sprintf(status, "{%d}", pl->team->Num);
 				strcat(string, status);
 			}
@@ -244,7 +269,8 @@ void Meta_update(void)
 	}
 
 	strcat(string, "\nadd status ");
-	if (strlen(string) + strlen(status) >= sizeof(string)) {
+	if (strlen(string) + strlen(status) >= sizeof(string))
+	{
 		/* Prevent array overflow */
 		strcpy(&status[sizeof(string) - (strlen(string) + 2)], "\n");
 	}

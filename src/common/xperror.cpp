@@ -16,18 +16,18 @@
 #include "version.h"
 #include "config.h"
 #include "const.h"
-#include "error.h"
+#include "xperror.h"
 #include "portability.h"
 #include "commonproto.h"
 
 #undef HAVE_STDARG
 #undef HAVE_VARARG
 #ifndef _WINDOWS
-# if (defined(__STDC__) && !defined(__sun__) || defined(__cplusplus))
-#  define HAVE_STDARG 1
-# else
-#  define HAVE_VARARG 1
-# endif
+#if (defined(__STDC__) && !defined(__sun__) || defined(__cplusplus))
+#define HAVE_STDARG 1
+#else
+#define HAVE_VARARG 1
+#endif
 #endif
 
 char error_version[] = VERSION;
@@ -43,10 +43,10 @@ char error_version[] = VERSION;
 /*
  * File local static data.
  */
-#define	MAX_PROG_LENGTH	32
+#define MAX_PROG_LENGTH 32
 static char progname[MAX_PROG_LENGTH];
 
-static const char* prog_basename(const char *prog)
+static const char *prog_basename(const char *prog)
 {
 #ifndef _WINDOWS
 	char *p;
@@ -80,13 +80,15 @@ void error(const char *fmt, ...)
 
 	va_start(ap, fmt);
 
-	if (progname[0] != '\0') {
+	if (progname[0] != '\0')
+	{
 		fprintf(stderr, "%s: ", progname);
 	}
 
 	vfprintf(stderr, fmt, ap);
 
-	if (e != 0) {
+	if (e != 0)
+	{
 		fprintf(stderr, ": (%s)", strerror(e));
 	}
 	fprintf(stderr, "\n");
@@ -101,14 +103,16 @@ void warn(const char *fmt, ...)
 
 	va_start(ap, fmt);
 
-	if (progname[0] != '\0') {
+	if (progname[0] != '\0')
+	{
 		fprintf(stderr, "%s: ", progname);
 	}
 
 	vfprintf(stderr, fmt, ap);
 
 	len = strlen(fmt);
-	if (len == 0 || fmt[len - 1] != '\n') {
+	if (len == 0 || fmt[len - 1] != '\n')
+	{
 		fprintf(stderr, "\n");
 	}
 
@@ -121,7 +125,8 @@ void fatal(const char *fmt, ...)
 
 	va_start(ap, fmt);
 
-	if (progname[0] != '\0') {
+	if (progname[0] != '\0')
+	{
 		fprintf(stderr, "%s: ", progname);
 	}
 
@@ -140,7 +145,8 @@ void dumpcore(const char *fmt, ...)
 
 	va_start(ap, fmt);
 
-	if (progname[0] != '\0') {
+	if (progname[0] != '\0')
+	{
 		fprintf(stderr, "%s: ", progname);
 	}
 
@@ -159,9 +165,8 @@ void dumpcore(const char *fmt, ...)
 /*
  * Hm, we'd better stick to the K&R way.
  */
-void
-error(va_alist)
-va_dcl
+void error(va_alist)
+	va_dcl
 {
 	va_list args;
 	int32_t e = errno; /* Store errno */
@@ -172,22 +177,21 @@ va_dcl
 	va_start(args);
 
 	if (progname[0] != '\0')
-	fprintf(stderr, "%s: ", progname);
+		fprintf(stderr, "%s: ", progname);
 
 	fmt = va_arg(args, char *);
-	(void) vfprintf(stderr, fmt, args);
+	(void)vfprintf(stderr, fmt, args);
 
-	if (e> 0 && e < sys_nerr)
-	fprintf(stderr, " (%s)", sys_errlist[e]);
+	if (e > 0 && e < sys_nerr)
+		fprintf(stderr, " (%s)", sys_errlist[e]);
 
 	fprintf(stderr, "\n");
 
 	va_end(args);
 }
 
-void
-warn(va_alist)
-va_dcl
+void warn(va_alist)
+	va_dcl
 {
 	va_list args;
 	char *fmt;
@@ -195,19 +199,18 @@ va_dcl
 	va_start(args);
 
 	if (progname[0] != '\0')
-	fprintf(stderr, "%s: ", progname);
+		fprintf(stderr, "%s: ", progname);
 
 	fmt = va_arg(args, char *);
-	(void) vfprintf(stderr, fmt, args);
+	(void)vfprintf(stderr, fmt, args);
 
 	fprintf(stderr, "\n");
 
 	va_end(args);
 }
 
-void
-fatal(va_alist)
-va_dcl
+void fatal(va_alist)
+	va_dcl
 {
 	va_list args;
 	char *fmt;
@@ -215,10 +218,10 @@ va_dcl
 	va_start(args);
 
 	if (progname[0] != '\0')
-	fprintf(stderr, "%s: ", progname);
+		fprintf(stderr, "%s: ", progname);
 
 	fmt = va_arg(args, char *);
-	(void) vfprintf(stderr, fmt, args);
+	(void)vfprintf(stderr, fmt, args);
 
 	fprintf(stderr, "\n");
 
@@ -227,9 +230,8 @@ va_dcl
 	exit(1);
 }
 
-void
-dumpcore(va_alist)
-va_dcl
+void dumpcore(va_alist)
+	va_dcl
 {
 	va_list args;
 	char *fmt;
@@ -237,10 +239,10 @@ va_dcl
 	va_start(args);
 
 	if (progname[0] != '\0')
-	fprintf(stderr, "%s: ", progname);
+		fprintf(stderr, "%s: ", progname);
 
 	fmt = va_arg(args, char *);
-	(void) vfprintf(stderr, fmt, args);
+	(void)vfprintf(stderr, fmt, args);
 
 	fprintf(stderr, "\n");
 

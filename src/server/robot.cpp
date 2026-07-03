@@ -42,13 +42,13 @@
 #include "netserver.h"
 #include "pack.h"
 #include "robot.h"
-#include "error.h"
+#include "xperror.h"
 #include "server.h"
 #include "player.h"
 #include "player_inline.h"
 #include "frame.h"
 
-#define DEFAULT_ROBOT_TYPE	"default"
+#define DEFAULT_ROBOT_TYPE "default"
 
 char robot_version[] = VERSION;
 
@@ -64,202 +64,203 @@ char robot_version[] = VERSION;
  * a configuration file.
  */
 static robot_t
-		DefaultRobots[] =
-			{
-						{ DEFAULT_ROBOT_TYPE,
-								"Mad Max",
-								"94 20", 0,
-								"(15,8,7)(15,0)(7,1)(7,2)(2,4)(-1,11)"
-									"(-3,11)(-2,3)(-8,6)(-8,-6)(-2,-3)(-3,-11)"
-									"(-1,-11)(2,-4)(7,-2)(7,-1)" },
-						{ DEFAULT_ROBOT_TYPE,
-								"Blackie",
-								"10 90", 0,
-								"(16,6,10)(15,0)(6,2)(-2,3)(-1,4)(-2,5)"
-									"(-10,8)(-13,8)(-13,1)(-15,0)(-13,-1)"
-									"(-13,-8)(-10,-8)(-2,-5)(-1,-4)(-2,-3)(6,-2)" },
-						{ DEFAULT_ROBOT_TYPE, "Kryten",
-								"70 40", 0,
-								"(4,1,3)(15,0)(0,8)(-8,0)(0,-8)" },
-						{ DEFAULT_ROBOT_TYPE, "Marvin",
-								"30 70", 0,
-								"(15,4,5)(10,0)(10,7)(5,14)(-5,14)(-10,7)"
-									"(-10,-7)(-5,-14)(5,-14)(10,-7)(10,0)(5,5)"
-									"(2,7)(5,0)(2,-7)(5,-5)" },
-						{ DEFAULT_ROBOT_TYPE, "R2D2",
-								"50 60", 0,
-								"(15,8,9)(15,0)(14,1)(-1,2)(-2,9)(0,10)"
-									"(-4,10)(-7,2)(-8,2)(-8,-2)(-7,-2)(-4,-10)"
-									"(0,-10)(-2,-9)(-1,-2)(14,-1)" },
-						{ DEFAULT_ROBOT_TYPE, "C3PO",
-								"60 50", 0,
-								"(16,1,15)(10,0)(0,5)(0,15)(15,10)(0,15)"
-									"(-15,10)(0,15)(0,5)(-7,0)(0,-5)(0,-15)"
-									"(-15,-10)(0,-15)(15,-10)(0,-15)(0,-5)" },
-						{ DEFAULT_ROBOT_TYPE, "K9",
-								"50 50", 0,
-								"(14,0,5)(15,0)(15,5)(5,5)(5,-5)(15,-5)"
-									"(15,0)(-15,0)(-15,5)(5,5)(5,-5)(-15,-5)"
-									"(-15,-8)(-15,8)(-15,0)" },
-						{ DEFAULT_ROBOT_TYPE, "Robby",
-								"45 55", 0,
-								"(5,2,3)(15,0)(0,12)(-9,8)(-9,-8)(0,-12)" },
-						{ DEFAULT_ROBOT_TYPE, "Mickey",
-								"05 95", 0,
-								"(15,6,7)(5,-1)(8,-5)(7,-9)(4,-11)(-1,-10)"
-									"(-5,-6)(-8,-10)(-8,10)(-5,6)(-1,10)(4,11)"
-									"(7,9)(8,5)(5,1)(0,0)" },
-						{ DEFAULT_ROBOT_TYPE, "Hermes",
-								"15 85", 0,
-								"(16,12,11)(10,1)(12,8)(-11,8)(-10,3)"
-									"(-7,0)(-5,2)(-7,0)(-10,-1)(-10,-3)"
-									"(-13,-4)(-13,-7)(-15,-8)(-15,-13)(-5,-5)"
-									"(-2,-4)(5,-2)" },
-						{ DEFAULT_ROBOT_TYPE, "Pan",
-								"60 60", 0,
-								"(14,6,5)(15,-1)(15,0)(5,0)(5,-1)(5,9)(-15,9)"
-									"(-15,-4)(-5,-7)(-3,-8)(-7,-8)(-5,-7)(5,-4)"
-									"(5,-1)(-15,-1)" },
-						{ DEFAULT_ROBOT_TYPE,
-								"Azurion",
-								"40 30", 0,
-								"(6,2,4)(15,0)(0,2)(-9,8)(-3,0)(-9,-8)(0,-2)" },
-						{ DEFAULT_ROBOT_TYPE,
-								"Droidion",
-								"60 30", 0,
-								"(6,2,4)(9,0)(4,8)(-5,8)(-10,0)(-5,-8)(4,-8)" },
-						{ DEFAULT_ROBOT_TYPE,
-								"Terminator",
-								"80 40", 0,
-								"(6,2,4)(15,0)(0,2)(-9,8)(-3,0)"
-									"(-9,-8)(0,-2)" },
-						{ DEFAULT_ROBOT_TYPE, "Sniper",
-								"30 90", 0,
-								"(15,6,9)(15,0)(4,2)(-2,8)(-4,7)(-3,2)"
-									"(-8,5)(-8,2)(-6,1)(-6,-1)(-8,-2)(-8,-5)"
-									"(-3,-2)(-4,-7)(-2,-8)(4,-2)" },
-						{ DEFAULT_ROBOT_TYPE,
-								"Slugger",
-								"40 40", 0,
-								"(15,8,7)(13,0)(11,1)(3,2)(-1,8)(-3,8)"
-									"(-3,2)(-5,2)(-8,5)(-8,-5)(-5,-2)(-3,-2)"
-									"(-3,-8)(-1,-8)(3,-2)(11,-1)" },
-						{ DEFAULT_ROBOT_TYPE, "Uzi",
-								"95 5", 0,
-								"(16,9,8)(15,3)(7,3)(7,-8)(3,-8)(3,1)(-2,1)"
-									"(-3,-1)(-5,-1)(-14,-5)(-15,2)(-3,4)(-1,8)"
-									"(0,6)(13,6)(14,8)(15,6)" },
-						{ DEFAULT_ROBOT_TYPE, "Capone",
-								"80 50", 0,
-								"(15,9,6)(14,0)(2,2)(0,8)(1,8)(-3,8)(-3,2)"
-									"(-8,4)(-7,1)(-7,-1)(-8,-4)(-3,-2)(-3,-8)"
-									"(1,-8)(0,-8)(2,-2)" },
-						{ DEFAULT_ROBOT_TYPE, "Tanx",
-								"40 70", 0,
-								"(16,7,8)(15,1)(2,0)(1,-2)(6,-3)(6,-5)(3,-8)"
-									"(-10,-8)(-13,-6)(-13,-3)(-10,-2)(-11,2)(-7,2)"
-									"(-7,8)(-7,2)(1,2)(2,1)" },
-						{ DEFAULT_ROBOT_TYPE,
-								"Chrome Star",
-								"60 60", 0,
-								"(5,1,4)(8,0)(-8,5)(2,-8)(2,8)(-8,-5)" },
-						{ DEFAULT_ROBOT_TYPE, "Bully",
-								"80 10", 0,
-								"(15,6,9)(11,0)(12,-3)(9,-3)(8,-2)(-5,-5)"
-									"(-9,-11)(-14,-14)(-5,-3)(-5,3)(-14,14)"
-									"(-9,11)(-5,5)(8,2)(9,3)(12,3)" },
-						{ DEFAULT_ROBOT_TYPE,
-								"Metal Hero",
-								"40 45", 0,
-								"(16,7,9)(15,5)(12,-2)(9,-2)(10,-1)"
-									"(-8,-1)(-4,-1)(1,-3)(-13,-9)(-9,0)"
-									"(-15,8)(1,3)(-4,1)(-8,1)(-8,-1)(-8,1)"
-									"(11,1)" },
-						{ DEFAULT_ROBOT_TYPE, "Aurora",
-								"60 55", 0,
-								"(16,5,11)(15,0)(-1,3)(-3,5)(-3,9)(7,10)"
-									"(-12,10)(-6,9)(-6,4)(-8,0)(-6,-4)(-6,-9)"
-									"(-12,-10)(7,-10)(-3,-9)(-3,-5)(-1,-3)" },
-						{ DEFAULT_ROBOT_TYPE,
-								"Dalt Wisney",
-								"30 75", 0,
-								"(16,10,6)(14,0)(7,-4)(0,-1)(-5,-4)"
-									"(2,-8)(0,-10)(-14,-10)(-5,-7)"
-									"(-14,0)(-5,7)(-14,10)(0,10)(2,8)"
-									"(-5,4)(0,1)(7,4)" },
-						{ DEFAULT_ROBOT_TYPE, "Psycho",
-								"65 55", 0,
-								"(11,5,6)(8,0)(5,8)(3,12)(0,15)(0,0)"
-									"(-8,3)(-8,-3)(0,0)(0,-15)(3,-12)(5,-8)" },
-						{ DEFAULT_ROBOT_TYPE, "Gorgon",
-								"30 40", 0,
-								"(15,7,8)(15,0)(5,2)(3,8)(2,2)(-9,2)"
-									"(-10,4)(-12,2)(-14,4)(-14,-4)(-12,-2)"
-									"(-10,-4)(-9,-2)(2,-2)(3,-8)(5,-2)" },
-						{ DEFAULT_ROBOT_TYPE, "Pompel",
-								"50 50", 0,
-								"(15,7,8)(15,0)(14,4)(10,5)(5,2)(-7,3)"
-									"(-7,6)(5,8)(-9,8)(-9,-8)(5,-8)(-7,-6)"
-									"(-7,-3)(5,-2)(10,-5)(14,-4)" },
-						{ DEFAULT_ROBOT_TYPE, "Pilt",
-								"50 50", 0,
-								"(16,8,7)(15,0)(13,-2)(9,-3)(3,-3)(-3,-3)"
-									"(-5,-2)(-13,-2)(-15,-3)(-15,3)(-13,2)"
-									"(-5,2)(-3,3)(-3,-8)(-3,8)(-3,3)(8,3)" },
-						{ DEFAULT_ROBOT_TYPE, "Sparky",
-								"20 40", 0,
-								"(15,8,7)(15,-8)(6,-5)(7,-4)(1,-2)(2,-1)"
-									"(-4,0)(-3,2)(-15,8)(-15,2)(-8,0)(-9,-2)"
-									"(-3,-3)(-4,-4)(3,-5)(2,-7)" },
-						{ DEFAULT_ROBOT_TYPE, "Cobra",
-								"85 60", 0,
-								"(16,5,11)(8,0)(8,-6)(6,-8)(0,-7)(5,-6)"
-									"(-8,-4)(5,-2)(0,-1)(5,0)(0,1)(5,2)(-8,4)"
-									"(5,6)(0,7)(6,8)(8,6)" },
-						{ DEFAULT_ROBOT_TYPE, "Falcon",
-								"70 20", 0,
-								"(16,5,6)(14,2)(14,4)(2,10)(-5,10)(-10,8)"
-									"(-12,3)(-12,-3)(-10,-8)(-5,-10)(9,-11)"
-									"(10,-8)(7,-8)(14,-4)(14,-2)(4,-2)(4,2)" },
-						{ DEFAULT_ROBOT_TYPE, "Boson",
-								"25 35", 0,
-								"(16,11,12)(15,0)(10,-5)(4,-8)(7,-2)(7,2)"
-									"(4,8)(6,0)(4,-8)(-10,-8)(-10,8)(-10,-8)"
-									"(-15,-7)(-15,7)(-10,8)(4,8)(10,5)" },
-						{ DEFAULT_ROBOT_TYPE, "Blazy",
-								"40 40", 0,
-								"(12,4,8)(4,0)(2,4)(-5,11)(10,12)(-8,12)"
-									"(-4,6)(-2,0)(-4,-6)(-8,-12)(10,-12)"
-									"(-5,-11)(2,-4)" },
-						{ DEFAULT_ROBOT_TYPE, "Pixie",
-								"15 93", 0,
-								"(13,6,7)(15,0)(7,4)(11,1)(-4,3)(3,5)"
-									"(-7,10)(-9,2)(-9,-2)(-7,-10)(3,-5)(-4,-3)"
-									"(11,-1)(7,-4)" },
-						{ DEFAULT_ROBOT_TYPE, "Wimpy",
-								"5 98", 0,
-								"(16,9,7)(3,0)(6,5)(8,10)(5,11)(1,10)(-1,8)"
-									"(-4,9)(-8,6)(-5,0)(-8,-6)(-4,-9)(-1,-8)"
-									"(1,-10)(5,-11)(8,-10)(6,-5)" },
-						{ DEFAULT_ROBOT_TYPE, "Bonnie",
-								"30 40", 0,
-								"(16,9,6)(13,3)(5,3)(5,1)(4,-1)(0,-1)"
-									"(-2,-8)(-8,-8)(-5,3)(-6,6)(-8,7)(-7,8)"
-									"(-4,7)(8,7)(10,8)(12,8)(13,7)" },
-						{ DEFAULT_ROBOT_TYPE, "Clyde",
-								"40 45", 0,
-								"(16,5,11)(14,0)(5,5)(6,2)(0,2)(0,8)(-13,8)"
-									"(-13,4)(-4,4)(-6,0)(-4,-4)(-13,-4)(-13,-8)"
-									"(0,-8)(0,-2)(6,-2)(5,-5)" },
-						{ DEFAULT_ROBOT_TYPE, "Neuro",
-								"70 70", 0,
-								"(16,7,5)(12,-7)(12,-12)(5,-12)(2,-10)"
-									"(1,-5)(-9,-4)(-11,2)(-8,8)(-3,11)(3,11)"
-									"(9,8)(11,2)(13,0)(12,-3)(12,-7)(7,-7)" }, };
+	DefaultRobots[] =
+		{
+			{DEFAULT_ROBOT_TYPE,
+			 "Mad Max",
+			 "94 20", 0,
+			 "(15,8,7)(15,0)(7,1)(7,2)(2,4)(-1,11)"
+			 "(-3,11)(-2,3)(-8,6)(-8,-6)(-2,-3)(-3,-11)"
+			 "(-1,-11)(2,-4)(7,-2)(7,-1)"},
+			{DEFAULT_ROBOT_TYPE,
+			 "Blackie",
+			 "10 90", 0,
+			 "(16,6,10)(15,0)(6,2)(-2,3)(-1,4)(-2,5)"
+			 "(-10,8)(-13,8)(-13,1)(-15,0)(-13,-1)"
+			 "(-13,-8)(-10,-8)(-2,-5)(-1,-4)(-2,-3)(6,-2)"},
+			{DEFAULT_ROBOT_TYPE, "Kryten",
+			 "70 40", 0,
+			 "(4,1,3)(15,0)(0,8)(-8,0)(0,-8)"},
+			{DEFAULT_ROBOT_TYPE, "Marvin",
+			 "30 70", 0,
+			 "(15,4,5)(10,0)(10,7)(5,14)(-5,14)(-10,7)"
+			 "(-10,-7)(-5,-14)(5,-14)(10,-7)(10,0)(5,5)"
+			 "(2,7)(5,0)(2,-7)(5,-5)"},
+			{DEFAULT_ROBOT_TYPE, "R2D2",
+			 "50 60", 0,
+			 "(15,8,9)(15,0)(14,1)(-1,2)(-2,9)(0,10)"
+			 "(-4,10)(-7,2)(-8,2)(-8,-2)(-7,-2)(-4,-10)"
+			 "(0,-10)(-2,-9)(-1,-2)(14,-1)"},
+			{DEFAULT_ROBOT_TYPE, "C3PO",
+			 "60 50", 0,
+			 "(16,1,15)(10,0)(0,5)(0,15)(15,10)(0,15)"
+			 "(-15,10)(0,15)(0,5)(-7,0)(0,-5)(0,-15)"
+			 "(-15,-10)(0,-15)(15,-10)(0,-15)(0,-5)"},
+			{DEFAULT_ROBOT_TYPE, "K9",
+			 "50 50", 0,
+			 "(14,0,5)(15,0)(15,5)(5,5)(5,-5)(15,-5)"
+			 "(15,0)(-15,0)(-15,5)(5,5)(5,-5)(-15,-5)"
+			 "(-15,-8)(-15,8)(-15,0)"},
+			{DEFAULT_ROBOT_TYPE, "Robby",
+			 "45 55", 0,
+			 "(5,2,3)(15,0)(0,12)(-9,8)(-9,-8)(0,-12)"},
+			{DEFAULT_ROBOT_TYPE, "Mickey",
+			 "05 95", 0,
+			 "(15,6,7)(5,-1)(8,-5)(7,-9)(4,-11)(-1,-10)"
+			 "(-5,-6)(-8,-10)(-8,10)(-5,6)(-1,10)(4,11)"
+			 "(7,9)(8,5)(5,1)(0,0)"},
+			{DEFAULT_ROBOT_TYPE, "Hermes",
+			 "15 85", 0,
+			 "(16,12,11)(10,1)(12,8)(-11,8)(-10,3)"
+			 "(-7,0)(-5,2)(-7,0)(-10,-1)(-10,-3)"
+			 "(-13,-4)(-13,-7)(-15,-8)(-15,-13)(-5,-5)"
+			 "(-2,-4)(5,-2)"},
+			{DEFAULT_ROBOT_TYPE, "Pan",
+			 "60 60", 0,
+			 "(14,6,5)(15,-1)(15,0)(5,0)(5,-1)(5,9)(-15,9)"
+			 "(-15,-4)(-5,-7)(-3,-8)(-7,-8)(-5,-7)(5,-4)"
+			 "(5,-1)(-15,-1)"},
+			{DEFAULT_ROBOT_TYPE,
+			 "Azurion",
+			 "40 30", 0,
+			 "(6,2,4)(15,0)(0,2)(-9,8)(-3,0)(-9,-8)(0,-2)"},
+			{DEFAULT_ROBOT_TYPE,
+			 "Droidion",
+			 "60 30", 0,
+			 "(6,2,4)(9,0)(4,8)(-5,8)(-10,0)(-5,-8)(4,-8)"},
+			{DEFAULT_ROBOT_TYPE,
+			 "Terminator",
+			 "80 40", 0,
+			 "(6,2,4)(15,0)(0,2)(-9,8)(-3,0)"
+			 "(-9,-8)(0,-2)"},
+			{DEFAULT_ROBOT_TYPE, "Sniper",
+			 "30 90", 0,
+			 "(15,6,9)(15,0)(4,2)(-2,8)(-4,7)(-3,2)"
+			 "(-8,5)(-8,2)(-6,1)(-6,-1)(-8,-2)(-8,-5)"
+			 "(-3,-2)(-4,-7)(-2,-8)(4,-2)"},
+			{DEFAULT_ROBOT_TYPE,
+			 "Slugger",
+			 "40 40", 0,
+			 "(15,8,7)(13,0)(11,1)(3,2)(-1,8)(-3,8)"
+			 "(-3,2)(-5,2)(-8,5)(-8,-5)(-5,-2)(-3,-2)"
+			 "(-3,-8)(-1,-8)(3,-2)(11,-1)"},
+			{DEFAULT_ROBOT_TYPE, "Uzi",
+			 "95 5", 0,
+			 "(16,9,8)(15,3)(7,3)(7,-8)(3,-8)(3,1)(-2,1)"
+			 "(-3,-1)(-5,-1)(-14,-5)(-15,2)(-3,4)(-1,8)"
+			 "(0,6)(13,6)(14,8)(15,6)"},
+			{DEFAULT_ROBOT_TYPE, "Capone",
+			 "80 50", 0,
+			 "(15,9,6)(14,0)(2,2)(0,8)(1,8)(-3,8)(-3,2)"
+			 "(-8,4)(-7,1)(-7,-1)(-8,-4)(-3,-2)(-3,-8)"
+			 "(1,-8)(0,-8)(2,-2)"},
+			{DEFAULT_ROBOT_TYPE, "Tanx",
+			 "40 70", 0,
+			 "(16,7,8)(15,1)(2,0)(1,-2)(6,-3)(6,-5)(3,-8)"
+			 "(-10,-8)(-13,-6)(-13,-3)(-10,-2)(-11,2)(-7,2)"
+			 "(-7,8)(-7,2)(1,2)(2,1)"},
+			{DEFAULT_ROBOT_TYPE,
+			 "Chrome Star",
+			 "60 60", 0,
+			 "(5,1,4)(8,0)(-8,5)(2,-8)(2,8)(-8,-5)"},
+			{DEFAULT_ROBOT_TYPE, "Bully",
+			 "80 10", 0,
+			 "(15,6,9)(11,0)(12,-3)(9,-3)(8,-2)(-5,-5)"
+			 "(-9,-11)(-14,-14)(-5,-3)(-5,3)(-14,14)"
+			 "(-9,11)(-5,5)(8,2)(9,3)(12,3)"},
+			{DEFAULT_ROBOT_TYPE,
+			 "Metal Hero",
+			 "40 45", 0,
+			 "(16,7,9)(15,5)(12,-2)(9,-2)(10,-1)"
+			 "(-8,-1)(-4,-1)(1,-3)(-13,-9)(-9,0)"
+			 "(-15,8)(1,3)(-4,1)(-8,1)(-8,-1)(-8,1)"
+			 "(11,1)"},
+			{DEFAULT_ROBOT_TYPE, "Aurora",
+			 "60 55", 0,
+			 "(16,5,11)(15,0)(-1,3)(-3,5)(-3,9)(7,10)"
+			 "(-12,10)(-6,9)(-6,4)(-8,0)(-6,-4)(-6,-9)"
+			 "(-12,-10)(7,-10)(-3,-9)(-3,-5)(-1,-3)"},
+			{DEFAULT_ROBOT_TYPE,
+			 "Dalt Wisney",
+			 "30 75", 0,
+			 "(16,10,6)(14,0)(7,-4)(0,-1)(-5,-4)"
+			 "(2,-8)(0,-10)(-14,-10)(-5,-7)"
+			 "(-14,0)(-5,7)(-14,10)(0,10)(2,8)"
+			 "(-5,4)(0,1)(7,4)"},
+			{DEFAULT_ROBOT_TYPE, "Psycho",
+			 "65 55", 0,
+			 "(11,5,6)(8,0)(5,8)(3,12)(0,15)(0,0)"
+			 "(-8,3)(-8,-3)(0,0)(0,-15)(3,-12)(5,-8)"},
+			{DEFAULT_ROBOT_TYPE, "Gorgon",
+			 "30 40", 0,
+			 "(15,7,8)(15,0)(5,2)(3,8)(2,2)(-9,2)"
+			 "(-10,4)(-12,2)(-14,4)(-14,-4)(-12,-2)"
+			 "(-10,-4)(-9,-2)(2,-2)(3,-8)(5,-2)"},
+			{DEFAULT_ROBOT_TYPE, "Pompel",
+			 "50 50", 0,
+			 "(15,7,8)(15,0)(14,4)(10,5)(5,2)(-7,3)"
+			 "(-7,6)(5,8)(-9,8)(-9,-8)(5,-8)(-7,-6)"
+			 "(-7,-3)(5,-2)(10,-5)(14,-4)"},
+			{DEFAULT_ROBOT_TYPE, "Pilt",
+			 "50 50", 0,
+			 "(16,8,7)(15,0)(13,-2)(9,-3)(3,-3)(-3,-3)"
+			 "(-5,-2)(-13,-2)(-15,-3)(-15,3)(-13,2)"
+			 "(-5,2)(-3,3)(-3,-8)(-3,8)(-3,3)(8,3)"},
+			{DEFAULT_ROBOT_TYPE, "Sparky",
+			 "20 40", 0,
+			 "(15,8,7)(15,-8)(6,-5)(7,-4)(1,-2)(2,-1)"
+			 "(-4,0)(-3,2)(-15,8)(-15,2)(-8,0)(-9,-2)"
+			 "(-3,-3)(-4,-4)(3,-5)(2,-7)"},
+			{DEFAULT_ROBOT_TYPE, "Cobra",
+			 "85 60", 0,
+			 "(16,5,11)(8,0)(8,-6)(6,-8)(0,-7)(5,-6)"
+			 "(-8,-4)(5,-2)(0,-1)(5,0)(0,1)(5,2)(-8,4)"
+			 "(5,6)(0,7)(6,8)(8,6)"},
+			{DEFAULT_ROBOT_TYPE, "Falcon",
+			 "70 20", 0,
+			 "(16,5,6)(14,2)(14,4)(2,10)(-5,10)(-10,8)"
+			 "(-12,3)(-12,-3)(-10,-8)(-5,-10)(9,-11)"
+			 "(10,-8)(7,-8)(14,-4)(14,-2)(4,-2)(4,2)"},
+			{DEFAULT_ROBOT_TYPE, "Boson",
+			 "25 35", 0,
+			 "(16,11,12)(15,0)(10,-5)(4,-8)(7,-2)(7,2)"
+			 "(4,8)(6,0)(4,-8)(-10,-8)(-10,8)(-10,-8)"
+			 "(-15,-7)(-15,7)(-10,8)(4,8)(10,5)"},
+			{DEFAULT_ROBOT_TYPE, "Blazy",
+			 "40 40", 0,
+			 "(12,4,8)(4,0)(2,4)(-5,11)(10,12)(-8,12)"
+			 "(-4,6)(-2,0)(-4,-6)(-8,-12)(10,-12)"
+			 "(-5,-11)(2,-4)"},
+			{DEFAULT_ROBOT_TYPE, "Pixie",
+			 "15 93", 0,
+			 "(13,6,7)(15,0)(7,4)(11,1)(-4,3)(3,5)"
+			 "(-7,10)(-9,2)(-9,-2)(-7,-10)(3,-5)(-4,-3)"
+			 "(11,-1)(7,-4)"},
+			{DEFAULT_ROBOT_TYPE, "Wimpy",
+			 "5 98", 0,
+			 "(16,9,7)(3,0)(6,5)(8,10)(5,11)(1,10)(-1,8)"
+			 "(-4,9)(-8,6)(-5,0)(-8,-6)(-4,-9)(-1,-8)"
+			 "(1,-10)(5,-11)(8,-10)(6,-5)"},
+			{DEFAULT_ROBOT_TYPE, "Bonnie",
+			 "30 40", 0,
+			 "(16,9,6)(13,3)(5,3)(5,1)(4,-1)(0,-1)"
+			 "(-2,-8)(-8,-8)(-5,3)(-6,6)(-8,7)(-7,8)"
+			 "(-4,7)(8,7)(10,8)(12,8)(13,7)"},
+			{DEFAULT_ROBOT_TYPE, "Clyde",
+			 "40 45", 0,
+			 "(16,5,11)(14,0)(5,5)(6,2)(0,2)(0,8)(-13,8)"
+			 "(-13,4)(-4,4)(-6,0)(-4,-4)(-13,-4)(-13,-8)"
+			 "(0,-8)(0,-2)(6,-2)(5,-5)"},
+			{DEFAULT_ROBOT_TYPE, "Neuro",
+			 "70 70", 0,
+			 "(16,7,5)(12,-7)(12,-12)(5,-12)(2,-10)"
+			 "(1,-5)(-9,-4)(-11,2)(-8,8)(-3,11)(3,11)"
+			 "(9,8)(11,2)(13,0)(12,-3)(12,-7)(7,-7)"},
+};
 
-int32_t NumRobots = 0; /* number of currently playing robots. */
+int32_t NumRobots = 0;			 /* number of currently playing robots. */
 static int32_t NumRobotDefs = 0; /* number of different robot parameters. */
-static robot_t *Robots; /* array of robot parameters. */
+static robot_t *Robots;			 /* array of robot parameters. */
 
 /*
  * Function prototype for robot type setup routines.
@@ -273,7 +274,9 @@ extern int32_t Robot_default_setup(robot_type_t *type_ptr);
  * Add your own robot type setup routine here too.
  */
 static int32_t (*robot_type_setups[])(robot_type_t *type_ptr) =
-	{ Robot_default_setup, };
+	{
+		Robot_default_setup,
+};
 
 /*
  * Array of the different robot types available.
@@ -283,9 +286,11 @@ static robot_type_t robot_types[NELEM(robot_type_setups)];
 
 void Parse_robot_file(void)
 {
-	if (robotFile && *robotFile) {
+	if (robotFile && *robotFile)
+	{
 		FILE *fp = fopen(robotFile, "r");
-		if (fp) {
+		if (fp)
+		{
 			char buf[1024];
 			char name_buf[MAX_NAME_LEN];
 			char ship_buf[2 * MSG_LEN];
@@ -303,68 +308,84 @@ void Parse_robot_file(void)
 			strcpy(type_buf, DEFAULT_ROBOT_TYPE);
 			strcpy(para_buf, "");
 
-			while (fp) {
+			while (fp)
+			{
 				int32_t end_of_record = 0;
 
-				if (!fgets(buf, sizeof buf, fp)) {
+				if (!fgets(buf, sizeof buf, fp))
+				{
 					end_of_record = 1;
 					fclose(fp);
 					fp = NULL;
 				}
-				else if (*buf == '\n') {
+				else if (*buf == '\n')
+				{
 					end_of_record = 1;
 				}
-				else {
+				else
+				{
 					int32_t size = 0;
 					int32_t key = 0;
 					char *dst = 0;
 
-					if (!strncmp(buf, "name:", 5)) {
+					if (!strncmp(buf, "name:", 5))
+					{
 						dst = name_buf;
 						size = sizeof name_buf;
 						key = 1;
 						got_name = 1;
 					}
-					else if (!strncmp(buf, "ship:", 5)) {
+					else if (!strncmp(buf, "ship:", 5))
+					{
 						dst = ship_buf;
 						size = sizeof ship_buf;
 						key = 2;
 					}
-					else if (!strncmp(buf, "type:", 5)) {
+					else if (!strncmp(buf, "type:", 5))
+					{
 						dst = type_buf;
 						size = sizeof type_buf;
 						key = 3;
 					}
-					else if (!strncmp(buf, "para:", 5)) {
+					else if (!strncmp(buf, "para:", 5))
+					{
 						dst = para_buf;
 						size = sizeof para_buf;
 						key = 4;
 					}
-					if (key > 0) {
+					if (key > 0)
+					{
 						char *ptr = strchr(buf, ':') + 1;
-						while (isspace(*ptr)) {
+						while (isspace(*ptr))
+						{
 							ptr++;
 						}
 						strncpy(dst, ptr, size);
 						dst[size - 1] = '\0';
 						ptr = &dst[strlen(dst)];
-						while (--ptr >= dst && isspace(*ptr)) {
+						while (--ptr >= dst && isspace(*ptr))
+						{
 							*ptr = '\0';
 						}
 					}
 				}
-				if (end_of_record && got_name) {
+				if (end_of_record && got_name)
+				{
 					got_name = 0;
-					if (num_robs == max_robs) {
-						if (max_robs == 0) {
+					if (num_robs == max_robs)
+					{
+						if (max_robs == 0)
+						{
 							max_robs = 10;
-							robs = (robot_t *) malloc(max_robs * sizeof(robot_t));
+							robs = (robot_t *)malloc(max_robs * sizeof(robot_t));
 						}
-						else {
+						else
+						{
 							max_robs += 10;
-							robs = (robot_t *) realloc(robs, max_robs * sizeof(robot_t));
+							robs = (robot_t *)realloc(robs, max_robs * sizeof(robot_t));
 						}
-						if (!robs) {
+						if (!robs)
+						{
 							error("Not enough memory to parse robotsfile");
 							fclose(fp);
 							break;
@@ -378,24 +399,30 @@ void Parse_robot_file(void)
 					num_robs++;
 				}
 			}
-			if (num_robs > 0) {
+			if (num_robs > 0)
+			{
 				Robots = robs;
 				NumRobotDefs = num_robs;
 			}
 		}
 	}
-	if (NumRobotDefs == 0) {
+	if (NumRobotDefs == 0)
+	{
 		Robots = &DefaultRobots[0];
 		NumRobotDefs = NELEM(DefaultRobots);
 	}
 
 #ifdef DEVELOPMENT
-	if (getenv("XPILOTS_DUMP_ROBOTS_TO_ROBOT_FILE") != NULL) {
-		if (robotFile && *robotFile) {
+	if (getenv("XPILOTS_DUMP_ROBOTS_TO_ROBOT_FILE") != NULL)
+	{
+		if (robotFile && *robotFile)
+		{
 			FILE *fp = fopen(robotFile, "w");
-			if (fp) {
+			if (fp)
+			{
 				int32_t i;
-				for (i = 0; i < NumRobotDefs; i++) {
+				for (i = 0; i < NumRobotDefs; i++)
+				{
 					fprintf(fp,
 							"type:\t%s\n"
 							"para:\t%s\n"
@@ -423,29 +450,37 @@ bool Robots_init(void)
 	int32_t n = 0;
 
 	/* If robot team hasn't been set, bail out immediately */
-	if (robotTeam == TEAM_INVALID) {
+	if (robotTeam == TEAM_INVALID)
+	{
 		return false;
 	}
 
 	/* Sanitize data received from command line */
-        if (robotTeam < 0 || robotTeam >= MAX_TEAMS) {
-                robotTeam = TEAM_INVALID;
-        }
+	if (robotTeam < 0 || robotTeam >= MAX_TEAMS)
+	{
+		robotTeam = TEAM_INVALID;
+	}
 
-	if (Team_num_is_valid(robotTeam) && World.teams[robotTeam].Properties == TEAM_DEFAULT) {
-		if (reserveRobotTeam) {
+	if (Team_num_is_valid(robotTeam) && World.teams[robotTeam].Properties == TEAM_DEFAULT)
+	{
+		if (reserveRobotTeam)
+		{
 			World.teams[robotTeam].Properties = TEAM_ONLY_ROBOTS;
 		}
 	}
-	else {
-		if (BIT(World.rules->mode, TEAM_PLAY)) {
+	else
+	{
+		if (BIT(World.rules->mode, TEAM_PLAY))
+		{
 			return false;
 		}
 	}
 
-	for (i = 0; i < num_robot_types; i++) {
+	for (i = 0; i < num_robot_types; i++)
+	{
 		memset(&robot_types[n], 0, sizeof(robot_type_t));
-		if ((*robot_type_setups[i])(&robot_types[n]) == 0) {
+		if ((*robot_type_setups[i])(&robot_types[n]) == 0)
+		{
 			/* maybe insert some checks about the result here */
 			n++;
 		}
@@ -458,78 +493,84 @@ bool Robots_init(void)
 }
 
 static void Robot_talks(enum robot_talk_t says_what, char *robot_name,
-		const char *other_name)
+						const char *other_name)
 {
 	/*
 	 * Insert your own witty messages here and remove the silly ones.
 	 */
 
 	static const char
-			*enter_msgs[] =
-				{
-						"%s just can't stand you anymore.",
-						"%s has come to give you a hard time.",
-						"%s is looking for trouble.",
-						"%s has a very loose trigger finger.",
-						"Have fear, %s is here.",
-						"Prepare to die by the hands of %s.",
-						"%s is untouchable.",
-						"%s is in a gruesome mood.",
-						"%s is in a killing mood.",
-						"%s wants you for dessert.",
-						"%s vows to torment you in this life and the next.",
-						"%s has no sense of humour.",
-						"%s is back from the Sirius wars, and he's in a violent mood.", };
+		*enter_msgs[] =
+			{
+				"%s just can't stand you anymore.",
+				"%s has come to give you a hard time.",
+				"%s is looking for trouble.",
+				"%s has a very loose trigger finger.",
+				"Have fear, %s is here.",
+				"Prepare to die by the hands of %s.",
+				"%s is untouchable.",
+				"%s is in a gruesome mood.",
+				"%s is in a killing mood.",
+				"%s wants you for dessert.",
+				"%s vows to torment you in this life and the next.",
+				"%s has no sense of humour.",
+				"%s is back from the Sirius wars, and he's in a violent mood.",
+			};
 	static const char
-			*leave_msgs[] =
-				{
-						"That's it, I've had enough. :(   I'm outta here. [%s]",
-						"Later people.  It's been fun. [%s]",
-						"Gotta go, ... er ... this ... er ... lab is closing. [%s]",
-						"Er...  Oh!  It it really that late?  I gotta go. [%s].",
-						"I'm signing off now.  Bye! [%s]",
-						"Gotta go...  Er... I have some work to be done. [%s]",
-						"This sucks! :(  I'm going back to cyberspace. [%s]",
-						"I've taken enough beating for today. [%s]",
-						"Oh man.  Playing with humans sucks. [%s]",
-						"You can't beat us robots; we always return, stronger than ever! [%s]",
-						"Geez, this just isn't my lucky day.  See ya some other time. [%s]",
-						"Wow, this game is just killing me. :( [%s]",
-						"I'll be back when you stop cheating! :-( [%s]", };
+		*leave_msgs[] =
+			{
+				"That's it, I've had enough. :(   I'm outta here. [%s]",
+				"Later people.  It's been fun. [%s]",
+				"Gotta go, ... er ... this ... er ... lab is closing. [%s]",
+				"Er...  Oh!  It it really that late?  I gotta go. [%s].",
+				"I'm signing off now.  Bye! [%s]",
+				"Gotta go...  Er... I have some work to be done. [%s]",
+				"This sucks! :(  I'm going back to cyberspace. [%s]",
+				"I've taken enough beating for today. [%s]",
+				"Oh man.  Playing with humans sucks. [%s]",
+				"You can't beat us robots; we always return, stronger than ever! [%s]",
+				"Geez, this just isn't my lucky day.  See ya some other time. [%s]",
+				"Wow, this game is just killing me. :( [%s]",
+				"I'll be back when you stop cheating! :-( [%s]",
+			};
 	static const char
-			*kill_msgs[] =
-				{
-						"Have some %s.  Have some! [%s]",
-						"You want some more %s? [%s]",
-						"%s lost his stuff again.  That's just tooooooo bad. :) [%s]",
-						"%s: did you like that one? [%s]",
-						"Face it %s, you just can't compete with me. [%s]",
-						"%s, my grandmother plays better than you. [%s]",
-						"Hey %s, go play chess instead. [%s]",
-						"I think Darwin would've said you're too unfit to survive %s :) [%s]",
-						"Oh my, what colourful explosions you make %s. :) [%s]",
-						"Hey %s, maybe its time you upgraded that old 386. [%s]", };
+		*kill_msgs[] =
+			{
+				"Have some %s.  Have some! [%s]",
+				"You want some more %s? [%s]",
+				"%s lost his stuff again.  That's just tooooooo bad. :) [%s]",
+				"%s: did you like that one? [%s]",
+				"Face it %s, you just can't compete with me. [%s]",
+				"%s, my grandmother plays better than you. [%s]",
+				"Hey %s, go play chess instead. [%s]",
+				"I think Darwin would've said you're too unfit to survive %s :) [%s]",
+				"Oh my, what colourful explosions you make %s. :) [%s]",
+				"Hey %s, maybe its time you upgraded that old 386. [%s]",
+			};
 	static const char
-			*war_msgs[] =
-				{
-						"UNBELIEVABLE, me shot down by %s?!?!  This means war [%s]",
-						"People like %s just piss me off. [%s]",
-						"Nice %s.  But now its my turn. [%s]",
-						"Red alert... target: %s. [%s]",
-						"$%#^@#$^#$%  That's the last time you do that %s! [%s]",
-						"Enough's enough!  It's only room enough for one of us %s here. [%s]",
-						"I'm sorry %s, but you must... DIE!!!!! [%s]",
-						"Jihad!  Die %s!  Die! [%s]", };
+		*war_msgs[] =
+			{
+				"UNBELIEVABLE, me shot down by %s?!?!  This means war [%s]",
+				"People like %s just piss me off. [%s]",
+				"Nice %s.  But now its my turn. [%s]",
+				"Red alert... target: %s. [%s]",
+				"$%#^@#$^#$%  That's the last time you do that %s! [%s]",
+				"Enough's enough!  It's only room enough for one of us %s here. [%s]",
+				"I'm sorry %s, but you must... DIE!!!!! [%s]",
+				"Jihad!  Die %s!  Die! [%s]",
+			};
 
 	static int32_t next_msg = -1;
 	const char **msgsp;
 	int32_t two, i, n;
 
-	if (robotsTalk != true && says_what != ROBOT_TALK_ENTER) {
+	if (robotsTalk != true && says_what != ROBOT_TALK_ENTER)
+	{
 		return;
 	}
 
-	switch (says_what) {
+	switch (says_what)
+	{
 	case ROBOT_TALK_ENTER:
 		msgsp = enter_msgs;
 		n = NELEM(enter_msgs);
@@ -554,17 +595,21 @@ static void Robot_talks(enum robot_talk_t says_what, char *robot_name,
 		return;
 	}
 
-	if (next_msg == -1) {
-		next_msg = (int32_t) (rfrac() * 997);
+	if (next_msg == -1)
+	{
+		next_msg = (int32_t)(rfrac() * 997);
 	}
-	if (++next_msg > 997) {
+	if (++next_msg > 997)
+	{
 		next_msg = 0;
 	}
 	i = next_msg % n;
-	if (two == 2) {
+	if (two == 2)
+	{
 		Message_game_print(msgsp[i], other_name, robot_name);
 	}
-	else {
+	else
+	{
 		Message_game_print(msgsp[i], robot_name);
 	}
 }
@@ -581,39 +626,50 @@ static bool Robot_add(void)
 	team_t *team;
 	player_state_t entry_state;
 
-	if (peek_ID() == 0) {
+	if (peek_ID() == 0)
+	{
 		return false;
 	}
 
-	if ((new_data = (robot_data_t *) malloc(sizeof(robot_data_t))) == NULL) {
+	if ((new_data = (robot_data_t *)malloc(sizeof(robot_data_t))) == NULL)
+	{
 		perror("malloc robot_data");
 		return false;
 	}
 	new_data->private_data = NULL;
 
 	most_used = 0;
-	for (i = 0; i < NumRobotDefs; i++) {
-		if (Robots[i].used > Robots[most_used].used) {
+	for (i = 0; i < NumRobotDefs; i++)
+	{
+		if (Robots[i].used > Robots[most_used].used)
+		{
 			most_used = i;
 		}
 	}
-	for (i = 0; i < NumPlayers; i++) {
-		if (Player_is_robot(Players[i])) {
-			data = (robot_data_t *) Players[i]->robot_data_ptr;
-			if (Robots[data->robots_ind].used < Robots[most_used].used) {
+	for (i = 0; i < NumPlayers; i++)
+	{
+		if (Player_is_robot(Players[i]))
+		{
+			data = (robot_data_t *)Players[i]->robot_data_ptr;
+			if (Robots[data->robots_ind].used < Robots[most_used].used)
+			{
 				Robots[data->robots_ind].used = Robots[most_used].used;
 			}
 		}
 	}
 	least_used = 0;
-	for (i = 0; i < NumRobotDefs; i++) {
-		if (Robots[i].used < Robots[least_used].used) {
+	for (i = 0; i < NumRobotDefs; i++)
+	{
+		if (Robots[i].used < Robots[least_used].used)
+		{
 			least_used = i;
 		}
 	}
-	num = (int32_t) (rfrac() * NumRobotDefs);
-	while (Robots[num].used > Robots[least_used].used) {
-		if (++num >= NumRobotDefs) {
+	num = (int32_t)(rfrac() * NumRobotDefs);
+	while (Robots[num].used > Robots[least_used].used)
+	{
+		if (++num >= NumRobotDefs)
+		{
 			num = 0;
 		}
 	}
@@ -621,15 +677,18 @@ static bool Robot_add(void)
 	rob->used++;
 	new_data->robots_ind = num;
 	new_data->robot_types_ind = 0;
-	for (i = 1; i < num_robot_types; i++) {
-		if (!strcmp(robot_types[i].name, rob->driver)) {
+	for (i = 1; i < num_robot_types; i++)
+	{
+		if (!strcmp(robot_types[i].name, rob->driver))
+		{
 			new_data->robot_types_ind = i;
 		}
 	}
 	rob_type = &robot_types[new_data->robot_types_ind];
 
 	// Reserve the player structure
-	if (!(robot = Player_add())) {
+	if (!(robot = Player_add()))
+	{
 		goto handle_result;
 	}
 
@@ -637,12 +696,14 @@ static bool Robot_add(void)
 
 	robot->pl_type = PL_TYPE_ROBOT;
 
-        robot->player_fps = gameSpeed;
+	robot->player_fps = gameSpeed;
 
-	if (BIT(World.rules->mode, TEAM_PLAY)) {
+	if (BIT(World.rules->mode, TEAM_PLAY))
+	{
 		team = Team_find_available(PL_TYPE_ROBOT);
 
-		if (!team) {
+		if (!team)
+		{
 			warn("Couldn't find a suitable team for robot id=%d", robot->id);
 			goto handle_result;
 		}
@@ -653,10 +714,12 @@ static bool Robot_add(void)
 	robot->pl_type_mychar = 'R';
 
 	// Set the shipshape
-	if (allowShipShapes == true) {
+	if (allowShipShapes == true)
+	{
 		robot->ship = Parse_shape_str(rob->shape);
 	}
-	else {
+	else
+	{
 		robot->ship = Triangle_ship();
 	}
 
@@ -683,7 +746,8 @@ static bool Robot_add(void)
 	entry_state = Player_compute_entry_state(robot, robot->team);
 	Player_set_state(robot, entry_state);
 
-	if (!(robot->home_base = Team_pick_free_base(robot->team))) {
+	if (!(robot->home_base = Team_pick_free_base(robot->team)))
+	{
 		error("Couldn't find a suitable base for robot %s on team %d", robot->name, robot->team->Num);
 		goto handle_result;
 	}
@@ -695,14 +759,15 @@ static bool Robot_add(void)
 	Robot_talks(ROBOT_TALK_ENTER, robot->name, "");
 
 	xpprintf("%s %s (%d, %s) starts at startpos %d.\n", showtime(),
-			robot->name, NumPlayers, robot->realname, robot->home_base->id);
+			 robot->name, NumPlayers, robot->realname, robot->home_base->id);
 
 	result = true;
 
-	/* Handle exceptions here */
-	handle_result:
+/* Handle exceptions here */
+handle_result:
 
-	if (!result) {
+	if (!result)
+	{
 		Robot_remove(robot);
 	}
 
@@ -724,33 +789,39 @@ void Robot_remove(player_t *pl)
 	int32_t low_score = INT_MAX;
 	player_t *pl2;
 
-	if (pl == NULL) {
+	if (pl == NULL)
+	{
 		/*
 		 * Find the robot with the lowest score.
 		 */
 
-		for (i = 0; i < NumPlayers; i++) {
+		for (i = 0; i < NumPlayers; i++)
+		{
 			pl2 = Players[i];
 
-			if (!Player_is_robot(pl2)) {
+			if (!Player_is_robot(pl2))
+			{
 				continue;
 			}
 
-			if (pl2->score < low_score) {
+			if (pl2->score < low_score)
+			{
 				pl = pl2;
 				low_score = pl2->score;
 			}
 		}
 	}
 
-	if (pl && Player_is_robot(pl)) {
+	if (pl && Player_is_robot(pl))
+	{
 		Player_remove(pl);
 	}
 }
 
 void Robot_kick(player_t *pl)
 {
-	if (Player_is_robot(pl)) {
+	if (Player_is_robot(pl))
+	{
 		Message_game_print("\"%s\" upset the gods and was kicked out of the game.", pl->name);
 		Player_remove(pl);
 	}
@@ -803,25 +874,28 @@ void Robot_war(player_t *pl, player_t *kp)
 {
 	int32_t i;
 
-	if (!kp || kp == pl) {
+	if (!kp || kp == pl)
+	{
 		return;
 	}
 
-	if (Player_is_robot(kp)) {
+	if (Player_is_robot(kp))
+	{
 		Robot_talks(ROBOT_TALK_KILL, kp->name, pl->name);
 
 		if (Robot_war_on_player(kp) == pl)
-			for (i = 0; i < NumPlayers; i++) {
-				if (Player_is_connected(Players[i])) {
+			for (i = 0; i < NumPlayers; i++)
+			{
+				if (Player_is_connected(Players[i]))
+				{
 					Send_war(Players[i]->connp, kp, NULL);
 				}
 			}
 		Robot_set_war(kp, NULL);
 	}
 
-	if (Player_is_robot(pl) && (int32_t) (rfrac() * 100) < kp->score - pl->score
-			&& !(BIT(World.rules->mode, TEAM_PLAY) && pl->team
-					== kp->team)) {
+	if (Player_is_robot(pl) && (int32_t)(rfrac() * 100) < kp->score - pl->score && !(BIT(World.rules->mode, TEAM_PLAY) && pl->team == kp->team))
+	{
 
 		Robot_talks(ROBOT_TALK_WAR, pl->name, kp->name);
 
@@ -831,11 +905,14 @@ void Robot_war(player_t *pl, player_t *kp)
 		 */
 		/* pl->fuel.sum = MAX_PLAYER_FUEL; */
 
-		if (Robot_war_on_player(pl) != kp) {
-			for (i = 0; i < NumPlayers; i++) {
-				if (Player_is_connected(Players[i])) {
+		if (Robot_war_on_player(pl) != kp)
+		{
+			for (i = 0; i < NumPlayers; i++)
+			{
+				if (Player_is_connected(Players[i]))
+				{
 					Send_war(Players[i]->connp, pl,
-							kp);
+							 kp);
 				}
 			}
 			Robot_set_war(pl, kp);
@@ -858,7 +935,7 @@ void Robot_go_home(player_t *pl)
 void Robot_message(player_t *pl, const char *message)
 {
 	robot_type_t *rob_type =
-			&robot_types[pl->robot_data_ptr->robot_types_ind];
+		&robot_types[pl->robot_data_ptr->robot_types_ind];
 
 	(*rob_type->message)(pl, message);
 }
@@ -880,21 +957,26 @@ bool Robot_should_leave(player_t *pl)
 {
 	bool leaving = false;
 
-	if (robotsLeave && pl->pl_life > 0 && !BIT(World.rules->mode, LIMITED_LIVES)) {
-		if (robotLeaveLife > 0 && pl->pl_life >= robotLeaveLife) {
+	if (robotsLeave && pl->pl_life > 0 && !BIT(World.rules->mode, LIMITED_LIVES))
+	{
+		if (robotLeaveLife > 0 && pl->pl_life >= robotLeaveLife)
+		{
 			Message_game_print("%s retires.", pl->name);
 			leaving = true;
 		}
-		else if (robotLeaveScore != 0 && pl->score < robotLeaveScore) {
+		else if (robotLeaveScore != 0 && pl->score < robotLeaveScore)
+		{
 			Message_game_print("%s leaves out of disappointment.", pl->name);
 			leaving = true;
 		}
-		else if (robotLeaveRatio != 0 && pl->score / (pl->pl_life + 1) < robotLeaveRatio) {
+		else if (robotLeaveRatio != 0 && pl->score / (pl->pl_life + 1) < robotLeaveRatio)
+		{
 			Message_game_print("%s played too badly.", pl->name);
 			leaving = true;
 		}
 
-		if (leaving) {
+		if (leaving)
+		{
 			Robot_talks(ROBOT_TALK_LEAVE, pl->name, "");
 			return true;
 		}
@@ -907,16 +989,17 @@ void Robot_add_remove(void)
 {
 	static int32_t new_robot_delay;
 
-	if ((NumRobots < maxRobots) && (NumPlayers + login_in_progress < World.NumBases) && (NumRobots < NumRobotDefs)
-			&& !(BIT(World.rules->mode, TEAM_PLAY) && restrictRobots
-					&& (World.teams[robotTeam].NumMembers >= World.teams[robotTeam].NumBases))) {
+	if ((NumRobots < maxRobots) && (NumPlayers + login_in_progress < World.NumBases) && (NumRobots < NumRobotDefs) && !(BIT(World.rules->mode, TEAM_PLAY) && restrictRobots && (World.teams[robotTeam].NumMembers >= World.teams[robotTeam].NumBases)))
+	{
 
-		if (++new_robot_delay >= RECOVERY_DELAY_TICKS) {
+		if (++new_robot_delay >= RECOVERY_DELAY_TICKS)
+		{
 			Robot_add();
 			new_robot_delay = 0;
 		}
 	}
-	else if ((NumRobots > 0) && ((NumPlayers > World.NumBases) || (NumRobots > maxRobots))) {
+	else if ((NumRobots > 0) && ((NumPlayers > World.NumBases) || (NumRobots > maxRobots)))
+	{
 		Robot_remove(NULL);
 	}
 }

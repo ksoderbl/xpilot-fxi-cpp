@@ -38,7 +38,7 @@
 #include "score.h"
 #include "objpos.h"
 #include "netserver.h"
-#include "error.h"
+#include "xperror.h"
 
 #include "player.h"
 #include "map.h"
@@ -55,7 +55,6 @@ char shot_version[] = VERSION;
 
 static object_t *objArray;
 
-
 /** @brief Allocate memory for a specified number of objects
  * Pointers to object structures will be available through the @ref Obj array.
  *
@@ -66,14 +65,16 @@ void Shots_allocate(int32_t number)
 	object_t *x;
 	int32_t i;
 
-	x = (object_t *) calloc(number, sizeof(object_t));
-	if (!x) {
+	x = (object_t *)calloc(number, sizeof(object_t));
+	if (!x)
+	{
 		error("Not enough memory for shots.");
 		exit(1);
 	}
 
 	objArray = x;
-	for (i = 0; i < number; i++) {
+	for (i = 0; i < number; i++)
+	{
 		x->owner = NULL;
 		x->id = i;
 		Obj[i] = x++;
@@ -82,7 +83,8 @@ void Shots_allocate(int32_t number)
 
 void Shots_free(void)
 {
-	if (objArray != NULL) {
+	if (objArray != NULL)
+	{
 		free(objArray);
 		objArray = NULL;
 	}
@@ -98,7 +100,8 @@ void Ball_treasure_add(treasure_t *t)
 
 	ball = Object_add();
 
-	if (!ball) {
+	if (!ball)
+	{
 		return;
 	}
 
@@ -116,7 +119,7 @@ void Ball_treasure_add(treasure_t *t)
 	Position_simple_set(&pos, t->pos.cx, t->pos.cy - PIXEL_TO_CLICK(7));
 	Position_set(&ball->pos, &pos);
 	Position_copy(&ball->pos_interp, &ball->pos);
-//	Object_position_remember(ball);
+	//	Object_position_remember(ball);
 	ball->owner = NULL;
 	ball->team = t->team;
 	ball->type = OBJ_BALL;
@@ -135,18 +138,20 @@ void Shot_add(player_t *pl)
 	DFLOAT speed = pl->shot_speed;
 	int32_t dir = pl->dir;
 
-	if (main_loops_slow < (pl->shot_time + fireRepeatRate)) {
+	if (main_loops_slow < (pl->shot_time + fireRepeatRate))
+	{
 		return;
 	}
 
-	if (pl->shots >= pl->shot_max || Player_uses_property(pl, USES_SHIELD)) {
+	if (pl->shots >= pl->shot_max || Player_uses_property(pl, USES_SHIELD))
+	{
 		return;
 	}
-
 
 	shot = Object_add();
 
-	if (!shot) {
+	if (!shot)
+	{
 		return;
 	}
 
@@ -160,7 +165,7 @@ void Shot_add(player_t *pl)
 	 * mounting points killing the player when they're firing.
 	 */
 
-	fuse = (int32_t) ((2.0 * (DFLOAT) SHIP_SZ) / speed + 1.0);
+	fuse = (int32_t)((2.0 * (DFLOAT)SHIP_SZ) / speed + 1.0);
 
 	shot->obj_life = SHOT_LIFE_TICKS;
 	shot->fuselife = shot->obj_life - fuse;
@@ -175,7 +180,7 @@ void Shot_add(player_t *pl)
 	shotpos.cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->m_gun[pl->dir].y);
 
 	Position_set(&shot->pos, &shotpos);
-//	Object_position_remember(shot);
+	//	Object_position_remember(shot);
 
 	shot->acc.x = shot->acc.y = 0;
 
@@ -247,60 +252,72 @@ void Ball_move(object_t *ball)
 	DFLOAT max_spring_ratio = maxBallConnectorRatio;
 
 	/* compute the normalized vector between the ball and the player */
-	if (Frame_is_real()) {
+	if (Frame_is_real())
+	{
 		D.x = WRAP_DX(pl->pos.x - ball->pos.x);
 		D.y = WRAP_DY(pl->pos.y - ball->pos.y);
 	}
-	else {
+	else
+	{
 		D.x = WRAP_DX(pl->pos_interp.x - ball->pos_interp.x);
 		D.y = WRAP_DY(pl->pos_interp.y - ball->pos_interp.y);
 	}
 
 	length = VECTOR_LENGTH(D);
-	if (length > 0.0) {
+	if (length > 0.0)
+	{
 		D.x /= length;
 		D.y /= length;
 	}
-	else {
+	else
+	{
 		D.x = D.y = 0.0;
 	}
 
 	/* compute the ratio for the spring action */
-	ratio = (ballConnectorLength - length) / (DFLOAT) ballConnectorLength;
+	ratio = (ballConnectorLength - length) / (DFLOAT)ballConnectorLength;
 
 	/* compute force by spring for this length */
 	force = k * ratio;
 
-	if (Frame_is_real()) {
+	if (Frame_is_real())
+	{
 		/* if the tether is too long or too short, release it */
-		if (ABS(ratio) > max_spring_ratio) {
+		if (ABS(ratio) > max_spring_ratio)
+		{
 			Ball_detach(pl, ball);
 			return;
 		}
 	}
 
-	if (Frame_is_real()) {
+	if (Frame_is_real())
+	{
 		ball->length = length;
 	}
-	else {
+	else
+	{
 		ball->length_interp = length;
 	}
 
 	/* compute damping for player */
-	if (Frame_is_real()) {
+	if (Frame_is_real())
+	{
 		cosine = (pl->vel.x * D.x) + (pl->vel.y * D.y);
 	}
-	else {
+	else
+	{
 		cosine = (pl->vel_interp.x * D.x) + (pl->vel_interp.y * D.y);
 	}
 
 	pl_damping = -b * cosine;
 
 	/* compute damping for ball */
-	if (Frame_is_real()) {
+	if (Frame_is_real())
+	{
 		cosine = (ball->vel.x * -D.x) + (ball->vel.y * -D.y);
 	}
-	else {
+	else
+	{
 		cosine = (ball->vel_interp.x * -D.x) + (ball->vel_interp.y * -D.y);
 	}
 
@@ -309,11 +326,13 @@ void Ball_move(object_t *ball)
 	/* compute accelleration for player, assume t = 1 */
 	accell = (force + pl_damping + ball_damping) / pl->mass;
 
-	if (Frame_is_real()) {
+	if (Frame_is_real())
+	{
 		pl->vel.x += D.x * accell;
 		pl->vel.y += D.y * accell;
 	}
-	else {
+	else
+	{
 		pl->vel_interp.x += D.x * accell * ticksPerFrame;
 		pl->vel_interp.y += D.y * accell * ticksPerFrame;
 	}
@@ -321,11 +340,13 @@ void Ball_move(object_t *ball)
 	/* compute accelleration for ball, assume t = 1 */
 	accell = (force + ball_damping + pl_damping) / ball->mass;
 
-	if (Frame_is_real()) {
+	if (Frame_is_real())
+	{
 		ball->vel.x += -D.x * accell;
 		ball->vel.y += -D.y * accell;
 	}
-	else {
+	else
+	{
 		ball->vel_interp.x += -D.x * accell * ticksPerFrame;
 		ball->vel_interp.y += -D.y * accell * ticksPerFrame;
 	}
@@ -336,26 +357,33 @@ void Ball_detach(player_t *pl, object_t *ball)
 	int32_t i, cnt;
 
 	/* Interrupt the non-solid connector, if present */
-	if (ball == NULL || ball == pl->ball_tmp) {
+	if (ball == NULL || ball == pl->ball_tmp)
+	{
 		pl->ball_tmp = NULL;
 		Player_disable_property(pl, USES_CONNECTOR);
 	}
 
-	if (Player_has_property(pl, HAS_BALL)) {
-		for (cnt = i = 0; i < NumObjs; i++) {
+	if (Player_has_property(pl, HAS_BALL))
+	{
+		for (cnt = i = 0; i < NumObjs; i++)
+		{
 			if (Object_is_type(Obj[i], OBJ_BALL) &&
-					Object_is_attached(Obj[i]) &&
-					Obj[i]->owner == pl) {
-				if (ball == NULL || ball == Obj[i]) {
+				Object_is_attached(Obj[i]) &&
+				Obj[i]->owner == pl)
+			{
+				if (ball == NULL || ball == Obj[i])
+				{
 					/* Don't reset owner so you can throw balls */
 					Object_set_attached(Obj[i], false);
 				}
-				else {
+				else
+				{
 					cnt++;
 				}
 			}
 		}
-		if (cnt == 0) {
+		if (cnt == 0)
+		{
 			Player_lose_property(pl, HAS_BALL);
 		}
 	}

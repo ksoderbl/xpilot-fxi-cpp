@@ -22,7 +22,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef	_WINDOWS
+#ifndef _WINDOWS
 #include <unistd.h>
 #endif
 #include <stdlib.h>
@@ -34,7 +34,7 @@
 #include "version.h"
 #include "config.h"
 #include "const.h"
-#include "error.h"
+#include "xperror.h"
 #include "pack.h"
 #include "checknames.h"
 
@@ -45,12 +45,15 @@ int32_t Check_real_name(char *name)
 	uint8_t *str;
 
 	name[MAX_NAME_LEN - 1] = '\0';
-	if (!*name) {
+	if (!*name)
+	{
 		return NAME_ERROR;
 	}
-	str = (uint8_t *) name;
-	for (; *str; str++) {
-		if (!isgraph(*str)) {
+	str = (uint8_t *)name;
+	for (; *str; str++)
+	{
+		if (!isgraph(*str))
+		{
 			return NAME_ERROR;
 		}
 	}
@@ -63,13 +66,16 @@ void Fix_real_name(char *name)
 	uint8_t *str;
 
 	name[MAX_NAME_LEN - 1] = '\0';
-	if (!*name) {
+	if (!*name)
+	{
 		strcpy(name, "X");
 		return;
 	}
-	str = (uint8_t *) name;
-	for (; *str; str++) {
-		if (!isgraph(*str)) {
+	str = (uint8_t *)name;
+	for (; *str; str++)
+	{
+		if (!isgraph(*str))
+		{
 			*str = 'x';
 		}
 	}
@@ -80,20 +86,25 @@ int32_t Check_nick_name(char *name)
 	uint8_t *str;
 
 	name[MAX_NAME_LEN - 1] = '\0';
-	if (!*name) {
+	if (!*name)
+	{
 		return NAME_ERROR;
 	}
-	str = (uint8_t *) name;
-	if (!isupper(*str)) {
+	str = (uint8_t *)name;
+	if (!isupper(*str))
+	{
 		return NAME_ERROR;
 	}
-	for (; *str; str++) {
-		if (!isprint(*str)) {
+	for (; *str; str++)
+	{
+		if (!isprint(*str))
+		{
 			return NAME_ERROR;
 		}
 	}
 	--str;
-	if (isspace(*str)) {
+	if (isspace(*str))
+	{
 		return NAME_ERROR;
 	}
 
@@ -105,27 +116,34 @@ void Fix_nick_name(char *name)
 	uint8_t *str;
 
 	name[MAX_NAME_LEN - 1] = '\0';
-	if (!*name) {
+	if (!*name)
+	{
 		static int32_t n;
 		sprintf(name, "X%d", n++);
 		return;
 	}
-	str = (uint8_t *) name;
-	if (!isupper(*str)) {
-		if (islower(*str)) {
+	str = (uint8_t *)name;
+	if (!isupper(*str))
+	{
+		if (islower(*str))
+		{
 			*str = toupper(*str);
 		}
-		else {
+		else
+		{
 			*str = 'X';
 		}
 	}
-	for (; *str; str++) {
-		if (!isprint(*str)) {
+	for (; *str; str++)
+	{
+		if (!isprint(*str))
+		{
 			*str = 'x';
 		}
 	}
 	--str;
-	while (isspace(*str)) {
+	while (isspace(*str))
+	{
 		*str-- = '\0';
 	}
 }
@@ -147,18 +165,24 @@ int32_t Check_host_name(char *name)
 	uint8_t *str;
 
 	name[MAX_HOST_LEN - 1] = '\0';
-	str = (uint8_t *) name;
-	if (!is_alpha_numeric(*str)) {
+	str = (uint8_t *)name;
+	if (!is_alpha_numeric(*str))
+	{
 		return NAME_ERROR;
 	}
-	for (; *str; str++) {
-		if (!is_alpha_numeric(*str)) {
-			if (*str == '.' || *str == '-') {
-				if (str[1] == '.' || str[1] == '-' || !str[1]) {
+	for (; *str; str++)
+	{
+		if (!is_alpha_numeric(*str))
+		{
+			if (*str == '.' || *str == '-')
+			{
+				if (str[1] == '.' || str[1] == '-' || !str[1])
+				{
 					return NAME_ERROR;
 				}
 			}
-			else {
+			else
+			{
 				return NAME_ERROR;
 			}
 		}
@@ -171,19 +195,25 @@ void Fix_host_name(char *name)
 	uint8_t *str;
 
 	name[MAX_HOST_LEN - 1] = '\0';
-	str = (uint8_t *) name;
-	if (!is_alpha_numeric(*str)) {
+	str = (uint8_t *)name;
+	if (!is_alpha_numeric(*str))
+	{
 		strcpy(name, "xxx.xxx");
 		return;
 	}
-	for (; *str; str++) {
-		if (!is_alpha_numeric(*str)) {
-			if (*str == '.' || *str == '-') {
-				if (str[1] == '.' || str[1] == '-' || !str[1]) {
+	for (; *str; str++)
+	{
+		if (!is_alpha_numeric(*str))
+		{
+			if (*str == '.' || *str == '-')
+			{
+				if (str[1] == '.' || str[1] == '-' || !str[1])
+				{
 					*str = 'x';
 				}
 			}
-			else {
+			else
+			{
 				*str = 'x';
 			}
 		}
@@ -197,9 +227,11 @@ int32_t Check_disp_name(char *name)
 	uint8_t *str;
 
 	name[MAX_NAME_LEN] = '\0';
-	str = (uint8_t *) name;
-	for (; *str; str++) {
-		if (!isgraph(*str)) {
+	str = (uint8_t *)name;
+	for (; *str; str++)
+	{
+		if (!isgraph(*str))
+		{
 			return NAME_ERROR;
 		}
 	}
@@ -211,11 +243,12 @@ void Fix_disp_name(char *name)
 	uint8_t *str;
 
 	name[MAX_NAME_LEN] = '\0';
-	str = (uint8_t *) name;
-	for (; *str; str++) {
-		if (!isgraph(*str)) {
+	str = (uint8_t *)name;
+	for (; *str; str++)
+	{
+		if (!isgraph(*str))
+		{
 			*str = 'x';
 		}
 	}
 }
-

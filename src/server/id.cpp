@@ -30,7 +30,7 @@
 #include "const.h"
 #include "global.h"
 #include "proto.h"
-#include "error.h"
+#include "xperror.h"
 
 char id_version[] = VERSION;
 
@@ -44,16 +44,19 @@ static void init_ID(void)
 {
 	int32_t i, id;
 
-	if (ID_inited == 0) {
+	if (ID_inited == 0)
+	{
 		ID_inited = 1;
-		for (i = 0, id = 1; i < NUM_IDS; i++, id++) {
+		for (i = 0, id = 1; i < NUM_IDS; i++, id++)
+		{
 			ID_queue[i] = id;
 			ID_inuse[id] = 0;
 		}
 		get_ID = 0;
 		put_ID = NUM_IDS;
 	}
-	if (put_ID - get_ID > NUM_IDS) {
+	if (put_ID - get_ID > NUM_IDS)
+	{
 		error("ID queue corruption (%u,%u,%d)", get_ID, put_ID, NUM_IDS);
 		exit(1);
 	}
@@ -65,10 +68,12 @@ int32_t peek_ID(void)
 
 	init_ID();
 
-	if (get_ID == put_ID) {
+	if (get_ID == put_ID)
+	{
 		id = 0;
 	}
-	else {
+	else
+	{
 		id = ID_queue[get_ID % NUM_IDS];
 	}
 	return id;
@@ -79,7 +84,8 @@ int32_t request_ID(void)
 	int32_t id;
 
 	id = peek_ID();
-	if (id != 0) {
+	if (id != 0)
+	{
 		get_ID++;
 		ID_inuse[id] = 1;
 	}
@@ -91,13 +97,12 @@ void release_ID(int32_t id)
 {
 	init_ID();
 
-	if (put_ID - get_ID == NUM_IDS || id <= 0 || id > NUM_IDS
-			|| ID_inuse[id] != 1) {
+	if (put_ID - get_ID == NUM_IDS || id <= 0 || id > NUM_IDS || ID_inuse[id] != 1)
+	{
 		error("Illegal ID (%u,%u,%d,%d)", get_ID, put_ID, id,
-				ID_inuse[id % (NUM_IDS + 1)]);
+			  ID_inuse[id % (NUM_IDS + 1)]);
 		exit(1);
 	}
 	ID_queue[put_ID++ % NUM_IDS] = id;
 	ID_inuse[id] = 0;
 }
-

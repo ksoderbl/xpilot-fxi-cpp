@@ -39,7 +39,7 @@
 #include "item.h"
 #include "netserver.h"
 #include "pack.h"
-#include "error.h"
+#include "xperror.h"
 #include "objpos.h"
 #include "rank.h"
 #include "frame.h"

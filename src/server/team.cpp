@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "error.h"
+#include "xperror.h"
 #include "commonproto.h"
 
 #include "team.h"
@@ -27,10 +27,12 @@ int32_t Team_count_players(team_t *team, player_state_t state)
 	int32_t count;
 	player_t *pl;
 
-	for (i = 0; i < NumPlayers; i++) {
+	for (i = 0; i < NumPlayers; i++)
+	{
 		pl = Players[i];
 
-		if (pl->team == team && Player_is_state(pl, state)) {
+		if (pl->team == team && Player_is_state(pl, state))
+		{
 			count++;
 		}
 	}
@@ -40,7 +42,8 @@ int32_t Team_count_players(team_t *team, player_state_t state)
 
 team_t *Team_get_by_id(int32_t team_id)
 {
-	if (team_id >= 0 && team_id < MAX_TEAMS) {
+	if (team_id >= 0 && team_id < MAX_TEAMS)
+	{
 		return &World.teams[team_id];
 	}
 
@@ -52,7 +55,8 @@ void Teams_reset(void)
 	int32_t i;
 
 	/* Reset the teams */
-	for (i = 0; i < MAX_TEAMS; i++) {
+	for (i = 0; i < MAX_TEAMS; i++)
+	{
 		World.teams[i].TreasuresDestroyed = 0;
 		World.teams[i].TreasuresLeft = World.teams[i].NumTreasures;
 	}
@@ -66,7 +70,8 @@ void Team_game_over(team_t *winning_team, const char *reason)
 	player_t **best_players;
 	DFLOAT best_ratio;
 
-	if (!(best_players = (player_t **) malloc(NumPlayers * sizeof(player_t *)))) {
+	if (!(best_players = (player_t **)malloc(NumPlayers * sizeof(player_t *))))
+	{
 		error("no mem");
 		End_game();
 	}
@@ -76,10 +81,12 @@ void Team_game_over(team_t *winning_team, const char *reason)
 	Score_compute_end_of_round(&average_score, &num_best_players, &best_ratio, best_players);
 
 	/* Print out the results of the round */
-	if (winning_team) {
+	if (winning_team)
+	{
 		Message_game_important_print("Team %d has won the game%s!", winning_team->Num, reason);
 	}
-	else {
+	else
+	{
 		Message_game_important_print("We have a draw%s!", reason);
 	}
 
@@ -87,24 +94,31 @@ void Team_game_over(team_t *winning_team, const char *reason)
 	Score_give_bonus(average_score, num_best_players, best_ratio, best_players);
 
 	/* Give bonuses to the winning team */
-	if (winning_team) {
+	if (winning_team)
+	{
 		player_t *pl;
 
-		for (i = 0; i < NumPlayers; i++) {
+		for (i = 0; i < NumPlayers; i++)
+		{
 			pl = Players[i];
 
-			if (pl->team != winning_team) {
+			if (pl->team != winning_team)
+			{
 				continue;
 			}
-			if (!(Player_is_alive(pl) || Player_is_appearing(pl) || Player_is_dead(pl))) {
+			if (!(Player_is_alive(pl) || Player_is_appearing(pl) || Player_is_dead(pl)))
+			{
 				continue;
 			}
-			for (j = 0; j < num_best_players; j++) {
-				if (pl == best_players[j]) {
+			for (j = 0; j < num_best_players; j++)
+			{
+				if (pl == best_players[j])
+				{
 					break;
 				}
 			}
-			if (j == num_best_players) {
+			if (j == num_best_players)
+			{
 				Score_give_individual_bonus(pl, average_score);
 			}
 		}
@@ -143,7 +157,7 @@ void Team_game_over(team_t *winning_team, const char *reason)
 team_t *Team_find_available(player_type_t pl_type)
 {
 	int32_t i, least_players, num_available_teams = 0, playing_teams = 0,
-			losing_team;
+							  losing_team;
 	player_t *pl;
 	int32_t playing[MAX_TEAMS];
 	int32_t free_bases[MAX_TEAMS];
@@ -151,14 +165,16 @@ team_t *Team_find_available(player_type_t pl_type)
 	int32_t team_score[MAX_TEAMS];
 	int32_t losing_score;
 
-
 	/* robots only */
-	if (pl_type == PL_TYPE_ROBOT) {
+	if (pl_type == PL_TYPE_ROBOT)
+	{
 		team_t *team;
 
-		if (Team_num_is_valid(robotTeam)) {
+		if (Team_num_is_valid(robotTeam))
+		{
 			team = &World.teams[robotTeam];
-			if (team->NumMembers < team->NumBases) {
+			if (team->NumMembers < team->NumBases)
+			{
 				return team;
 			}
 		}
@@ -167,18 +183,23 @@ team_t *Team_find_available(player_type_t pl_type)
 	}
 
 	/* humans only */
-	if (pl_type != PL_TYPE_HUMAN) {
+	if (pl_type != PL_TYPE_HUMAN)
+	{
 		return NULL;
 	}
 
-	for (i = 0; i < MAX_TEAMS; i++) {
-		if (World.teams[i].Properties == TEAM_ONLY_PAUSERS) {
+	for (i = 0; i < MAX_TEAMS; i++)
+	{
+		if (World.teams[i].Properties == TEAM_ONLY_PAUSERS)
+		{
 			free_bases[i] = 0;
 		}
-		else if (World.teams[i].Properties == TEAM_ONLY_ROBOTS && restrictRobots) {
+		else if (World.teams[i].Properties == TEAM_ONLY_ROBOTS && restrictRobots)
+		{
 			free_bases[i] = 0;
 		}
-		else {
+		else
+		{
 			free_bases[i] = World.teams[i].NumBases - World.teams[i].NumMembers;
 		}
 
@@ -191,65 +212,86 @@ team_t *Team_find_available(player_type_t pl_type)
 	 * Find out which teams have actively playing members.
 	 * And calculate the score for each team.
 	 */
-	for (i = 0; i < NumPlayers; i++) {
+	for (i = 0; i < NumPlayers; i++)
+	{
 		pl = Players[i];
 
-                if (!(Player_is_alive(pl) || Player_is_appearing(pl) ||
-                            Player_is_dead(pl) || Player_is_waiting(pl))) {
-                    continue;
-                }
+		if (!(Player_is_alive(pl) || Player_is_appearing(pl) ||
+			  Player_is_dead(pl) || Player_is_waiting(pl)))
+		{
+			continue;
+		}
 
-		if (!playing[pl->team->Num]++) {
+		if (!playing[pl->team->Num]++)
+		{
 			playing_teams++;
 		}
-		if (Player_is_human(pl) || Player_is_robot(pl)) {
+		if (Player_is_human(pl) || Player_is_robot(pl))
+		{
 			team_score[pl->team->Num] += pl->score;
 		}
 	}
-	if (playing_teams <= 1) {
-		for (i = 0; i < MAX_TEAMS; i++) {
-			if (!playing[i] && free_bases[i] > 0) {
+	if (playing_teams <= 1)
+	{
+		for (i = 0; i < MAX_TEAMS; i++)
+		{
+			if (!playing[i] && free_bases[i] > 0)
+			{
 				available_teams[num_available_teams++] = i;
 			}
 		}
 	}
-	else {
+	else
+	{
 		least_players = NumPlayers;
-		for (i = 0; i < MAX_TEAMS; i++) {
+		for (i = 0; i < MAX_TEAMS; i++)
+		{
 			/* We fill teams with players first. */
-			if (playing[i] > 0 && free_bases[i] > 0) {
-				if (playing[i] < least_players) {
+			if (playing[i] > 0 && free_bases[i] > 0)
+			{
+				if (playing[i] < least_players)
+				{
 					least_players = playing[i];
 				}
 			}
 		}
 
-		for (i = 0; i < MAX_TEAMS; i++) {
-			if (free_bases[i] > 0) {
-				if (least_players == NumPlayers || playing[i] == least_players) {
+		for (i = 0; i < MAX_TEAMS; i++)
+		{
+			if (free_bases[i] > 0)
+			{
+				if (least_players == NumPlayers || playing[i] == least_players)
+				{
 					available_teams[num_available_teams++] = i;
 				}
 			}
 		}
 	}
 
-	if (!num_available_teams) {
-		for (i = 0; i < MAX_TEAMS; i++) {
-			if (free_bases[i] > 0) {
+	if (!num_available_teams)
+	{
+		for (i = 0; i < MAX_TEAMS; i++)
+		{
+			if (free_bases[i] > 0)
+			{
 				available_teams[num_available_teams++] = i;
 			}
 		}
 	}
 
-	if (num_available_teams == 1) {
+	if (num_available_teams == 1)
+	{
 		return &World.teams[available_teams[0]];
 	}
 
-	if (num_available_teams > 1) {
+	if (num_available_teams > 1)
+	{
 		losing_team = -1;
 		losing_score = INT_MAX;
-		for (i = 0; i < num_available_teams; i++) {
-			if (team_score[available_teams[i]] < losing_score && available_teams[i] != robotTeam) {
+		for (i = 0; i < num_available_teams; i++)
+		{
+			if (team_score[available_teams[i]] < losing_score && available_teams[i] != robotTeam)
+			{
 				losing_team = available_teams[i];
 				losing_score = team_score[losing_team];
 			}
@@ -294,9 +336,10 @@ bool Team_is_dead(team_t *team)
 	int32_t i;
 	bool alive = false;
 
-	for (i = 0; i < NumPlayers; i++) {
-		if (Players[i]->team == team
-				&& (Player_is_alive(Players[i]) || Player_is_appearing(Players[i]))) {
+	for (i = 0; i < NumPlayers; i++)
+	{
+		if (Players[i]->team == team && (Player_is_alive(Players[i]) || Player_is_appearing(Players[i])))
+		{
 			alive = true;
 			break;
 		}
@@ -317,10 +360,12 @@ int32_t Team_count_active_players(team_t *team)
 	player_t *pl;
 	int32_t count = 0;
 
-	for (i = 0; i < NumPlayers; i++) {
+	for (i = 0; i < NumPlayers; i++)
+	{
 		pl = Players[i];
 
-		if ((pl->team == team || team == NULL) && Player_is_active(pl)) {
+		if ((pl->team == team || team == NULL) && Player_is_active(pl))
+		{
 			count++;
 		}
 	}
@@ -330,14 +375,16 @@ int32_t Team_count_active_players(team_t *team)
 
 void Rounds_count(void)
 {
-	if (!roundsToPlay) {
+	if (!roundsToPlay)
+	{
 		return;
 	}
 
 	++roundsPlayed;
 
 	Message_game_important_print("Round %d out of %d completed.", roundsPlayed, roundsToPlay);
-	if (roundsPlayed >= roundsToPlay) {
+	if (roundsPlayed >= roundsToPlay)
+	{
 		Game_Over();
 	}
 }
@@ -348,57 +395,70 @@ void Rounds_count(void)
  */
 base_t *Team_pick_free_base(team_t *team)
 {
-        int32_t i, num_free;
-        int32_t pick = 0, seen = 0;
-        static int32_t prev_num_bases = 0;
-        static char *free_bases = NULL;
+	int32_t i, num_free;
+	int32_t pick = 0, seen = 0;
+	static int32_t prev_num_bases = 0;
+	static char *free_bases = NULL;
 
-        if (prev_num_bases != World.NumBases) {
-                prev_num_bases = World.NumBases;
-                if (free_bases != NULL) {
-                        free(free_bases);
-                }
-                free_bases = (char *) malloc(World.NumBases * sizeof(*free_bases));
-                if (free_bases == NULL) {
-                        error("Can't allocate memory for free_bases");
-                        End_game();
-                }
-        }
+	if (prev_num_bases != World.NumBases)
+	{
+		prev_num_bases = World.NumBases;
+		if (free_bases != NULL)
+		{
+			free(free_bases);
+		}
+		free_bases = (char *)malloc(World.NumBases * sizeof(*free_bases));
+		if (free_bases == NULL)
+		{
+			error("Can't allocate memory for free_bases");
+			End_game();
+		}
+	}
 
-        num_free = 0;
-        for (i = 0; i < World.NumBases; i++) {
-                if (World.base[i].team == team) {
-                        num_free++;
-                        free_bases[i] = 1;
-                }
-                else {
-                        free_bases[i] = 0; /* other team */
-                }
-        }
+	num_free = 0;
+	for (i = 0; i < World.NumBases; i++)
+	{
+		if (World.base[i].team == team)
+		{
+			num_free++;
+			free_bases[i] = 1;
+		}
+		else
+		{
+			free_bases[i] = 0; /* other team */
+		}
+	}
 
-        for (i = 0; i < NumPlayers; i++) {
-                if (Players[i]->home_base && free_bases[Players[i]->home_base->id]) {
-                        free_bases[Players[i]->home_base->id] = 0; /* occupado */
-                        num_free--;
-                }
-        }
+	for (i = 0; i < NumPlayers; i++)
+	{
+		if (Players[i]->home_base && free_bases[Players[i]->home_base->id])
+		{
+			free_bases[Players[i]->home_base->id] = 0; /* occupado */
+			num_free--;
+		}
+	}
 
-        pick = (int32_t) (rfrac() * num_free);
-        seen = 0;
-        for (i = 0; i < World.NumBases; i++) {
-                if (free_bases[i] != 0) {
-                        if (seen < pick) {
-                                seen++;
-                        }
-                        else {
-                                break;
-                        }
-                }
-        }
+	pick = (int32_t)(rfrac() * num_free);
+	seen = 0;
+	for (i = 0; i < World.NumBases; i++)
+	{
+		if (free_bases[i] != 0)
+		{
+			if (seen < pick)
+			{
+				seen++;
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
 
-        if (i == World.NumBases) {
-                return NULL;
-        }
+	if (i == World.NumBases)
+	{
+		return NULL;
+	}
 
-        return &World.base[i];
+	return &World.base[i];
 }

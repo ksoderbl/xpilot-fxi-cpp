@@ -29,7 +29,7 @@
 #include "version.h"
 #include "config.h"
 #include "const.h"
-#include "error.h"
+#include "xperror.h"
 #include "commonproto.h"
 
 char math_version[] = VERSION;
@@ -44,23 +44,23 @@ DFLOAT discrete_angle(DFLOAT x, DFLOAT y);
 
 int32_t string_is_true(char *optval)
 {
-	return (strncasecmp(optval, "true", 4) == 0 || strncasecmp(optval,
-			"on", 2) == 0 || strncasecmp(optval, "yes", 3) == 0);
+	return (strncasecmp(optval, "true", 4) == 0 || strncasecmp(optval, "on", 2) == 0 || strncasecmp(optval, "yes", 3) == 0);
 }
 
 int32_t string_is_false(char *optval)
 {
-	return (strncasecmp(optval, "false", 5) == 0 || strncasecmp(optval,
-			"off", 3) == 0 || strncasecmp(optval, "no", 2) == 0);
+	return (strncasecmp(optval, "false", 5) == 0 || strncasecmp(optval, "off", 3) == 0 || strncasecmp(optval, "no", 2) == 0);
 }
 
 int32_t mod(int32_t x, int32_t y)
 {
-	if (x >= y || x < 0) {
+	if (x >= y || x < 0)
+	{
 		x = x - y * (x / y);
 	}
 
-	if (x < 0) {
+	if (x < 0)
+	{
 		x += y;
 	}
 
@@ -69,21 +69,24 @@ int32_t mod(int32_t x, int32_t y)
 
 int32_t f2i(DFLOAT f)
 {
-	return (f < 0) ? -(int32_t) (0.5f - f) : (int32_t) (f + 0.5f);
+	return (f < 0) ? -(int32_t)(0.5f - f) : (int32_t)(f + 0.5f);
 }
 
 DFLOAT discrete_angle(DFLOAT x, DFLOAT y)
 {
 	DFLOAT angle;
 
-	if (x != 0.0 || y != 0.0) {
+	if (x != 0.0 || y != 0.0)
+	{
 		angle = atan2(y, x) / (2 * PI);
 	}
-	else {
+	else
+	{
 		angle = 0.0;
 	}
 
-	if (angle < 0) {
+	if (angle < 0)
+	{
 		angle++;
 	}
 	return angle * ANGLE_RESOLUTION;
@@ -95,16 +98,16 @@ double rfrac(void)
 	 * Return a pseudo-random value in the range { 0.0 <= x < 1.0 }.
 	 * Use randomMT() which returns a 32 bit PRN and multiply by 1/(1<<32).
 	 */
-	return (double) randomMT() * 0.00000000023283064365386962890625;
+	return (double)randomMT() * 0.00000000023283064365386962890625;
 }
 
 void make_trig_table(void)
 {
 	int32_t i;
 
-	for (i = 0; i < TABLE_SIZE; i++) {
+	for (i = 0; i < TABLE_SIZE; i++)
+	{
 		tbl_sin[i] = sin(i * (2.0 * PI / TABLE_SIZE));
 		tbl_cos[i] = cos(i * (2.0 * PI / TABLE_SIZE));
 	}
 }
-

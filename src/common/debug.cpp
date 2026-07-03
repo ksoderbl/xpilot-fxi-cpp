@@ -5,8 +5,8 @@
  *      Author: rotunda
  */
 
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 #include <time.h>
 
 #include "debug.h"
@@ -25,8 +25,8 @@ char *showtime(void)
 	time_t now;
 	struct tm *tmp;
 	static char month_names[13][4] =
-		{ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug",
-				"Sep", "Oct", "Nov", "Dec", "Bug" };
+		{"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug",
+		 "Sep", "Oct", "Nov", "Dec", "Bug"};
 	static char buf[80];
 
 	time(&now);

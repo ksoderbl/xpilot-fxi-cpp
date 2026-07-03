@@ -22,9 +22,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
 
 #include "version.h"
 #include "config.h"
@@ -47,35 +47,41 @@
  */
 char event_version[] = VERSION;
 
-
 int32_t Handle_keyboard(player_t *pl)
 {
 	int32_t key;
 	bool pressed;
 
-	for (key = 0; key < NUM_KEYS; key++) {
-		if (pl->last_keyv[key / BITV_SIZE] == pl->prev_keyv[key / BITV_SIZE]) {
+	for (key = 0; key < NUM_KEYS; key++)
+	{
+		if (pl->last_keyv[key / BITV_SIZE] == pl->prev_keyv[key / BITV_SIZE])
+		{
 			key |= (BITV_SIZE - 1); /* Skip to next keyv element */
 			continue;
 		}
-		while (BITV_ISSET(pl->last_keyv, key) == BITV_ISSET(pl->prev_keyv, key)) {
-			if (++key >= NUM_KEYS) {
+		while (BITV_ISSET(pl->last_keyv, key) == BITV_ISSET(pl->prev_keyv, key))
+		{
+			if (++key >= NUM_KEYS)
+			{
 				break;
 			}
 		}
-		if (key >= NUM_KEYS) {
+		if (key >= NUM_KEYS)
+		{
 			break;
 		}
 		pressed = BITV_ISSET(pl->last_keyv, key) != 0;
 		BITV_TOGGLE(pl->prev_keyv, key);
-		if (key != KEY_SHIELD) /* would interfere with auto-idle-pause.. */
+		if (key != KEY_SHIELD)				   /* would interfere with auto-idle-pause.. */
 			pl->frame_last_busy = frame_loops; /* ok -pgm due to client auto-shield */
 
 		/*
 		 * Allow these functions while you're 'dead'.
 		 */
-		if (!Player_is_alive(pl)) {
-			switch (key) {
+		if (!Player_is_alive(pl))
+		{
+			switch (key)
+			{
 			case KEY_PAUSE:
 			case KEY_LOCK_NEXT:
 			case KEY_LOCK_PREV:
@@ -100,21 +106,23 @@ int32_t Handle_keyboard(player_t *pl)
 			case KEY_DECREASE_TURNSPEED:
 			case KEY_TANK_NEXT:
 			case KEY_TANK_PREV:
-			case KEY_TURN_LEFT: /* Needed so that we don't get */
+			case KEY_TURN_LEFT:	 /* Needed so that we don't get */
 			case KEY_TURN_RIGHT: /* out-of-sync with the turnacc */
-			case KEY_THRUST:	/* to capture (in particular) key releases */
-			case KEY_FIRE_SHOT:	/* to capture (in particular) key releases */
-			case KEY_REFUEL:	/* to capture (in particular) key releases */
-			case KEY_CONNECTOR:	/* to capture (in particular) key releases */
-			case KEY_DROP_BALL:	/* to capture (in particular) key releases */
+			case KEY_THRUST:	 /* to capture (in particular) key releases */
+			case KEY_FIRE_SHOT:	 /* to capture (in particular) key releases */
+			case KEY_REFUEL:	 /* to capture (in particular) key releases */
+			case KEY_CONNECTOR:	 /* to capture (in particular) key releases */
+			case KEY_DROP_BALL:	 /* to capture (in particular) key releases */
 				break;
 			default:
 				continue;
 			}
 		}
 
-		if (pressed) { /* --- KEYPRESS --- */
-			switch (key) {
+		if (pressed)
+		{ /* --- KEYPRESS --- */
+			switch (key)
+			{
 
 			case KEY_TANK_NEXT:
 			case KEY_TANK_PREV:
@@ -140,22 +148,26 @@ int32_t Handle_keyboard(player_t *pl)
 				break;
 
 			case KEY_TOGGLE_COMPASS:
-				if (!Player_has_property(pl, HAS_COMPASS)) {
+				if (!Player_has_property(pl, HAS_COMPASS))
+				{
 					break;
 				}
 				Player_toggle_property(pl, USES_COMPASS);
-				if (!Player_uses_property(pl, USES_COMPASS)) {
+				if (!Player_uses_property(pl, USES_COMPASS))
+				{
 					break;
 				}
 
-				if (!Player_lock_is_initialized(pl)) {
+				if (!Player_lock_is_initialized(pl))
+				{
 					Player_lock_closest(pl, false);
 				}
 
 				break;
 
 			case KEY_LOCK_NEXT_CLOSE:
-				if (!Player_lock_closest(pl, true)) {
+				if (!Player_lock_closest(pl, true))
+				{
 					Player_lock_closest(pl, false);
 				}
 				break;
@@ -165,7 +177,8 @@ int32_t Handle_keyboard(player_t *pl)
 				break;
 
 			case KEY_CHANGE_HOME:
-				if (Block_is_base(OBJ_X_IN_BLOCKS(pl), OBJ_Y_IN_BLOCKS(pl))) {
+				if (Block_is_base(OBJ_X_IN_BLOCKS(pl), OBJ_Y_IN_BLOCKS(pl)))
+				{
 					Player_change_home(pl, Map_get_base_by_pos(&pl->pos));
 				}
 				break;
@@ -175,7 +188,8 @@ int32_t Handle_keyboard(player_t *pl)
 				break;
 
 			case KEY_FIRE_SHOT:
-				if (Player_has_property(pl, HAS_SHOT)) {
+				if (Player_has_property(pl, HAS_SHOT))
+				{
 					Player_disable_property(pl, USES_SHIELD);
 					Player_enable_property(pl, USES_SHOT);
 				}
@@ -188,16 +202,21 @@ int32_t Handle_keyboard(player_t *pl)
 			case KEY_LOAD_LOCK_1:
 			case KEY_LOAD_LOCK_2:
 			case KEY_LOAD_LOCK_3:
-			case KEY_LOAD_LOCK_4: {
+			case KEY_LOAD_LOCK_4:
+			{
 				player_t *lock_pl = pl->lockbank[key - KEY_LOAD_LOCK_1];
 
-				if (BIT(pl->pl_status, REPROGRAM)) {
-					if (BIT(pl->lock.flags, LOCK_PLAYER)) {
+				if (BIT(pl->pl_status, REPROGRAM))
+				{
+					if (BIT(pl->lock.flags, LOCK_PLAYER))
+					{
 						pl->lockbank[key - KEY_LOAD_LOCK_1] = pl->lock.object;
 					}
 				}
-				else {
-					if (lock_pl != NULL && Player_lock_is_allowed(pl, lock_pl)) {
+				else
+				{
+					if (lock_pl != NULL && Player_lock_is_allowed(pl, lock_pl))
+					{
 						pl->lock.object = lock_pl;
 						SET_BIT(pl->lock.flags, LOCK_PLAYER);
 					}
@@ -208,32 +227,39 @@ int32_t Handle_keyboard(player_t *pl)
 			case KEY_TURN_LEFT:
 			case KEY_TURN_RIGHT:
 				pl->turnacc = 0;
-				if (BITV_ISSET(pl->last_keyv, KEY_TURN_LEFT)) {
+				if (BITV_ISSET(pl->last_keyv, KEY_TURN_LEFT))
+				{
 					pl->turnacc += pl->turnspeed * ticksPerFrame;
 				}
-				if (BITV_ISSET(pl->last_keyv, KEY_TURN_RIGHT)) {
+				if (BITV_ISSET(pl->last_keyv, KEY_TURN_RIGHT))
+				{
 					pl->turnacc -= pl->turnspeed * ticksPerFrame;
 				}
 				break;
 
 			case KEY_SELF_DESTRUCT:
-				if (Player_is_self_destructing(pl)) {
+				if (Player_is_self_destructing(pl))
+				{
 					Player_self_destruct(pl, false);
 				}
-				else {
+				else
+				{
 					Player_self_destruct(pl, true);
 				}
 				break;
 
 			case KEY_PAUSE:
-				if (!Player_is_paused(pl)) {
+				if (!Player_is_paused(pl))
+				{
 					Player_pause_self(pl);
 				}
-				else {
+				else
+				{
 					Player_unpause(pl, NULL);
 				}
 
-				if (!Player_is_paused(pl)) {
+				if (!Player_is_paused(pl))
+				{
 					BITV_SET(pl->last_keyv, key);
 					BITV_SET(pl->prev_keyv, key);
 				}
@@ -241,7 +267,8 @@ int32_t Handle_keyboard(player_t *pl)
 				break;
 
 			case KEY_SWAP_SETTINGS:
-				if (pl->turnacc == 0.0) {
+				if (pl->turnacc == 0.0)
+				{
 					SWAP(pl->power, pl->power_s);
 					SWAP(pl->turnspeed, pl->turnspeed_s);
 					SWAP(pl->turnresistance, pl->turnresistance_s);
@@ -268,14 +295,16 @@ int32_t Handle_keyboard(player_t *pl)
 				break;
 
 			case KEY_INCREASE_TURNSPEED:
-				if (pl->turnacc == 0.0) {
+				if (pl->turnacc == 0.0)
+				{
 					pl->turnspeed *= 1.05;
 				}
 				pl->turnspeed = MIN(pl->turnspeed, MAX_PLAYER_TURNSPEED);
 				break;
 
 			case KEY_DECREASE_TURNSPEED:
-				if (pl->turnacc == 0.0) {
+				if (pl->turnacc == 0.0)
+				{
 					pl->turnspeed *= 0.95;
 				}
 				pl->turnspeed = MAX(pl->turnspeed, MIN_PLAYER_TURNSPEED);
@@ -289,16 +318,20 @@ int32_t Handle_keyboard(player_t *pl)
 				break;
 			}
 		}
-		else {
+		else
+		{
 			/* --- KEYRELEASE --- */
-			switch (key) {
+			switch (key)
+			{
 			case KEY_TURN_LEFT:
 			case KEY_TURN_RIGHT:
 				pl->turnacc = 0;
-				if (BITV_ISSET(pl->last_keyv, KEY_TURN_LEFT)) {
+				if (BITV_ISSET(pl->last_keyv, KEY_TURN_LEFT))
+				{
 					pl->turnacc += pl->turnspeed * ticksPerFrame;
 				}
-				if (BITV_ISSET(pl->last_keyv, KEY_TURN_RIGHT)) {
+				if (BITV_ISSET(pl->last_keyv, KEY_TURN_RIGHT))
+				{
 					pl->turnacc -= pl->turnspeed * ticksPerFrame;
 				}
 				break;
@@ -312,7 +345,8 @@ int32_t Handle_keyboard(player_t *pl)
 				break;
 
 			case KEY_SHIELD:
-				if (Player_uses_property(pl, USES_SHIELD)) {
+				if (Player_uses_property(pl, USES_SHIELD))
+				{
 					Player_disable_property(pl, USES_SHIELD);
 					/*
 					 * Insert the default fireRepeatRate between lowering

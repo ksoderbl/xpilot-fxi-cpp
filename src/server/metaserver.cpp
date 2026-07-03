@@ -23,10 +23,10 @@
  */
 
 #include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstring>
+#include <cctype>
+#include <cstdio>
 #include <time.h>
 #include <sys/time.h>
 

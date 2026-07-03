@@ -22,12 +22,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <stdint.h>
-#include <stdio.h>
-#include <ctype.h>
+#include <cstdio>
+#include <cctype>
 #include "commonproto.h"
-
 
 #if (!HAVE_STRINGS_H)
 /*
@@ -40,7 +39,8 @@ int32_t strcasecmp(const char *str1, const char *str2)
 {
 	int32_t c1, c2;
 
-	do {
+	do
+	{
 		c1 = *str1++;
 		c2 = *str2++;
 		c1 = tolower(c1);
@@ -57,8 +57,10 @@ int32_t strncasecmp(const char *str1, const char *str2, size_t n)
 {
 	int32_t c1, c2;
 
-	do {
-		if (n-- <= 0) {
+	do
+	{
+		if (n-- <= 0)
+		{
 			return 0;
 		}
 		c1 = *str1++;

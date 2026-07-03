@@ -25,11 +25,11 @@
 #ifndef _WINDOWS
 #include <unistd.h>
 #endif
-#include <stdlib.h>
-#include <stdio.h>
-#include <errno.h>
-#include <string.h>
-#include <ctype.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cerrno>
+#include <cstring>
+#include <cctype>
 
 #include "version.h"
 #include "config.h"

@@ -96,11 +96,11 @@
 
 #include "types.h"
 #include <unistd.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
 #include <time.h>
-#include <errno.h>
+#include <cerrno>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/param.h>
@@ -108,7 +108,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
-#include <ctype.h>
+#include <cctype>
 
 #include "version.h"
 #include "xpconfig.h"

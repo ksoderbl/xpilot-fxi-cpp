@@ -5,8 +5,8 @@
  *      Author: rotunda
  */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 
 #include "xperror.h"
 #include "commonproto.h"

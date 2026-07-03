@@ -22,9 +22,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
 
 #include "version.h"
 #include "config.h"
@@ -35,7 +35,6 @@
 #include "map.h"
 
 char objpos_version[] = VERSION;
-
 
 void Position_copy(objposition_t *dstpos, objposition_t *srcpos)
 {

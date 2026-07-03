@@ -22,12 +22,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <ctype.h>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
+#include <cctype>
 #include <limits.h>
-#include <errno.h>
+#include <cerrno>
 #include <sys/types.h>
 
 #include <unistd.h>

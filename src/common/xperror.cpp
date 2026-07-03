@@ -8,10 +8,10 @@
  * Windows mods and memory leak detection by Dick Balaska <dick@xpilot.org>.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <errno.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
+#include <cerrno>
 
 #include "version.h"
 #include "config.h"

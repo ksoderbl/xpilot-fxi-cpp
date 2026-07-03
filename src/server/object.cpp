@@ -5,8 +5,8 @@
  *      Author: rotunda
  */
 
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 
 #include "global.h"
 #include "debug.h"
@@ -24,7 +24,6 @@
 int32_t NumObjs = 0;
 object_t *Obj[MAX_TOTAL_OBJECTS];
 
-
 /** \brief Counts missing treasure of specified team
  * \param team	team, unspecified if NULL
  * \return number of missing treasures
@@ -34,14 +33,19 @@ int32_t Object_count_treasures_missing(team_t *team)
 	int32_t i;
 	int32_t count = 0;
 
-	for (i = 0; i < World.NumTreasures; i++) {
-		if (!World.treasures[i].have) {
-			if (team) {
-				if (World.treasures[i].team == team) {
+	for (i = 0; i < World.NumTreasures; i++)
+	{
+		if (!World.treasures[i].have)
+		{
+			if (team)
+			{
+				if (World.treasures[i].team == team)
+				{
 					count++;
 				}
 			}
-			else {
+			else
+			{
 				count++;
 			}
 		}
@@ -64,7 +68,8 @@ void Objects_remove_timed_out(void)
 	object_t *obj;
 	int32_t type;
 
-	for (i = NumObjs - 1; i >= 0; i--) {
+	for (i = NumObjs - 1; i >= 0; i--)
+	{
 		obj = Obj[i];
 		type = obj->type;
 
@@ -72,34 +77,40 @@ void Objects_remove_timed_out(void)
 		 * Count the life of sparks or debris in terms of ticks rather than frames.
 		 * This dirty hack preserves the old (fxi v1.4.2 and xpilot v4.5.4) behaviour of sparks).
 		 */
-		if (!Frame_is_real() && (type == OBJ_SPARK || type == OBJ_DEBRIS)) {
+		if (!Frame_is_real() && (type == OBJ_SPARK || type == OBJ_DEBRIS))
+		{
 			continue;
 		}
 
 		obj->obj_life--;
 
 		/* Increment the ball loose frame counter */
-		if (type == OBJ_BALL && ! obj->treasure->have) {
+		if (type == OBJ_BALL && !obj->treasure->have)
+		{
 			obj->loose_count++;
 
-			if (Frame_is_real()) {
+			if (Frame_is_real())
+			{
 				obj->loose_count_ticks++;
 			}
 		}
 
 		/* object has not timed out */
-		if (obj->obj_life > 0) {
+		if (obj->obj_life > 0)
+		{
 			continue;
 		}
 
 		/* object was destroyed */
-		else {
+		else
+		{
 			treasure_t *t = obj->treasure;
 
 			Object_remove(obj);
 
 			/* Restore balls */
-			if (type ==  OBJ_BALL) {
+			if (type == OBJ_BALL)
+			{
 				Ball_treasure_add(t);
 			}
 		}
@@ -112,7 +123,8 @@ void Object_remove(object_t *obj)
 	player_t *pl;
 	int32_t i;
 
-	switch (obj->type) {
+	switch (obj->type)
+	{
 
 	case OBJ_SPARK:
 	case OBJ_DEBRIS:
@@ -121,15 +133,19 @@ void Object_remove(object_t *obj)
 
 	case OBJ_BALL:
 		/* Detach the ball or non-solid connector */
-		if (Object_is_attached(obj)) {
+		if (Object_is_attached(obj))
+		{
 			Ball_detach(obj->owner, obj);
 		}
-		else {
+		else
+		{
 			/*
 			 * Maybe some player is still busy trying to connect to this ball.
 			 */
-			for (i = 0; i < NumPlayers; i++) {
-				if (Players[i]->ball_tmp == obj) {
+			for (i = 0; i < NumPlayers; i++)
+			{
+				if (Players[i]->ball_tmp == obj)
+				{
 					Players[i]->ball_tmp = NULL;
 				}
 			}
@@ -140,12 +156,15 @@ void Object_remove(object_t *obj)
 
 	/* Shots related to a player. */
 	case OBJ_SHOT:
-		if (!obj->owner) {
+		if (!obj->owner)
+		{
 			break;
 		}
 		pl = obj->owner;
-		if (Object_is_type(obj, OBJ_SHOT)) {
-			if (--pl->shots <= 0) {
+		if (Object_is_type(obj, OBJ_SHOT))
+		{
+			if (--pl->shots <= 0)
+			{
 				pl->shots = 0;
 			}
 		}
@@ -156,7 +175,6 @@ void Object_remove(object_t *obj)
 		ASSERT(0)
 		break;
 	}
-
 
 	NumObjs--;
 
@@ -175,7 +193,8 @@ void Object_remove(object_t *obj)
 
 object_t *Object_add(void)
 {
-	if (NumObjs >= MAX_TOTAL_OBJECTS) {
+	if (NumObjs >= MAX_TOTAL_OBJECTS)
+	{
 		return NULL;
 	}
 
@@ -189,7 +208,8 @@ void Objects_time_out(void)
 {
 	int32_t i;
 
-	for (i = 0; i < NumObjs; i++) {
+	for (i = 0; i < NumObjs; i++)
+	{
 		Object_expire(Obj[i]);
 	}
 }
@@ -199,7 +219,8 @@ void Objects_interpolation_init(void)
 	int32_t i;
 	object_t *obj;
 
-	for (i = 0; i < NumObjs; i++) {
+	for (i = 0; i < NumObjs; i++)
+	{
 		obj = Obj[i];
 		Position_copy(&obj->pos_interp, &obj->pos);
 		obj->vel_interp.x = obj->vel.x;

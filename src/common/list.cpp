@@ -21,7 +21,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <string.h>
+#include <cstring>
 
 #include "list.h"
 #include "types.h"

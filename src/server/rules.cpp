@@ -22,8 +22,8 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 
 #include "version.h"
 #include "config.h"
@@ -38,8 +38,8 @@
 
 char rules_version[] = VERSION;
 
-#define MAX_FUEL                10000
-#define MAX_AUTOPILOT           99
+#define MAX_FUEL 10000
+#define MAX_AUTOPILOT 99
 
 /*
  * Bitmask of object types the robot puts up shield for.
@@ -90,13 +90,7 @@ void Set_world_rules(void)
 {
 	static rules_t rules;
 
-	rules.mode = ((crashWithPlayer ? CRASH_WITH_PLAYER : 0)
-			| (bounceWithPlayer ? BOUNCE_WITH_PLAYER : 0)
-			| (playerKillings ? PLAYER_KILLINGS : 0)
-			| (playerShielding ? PLAYER_SHIELDING : 0)
-			| (limitedLives ? LIMITED_LIVES : 0)
-			| (teamPlay ? TEAM_PLAY : 0) | (WRAP_PLAY)
-			| (Team_num_is_valid(robotTeam) ? PRACTISE_PLAY : 0));
+	rules.mode = ((crashWithPlayer ? CRASH_WITH_PLAYER : 0) | (bounceWithPlayer ? BOUNCE_WITH_PLAYER : 0) | (playerKillings ? PLAYER_KILLINGS : 0) | (playerShielding ? PLAYER_SHIELDING : 0) | (limitedLives ? LIMITED_LIVES : 0) | (teamPlay ? TEAM_PLAY : 0) | (WRAP_PLAY) | (Team_num_is_valid(robotTeam) ? PRACTISE_PLAY : 0));
 	rules.lives = worldLives;
 	World.rules = &rules;
 
@@ -107,4 +101,3 @@ void Set_world_rules(void)
 
 	USES_DEFAULT &= HAS_DEFAULT;
 }
-

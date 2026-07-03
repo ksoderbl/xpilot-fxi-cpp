@@ -25,10 +25,10 @@
 #ifndef _WINDOWS
 #include <unistd.h>
 #endif
-#include <stdlib.h>
-#include <stdio.h>
-#include <errno.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cerrno>
+#include <cstring>
 #include <sys/types.h>
 #if defined(__hpux) || defined(_WINDOWS)
 #include <time.h>

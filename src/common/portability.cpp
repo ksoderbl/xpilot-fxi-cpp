@@ -29,16 +29,16 @@
 #include <unistd.h>
 #include <pwd.h>
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
 
 #ifdef PLOCKSERVER
-# if defined(__linux__)
-#  include <sys/mman.h>
-# else
-#  include <sys/lock.h>
-# endif
+#if defined(__linux__)
+#include <sys/mman.h>
+#else
+#include <sys/lock.h>
+#endif
 #endif
 
 #include "version.h"

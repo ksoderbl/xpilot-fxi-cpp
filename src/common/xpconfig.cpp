@@ -22,10 +22,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <stdint.h>
-#include <string.h>
-#include <ctype.h>
+#include <cstring>
+#include <cctype>
 
 #include "version.h"
 #include "config.h"
@@ -36,59 +36,58 @@
  * is in the Makefile.std and in the Imakefile.
  */
 #ifndef LOCALGURU
-#    define LOCALGURU		"xpilot@xpilot.org"
+#define LOCALGURU "xpilot@xpilot.org"
 #endif
 
-#ifndef	DEFAULT_MAP
-#    define DEFAULT_MAP		"teamcup.xp"
+#ifndef DEFAULT_MAP
+#define DEFAULT_MAP "teamcup.xp"
 #endif
 
 #ifndef CONF_DATADIR
-#    error "Please define CONF_DATADIR!!!"
+#error "Please define CONF_DATADIR!!!"
 #endif
 
 #ifndef DEFAULTS_FILE_NAME
-#    define DEFAULTS_FILE_NAME	CONF_DATADIR "defaults.txt"
+#define DEFAULTS_FILE_NAME CONF_DATADIR "defaults.txt"
 #endif
 #ifndef PASSWORD_FILE_NAME
-#    define PASSWORD_FILE_NAME	CONF_DATADIR "password.txt"
+#define PASSWORD_FILE_NAME CONF_DATADIR "password.txt"
 #endif
 #ifndef ROBOTFILE
-#    define ROBOTFILE		CONF_DATADIR "robots.txt"
+#define ROBOTFILE CONF_DATADIR "robots.txt"
 #endif
 #ifndef SERVERMOTDFILE
-#    define	SERVERMOTDFILE	CONF_DATADIR "servermotd.txt"
+#define SERVERMOTDFILE CONF_DATADIR "servermotd.txt"
 #endif
 #ifndef LOCALMOTDFILE
-#    define	LOCALMOTDFILE	CONF_DATADIR "localmotd.txt"
+#define LOCALMOTDFILE CONF_DATADIR "localmotd.txt"
 #endif
 #ifndef LOGFILE
-#    define	LOGFILE		CONF_DATADIR "log.txt"
+#define LOGFILE CONF_DATADIR "log.txt"
 #endif
 #ifndef MAPDIR
-#    define MAPDIR		CONF_DATADIR "maps/"
+#define MAPDIR CONF_DATADIR "maps/"
 #endif
 #ifndef SHIP_FILE
-#    define SHIP_FILE		CONF_DATADIR "shipshapes.txt"
+#define SHIP_FILE CONF_DATADIR "shipshapes.txt"
 #endif
 
 #ifndef ZCAT_EXT
-#    define ZCAT_EXT	".gz"
+#define ZCAT_EXT ".gz"
 #endif
 
 #ifndef ZCAT_FORMAT
-#    define ZCAT_FORMAT "gzip -d -c < %s"
+#define ZCAT_FORMAT "gzip -d -c < %s"
 #endif
 
 /*
  * Please don't change this one.
  */
 #ifndef CONTACTADDRESS
-#    define CONTACTADDRESS	"xpilot@xpilot.org"
+#define CONTACTADDRESS "xpilot@xpilot.org"
 #endif
 
 char xpconfig_version[] = VERSION;
-
 
 char *Conf_contactaddress(void);
 char *Conf_datadir(void);
@@ -104,7 +103,6 @@ char *Conf_localguru(void);
 char *Conf_robotfile(void);
 char *Conf_zcat_ext(void);
 char *Conf_zcat_format(void);
-
 
 char *Conf_datadir(void)
 {
@@ -148,7 +146,8 @@ char *Conf_servermotdfile(void)
 	char *filename;
 
 	filename = getenv(env);
-	if (filename == NULL) {
+	if (filename == NULL)
+	{
 		filename = conf;
 	}
 

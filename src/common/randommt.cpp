@@ -52,10 +52,8 @@
  **
  */
 
-
 #include <stdint.h>
 #include "commonproto.h"
-
 
 /*
  ** uint32_t must be an unsigned integer type capable of holding at least 32
@@ -63,17 +61,17 @@
  ** GCC at -O3 optimization so try your options and see what's best for you.
  */
 
-#define N              (624)			/* length of state vector */
-#define M              (397)			/* a period parameter */
-#define K              (0x9908B0DFU)		/* a magic constant */
-#define hiBit(u)       ((u) & 0x80000000U)	/* mask all but highest   bit of u */
-#define loBit(u)       ((u) & 0x00000001U)	/* mask all but lowest    bit of u */
-#define loBits(u)      ((u) & 0x7FFFFFFFU)	/* mask     the highest   bit of u */
-#define mixBits(u, v)  (hiBit(u)|loBits(v))	/* move hi bit of u to hi bit of v */
+#define N (624)								 /* length of state vector */
+#define M (397)								 /* a period parameter */
+#define K (0x9908B0DFU)						 /* a magic constant */
+#define hiBit(u) ((u) & 0x80000000U)		 /* mask all but highest   bit of u */
+#define loBit(u) ((u) & 0x00000001U)		 /* mask all but lowest    bit of u */
+#define loBits(u) ((u) & 0x7FFFFFFFU)		 /* mask     the highest   bit of u */
+#define mixBits(u, v) (hiBit(u) | loBits(v)) /* move hi bit of u to hi bit of v */
 
 static uint32_t state[N + 1]; /* state vector + 1 extra to not violate ANSI C */
-static uint32_t *next; /* next random value is computed from here */
-static int32_t left = -1; /* can *next++ this many times before reloading */
+static uint32_t *next;		  /* next random value is computed from here */
+static int32_t left = -1;	  /* can *next++ this many times before reloading */
 
 void seedMT(uint32_t seed)
 {
@@ -140,8 +138,7 @@ uint32_t reloadMT(void)
 
 	left = N - 1, next = state + 1;
 
-	for (s0 = state[0], s1 = state[1], j = N - M + 1; --j; s0 = s1, s1
-			= *p2++)
+	for (s0 = state[0], s1 = state[1], j = N - M + 1; --j; s0 = s1, s1 = *p2++)
 		*p0++ = *pM++ ^ (mixBits(s0, s1) >> 1) ^ (loBit(s1) ? K : 0U);
 
 	for (pM = state, j = M; --j; s0 = s1, s1 = *p2++)
@@ -170,8 +167,8 @@ uint32_t randomMT(void)
 
 #ifdef MT_MAIN
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 
 #ifndef EXIT_SUCCESS
 #define EXIT_SUCCESS 0
@@ -188,8 +185,8 @@ int32_t main(void)
 	/* print the first 2,002 random numbers seven to a line as an example */
 
 	for (j = 0; j < 2002; j++)
-	printf(" %10lu%s", (uint32_t)randomMT(),
-			(j % 7) == 6 ? "\n" : "");
+		printf(" %10lu%s", (uint32_t)randomMT(),
+			   (j % 7) == 6 ? "\n" : "");
 
 	return (EXIT_SUCCESS);
 }

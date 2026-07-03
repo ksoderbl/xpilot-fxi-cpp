@@ -25,12 +25,12 @@
 #include <unistd.h>
 #include <sys/time.h>
 #include <sys/types.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
 #include <signal.h>
 #include <time.h>
-#include <errno.h>
+#include <cerrno>
 
 #include "version.h"
 #include "xpconfig.h"

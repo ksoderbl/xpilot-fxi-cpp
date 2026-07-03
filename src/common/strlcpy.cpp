@@ -22,7 +22,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
+#include <cstdlib>
 #include "commonproto.h"
 
 /*
@@ -47,15 +47,18 @@ size_t strlcpy(char *dest, const char *src, size_t size)
 	register const char *s = src;
 	register char *maxd = dest + (size - 1);
 
-	if (size > 0) {
-		while (*s && d < maxd) {
+	if (size > 0)
+	{
+		while (*s && d < maxd)
+		{
 			*d = *s;
 			s++;
 			d++;
 		}
 		*d = '\0';
 	}
-	while (*s) {
+	while (*s)
+	{
 		s++;
 	}
 	return (s - src);
@@ -84,21 +87,24 @@ size_t strlcat(char *dest, const char *src, size_t size)
 	register char *maxd = dest + (size - 1);
 	size_t dlen = 0;
 
-	if (size > 0) {
-		while (*d && d < maxd) {
+	if (size > 0)
+	{
+		while (*d && d < maxd)
+		{
 			d++;
 		}
 		dlen = (d - dest);
-		while (*s && d < maxd) {
+		while (*s && d < maxd)
+		{
 			*d = *s;
 			s++;
 			d++;
 		}
 		*d = '\0';
 	}
-	while (*s) {
+	while (*s)
+	{
 		s++;
 	}
 	return dlen + (s - src);
 }
-

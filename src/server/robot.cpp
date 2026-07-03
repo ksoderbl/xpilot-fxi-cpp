@@ -24,10 +24,10 @@
 /* Robot code originally submitted by Maurice Abraham. */
 
 #include <unistd.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <string.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cctype>
+#include <cstring>
+#include <cstdio>
 
 #include "version.h"
 #include "commonproto.h"

@@ -41,8 +41,6 @@
 #include "map.h"
 #include "player_inline.h"
 
-char rank_version[] = VERSION;
-
 char *rankFileName;
 char *rankWebpageFileName;
 char *rankWebpageCSS;
@@ -905,8 +903,6 @@ static void tagstart(void *data, const char *el, const char **attr)
 {
 	static bool xptag = false;
 
-	UNUSED_PARAM(data);
-
 	if (!strcasecmp(el, "XPilotNGRank"))
 	{
 		double version = -1;
@@ -1000,8 +996,6 @@ static void tagstart(void *data, const char *el, const char **attr)
 
 static void tagend(void *data, const char *el)
 {
-	UNUSED_PARAM(data);
-
 	if (!strcasecmp(el, "Players"))
 		playerstag = false;
 

@@ -67,8 +67,6 @@
 #include "bit.h"
 #include "socklib.h"
 
-char net_version[] = VERSION;
-
 int32_t last_packet_of_frame;
 
 int32_t Sockbuf_init(sockbuf_t *sbuf, int32_t sock, int32_t size, int32_t state)

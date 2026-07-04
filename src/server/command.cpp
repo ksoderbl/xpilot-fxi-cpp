@@ -46,7 +46,6 @@
 #include "map.h"
 #include "player_inline.h"
 
-char command_version[] = VERSION;
 extern bool limitedRoundsGameOver;
 
 extern connection_t *Conn;
@@ -188,7 +187,7 @@ typedef struct
 	const char *name;
 	const char *abbrev;
 	const char *help;
-	int32_t oper_only;
+	bool oper_only;
 	int32_t (*cmd)(char *arg, player_t *pl, bool oper, char *msg);
 } Command_info;
 
@@ -357,7 +356,7 @@ void Handle_player_command(player_t *pl, char *cmd)
 	}
 }
 
-static int32_t Cmd_advance(char *arg, player_t *pl, int32_t oper, char *msg)
+static int32_t Cmd_advance(char *arg, player_t *pl, bool oper, char *msg)
 {
 	int32_t result;
 
@@ -381,7 +380,7 @@ static int32_t Cmd_advance(char *arg, player_t *pl, int32_t oper, char *msg)
 	return CMD_RESULT_SUCCESS;
 }
 
-static int32_t Cmd_queue(char *arg, player_t *pl, int32_t oper, char *msg)
+static int32_t Cmd_queue(char *arg, player_t *pl, bool oper, char *msg)
 {
 	int32_t result;
 
@@ -937,7 +936,6 @@ static int32_t Cmd_get(char *arg, player_t *pl, bool oper, char *msg)
 
 static int32_t Cmd_stats(char *arg, player_t *pl, bool oper, char *msg)
 {
-	/*    UNUSED_PARAM(pl); UNUSED_PARAM(oper);*/
 	if (!arg || !*arg)
 		return CMD_RESULT_NO_NAME;
 
@@ -992,8 +990,6 @@ static int32_t Cmd_addr(char *arg, player_t *pl, bool oper, char *msg)
 	player_t *pl2 = NULL;
 	const char *errorstr;
 	size_t size = MSG_LEN;
-
-	/*UNUSED_PARAM(pl);*/
 
 	if (!oper)
 		return CMD_RESULT_NOT_OPERATOR;

@@ -38,8 +38,6 @@
 #include "pack.h"
 #include "checknames.h"
 
-char checknames_version[] = VERSION;
-
 int32_t Check_real_name(char *name)
 {
 	uint8_t *str;

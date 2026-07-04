@@ -36,8 +36,6 @@
 #include "player.h"
 #include "player_inline.h"
 
-char rules_version[] = VERSION;
-
 #define MAX_FUEL 10000
 #define MAX_AUTOPILOT 99
 

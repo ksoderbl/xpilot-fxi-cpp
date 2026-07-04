@@ -21,7 +21,7 @@
 #include "frame.h"
 #include "rank.h"
 
-int32_t Team_count_players(team_t *team, player_state_t state)
+int32_t Team_count_players(team_t *team, int32_t state)
 {
 	int32_t i;
 	int32_t count;
@@ -154,7 +154,7 @@ void Team_game_over(team_t *winning_team, const char *reason)
  *
  * Prefer not to place players in the robotTeam if possible.
  */
-team_t *Team_find_available(player_type_t pl_type)
+team_t *Team_find_available(int32_t pl_type)
 {
 	int32_t i, least_players, num_available_teams = 0, playing_teams = 0,
 							  losing_team;

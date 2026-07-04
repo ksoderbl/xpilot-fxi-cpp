@@ -1,5 +1,4 @@
 /*
- *
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -22,9 +21,9 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef NETSERVER_H
-#define NETSERVER_H
+#pragma once
 
+#include "types.h"
 #include "net.h"
 #include "object.h"
 
@@ -75,21 +74,18 @@
 /*
  * Types of player attributes, that need to be sent to them
  */
-typedef enum
-{
-	PL_SEND_GENERAL = 1 << 1,
-	PL_SEND_SCORE = 1 << 2,
-	PL_SEND_BASE = 1 << 3,
-	PL_SEND_WAR = 1 << 4,
+constexpr int32_t PL_SEND_GENERAL = 1 << 1;
+constexpr int32_t PL_SEND_SCORE = 1 << 2;
+constexpr int32_t PL_SEND_BASE = 1 << 3;
+constexpr int32_t PL_SEND_WAR = 1 << 4;
 
-	PL_SEND_ALL = 0xFFFFFFFF
-} pl_send_t;
+constexpr int32_t PL_SEND_ALL = 0xFFFFFFFF;
 
 /*
  * All the connection state info.
  * Some of it is hardly ever used, if at all.
  */
-struct _connection
+typedef struct connection
 {
 	int32_t cid;					 /* connection ID */
 	int32_t state;					 /* state of connection */
@@ -127,7 +123,18 @@ struct _connection
 	char *addr;						 /* address of players host */
 	char *host;						 /* hostname of players host */
 	player_t *pl;					 /* pointer to the player's structure */
-};
+} connection_t;
+
+// Returns pointer to the player's connection structure, or NULL if
+// the supplied pointer is invalid or if the player is disconnected.
+// #define Player_is_connected(pl) ((pl) ? ((pl)->connp) : NULL)
+
+static inline connection_t *Player_is_connected(player_t *pl)
+{
+	if (pl)
+		return pl->connp;
+	return nullptr;
+}
 
 extern int32_t num_logins;
 extern int32_t num_logouts;
@@ -183,10 +190,8 @@ void Get_display_parameters(connection_t *connp, int32_t *width, int32_t *height
 int32_t Send_shape(connection_t *connp, int32_t shape);
 const char *Player_get_addr(player_t *pl);
 
-void Send_info(connection_t *connp, player_t *pl, pl_send_t attr);
+void Send_info(connection_t *connp, player_t *pl, int32_t attr);
 
-void Send_info_about_myself(player_t *pl, pl_send_t attr);
-void Send_info_about_others(player_t *pl, pl_send_t attr);
-void Send_info_about_player(player_t *pl, pl_send_t attr);
-
-#endif
+void Send_info_about_myself(player_t *pl, int32_t attr);
+void Send_info_about_others(player_t *pl, int32_t attr);
+void Send_info_about_player(player_t *pl, int32_t attr);

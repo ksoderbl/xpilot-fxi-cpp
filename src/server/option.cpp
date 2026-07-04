@@ -26,7 +26,7 @@
 #include <cstring>
 #include <cstdio>
 #include <cctype>
-#include <limits.h>
+#include <climits>
 #include <cerrno>
 
 #include <unistd.h>
@@ -40,8 +40,6 @@
 #include "xperror.h"
 #include "types.h"
 #include "commonproto.h"
-
-char option_version[] = VERSION;
 
 /*
  * This module implements an in memory server option database.

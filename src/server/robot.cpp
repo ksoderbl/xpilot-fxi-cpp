@@ -50,8 +50,6 @@
 
 #define DEFAULT_ROBOT_TYPE "default"
 
-char robot_version[] = VERSION;
-
 /*
  * Array of different robots.
  * Each robot has a name of a robot type determining
@@ -624,7 +622,7 @@ static bool Robot_add(void)
 	robot_data_t *data, *new_data;
 	robot_type_t *rob_type;
 	team_t *team;
-	player_state_t entry_state;
+	int32_t entry_state;
 
 	if (peek_ID() == 0)
 	{

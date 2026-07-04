@@ -32,8 +32,6 @@
 #include "xperror.h"
 #include "commonproto.h"
 
-char math_version[] = VERSION;
-
 DFLOAT tbl_sin[TABLE_SIZE];
 DFLOAT tbl_cos[TABLE_SIZE];
 

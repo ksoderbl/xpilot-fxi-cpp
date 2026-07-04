@@ -22,11 +22,11 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MAP_H
-#define MAP_H
+#pragma once
 
+#include "const.h"
 #include "types.h"
-#include "structs.h"
+
 #include "global.h"
 #include "rules.h"
 #include "item.h"
@@ -81,15 +81,15 @@
 #define Block_is_fuel(x, y) (World.block[x][y] == FUEL)
 #define Block_is_treasure(x, y) (World.block[x][y] == TREASURE)
 
-struct _fuel
+typedef struct fuel
 {
 	int32_t id;
 	objposition_t pos;
 	int32_t fuel;
 	uint32_t conn_mask; /* mask marking player connections which already received an update of this fuel station */
 	int32_t last_change;
-	team_t *team;
-};
+	struct team *team;
+} fuel_t;
 
 typedef struct
 {
@@ -97,24 +97,24 @@ typedef struct
 	int32_t num;	 /* Number active right now */
 } item_t;
 
-struct _treasure
+typedef struct treasure
 {
 	int32_t id; /* treasure id */
 	objposition_t pos;
 	bool have;		   /* true if this treasure has ball in it */
-	team_t *team;	   /* team of this treasure */
+	struct team *team; /* team of this treasure */
 	int32_t destroyed; /* number of times this treasure destroyed */
-};
+} treasure_t;
 
-struct _base
+typedef struct base
 {
 	int32_t id;
 	objposition_t pos;
 	int32_t dir;
-	team_t *team;
-};
+	struct team *team;
+} base_t;
 
-struct World_map_
+typedef struct World_map
 {
 	int32_t x, y;			 /* Size of world in blocks */
 	int32_t diagonal;		 /* Diagonal length in blocks */
@@ -130,7 +130,7 @@ struct World_map_
 
 	item_t items[NUM_ITEMS];
 
-	team_t teams[MAX_TEAMS];
+	struct team teams[MAX_TEAMS];
 
 	int32_t NumTeamBases; /* How many 'different' teams are allowed */
 	int32_t NumBases;
@@ -140,9 +140,9 @@ struct World_map_
 	int32_t NumTreasures;
 	treasure_t *treasures;
 	int32_t nextEvent;
-};
+} World_map_t;
 
-// extern World_map World;
+extern struct World_map World;
 
 /** \brief Wraps a positive or negative value to fit it within range [0; limit)
  *
@@ -219,11 +219,9 @@ DFLOAT Map_get_distance(objposition_t *p1, objposition_t *p2);
 void Map_compute_base_direction(void);
 base_t *Map_get_base_by_pos(objposition_t *pos);
 treasure_t *Map_get_treasure_by_pos(objposition_t *pos);
-team_t *Map_get_closest_team(objposition_t *pos);
+struct team *Map_get_closest_team(objposition_t *pos);
 
 void Fuelstation_add_fuel(fuel_t *fs, int32_t fuel);
 
 void Map_free(void);
 bool Map_parse(void);
-
-#endif

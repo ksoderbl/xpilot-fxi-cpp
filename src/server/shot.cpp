@@ -47,8 +47,6 @@
 #include "object.h"
 #include "rank.h"
 
-char shot_version[] = VERSION;
-
 /*
  * Functions for shots.
  */

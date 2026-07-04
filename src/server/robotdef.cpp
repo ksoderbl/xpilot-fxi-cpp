@@ -1338,9 +1338,9 @@ static void Robot_default_play(player_t *pl)
 	if (enemy_pl)
 	{
 		pl2 = enemy_pl;
-		if (!BIT(pl->lock.flags, LOCK_PLAYER) || (enemy_dist < pl->lock.distance / 2) || (enemy_dist < pl->lock.distance * 2 && BIT(World.rules->mode, TEAM_PLAY) && Player_has_property(pl2, HAS_BALL)) || ((pl->lock.object) && (pl2->score > ((player_t *)(pl->lock.object))->score)))
+		if (!BIT(pl->lock.flags, LOCK_PLAYER) || (enemy_dist < pl->lock.distance / 2) || (enemy_dist < pl->lock.distance * 2 && BIT(World.rules->mode, TEAM_PLAY) && Player_has_property(pl2, HAS_BALL)) || ((pl->lock.object_ptr) && (pl2->score > ((player_t *)(pl->lock.object_ptr))->score)))
 		{
-			pl->lock.object = pl2;
+			pl->lock.object_ptr = (void *)pl2;
 			SET_BIT(pl->lock.flags, LOCK_PLAYER);
 			pl->lock.distance = enemy_dist;
 		}
@@ -1349,7 +1349,7 @@ static void Robot_default_play(player_t *pl)
 	if (BIT(pl->lock.flags, LOCK_PLAYER))
 	{
 		int32_t delta_dir;
-		pl2 = pl->lock.object;
+		pl2 = (struct player *)(pl->lock.object_ptr);
 		delta_dir = (int32_t)(pl->dir - Map_get_discrete_angle(&pl->pos, &pl2->pos));
 		delta_dir = MOD2(delta_dir, ANGLE_RESOLUTION);
 		if (!Player_is_alive(pl2) || (BIT(my_data->robot_lock, LOCK_PLAYER) && my_data->robot_lock_pl != pl2 && Player_is_alive(my_data->robot_lock_pl)) || !Detect(pl, pl2) || ((pl->fuel.sum <= pl->fuel.l3) && (delta_dir < 3 * ANGLE_RESOLUTION / 4 || delta_dir > ANGLE_RESOLUTION / 4)) || ((BIT(World.rules->mode, TEAM_PLAY)) && pl->team == pl2->team))
@@ -1357,7 +1357,7 @@ static void Robot_default_play(player_t *pl)
 			/* unset the player lock */
 			CLR_BIT(pl->lock.flags, LOCK_PLAYER);
 			// TODO: is this a reasonable thing to do?
-			pl->lock.object = Players[0];
+			pl->lock.object_ptr = (void *)Players[0];
 			pl->lock.distance = 0;
 		}
 	}
@@ -1395,13 +1395,13 @@ static void Robot_default_play(player_t *pl)
 			}
 		}
 	}
-	if (BIT(pl->lock.flags, LOCK_PLAYER) && Detect(pl, pl->lock.object))
+	if (BIT(pl->lock.flags, LOCK_PLAYER) && Detect(pl, (player_t *)pl->lock.object_ptr))
 	{
 		int32_t shoot_time;
 		objposition_t pos;
 		clpos_t clpos;
 
-		pl2 = pl->lock.object;
+		pl2 = (player_t *)pl->lock.object_ptr;
 		shoot_time = (int32_t)(pl->lock.distance / (pl->shot_speed + 1));
 
 		/*-BA Also allow for our own momentum. */

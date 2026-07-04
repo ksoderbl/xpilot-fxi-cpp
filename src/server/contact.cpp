@@ -72,8 +72,6 @@ struct queued_player
 	int32_t last_ack_recv;
 };
 
-char contact_version[] = VERSION;
-
 /*
  * Global variables
  */
@@ -963,7 +961,7 @@ static int32_t Queue_player(char *real, char *nick, char *disp, int32_t team, ch
 	strlcpy(qp->nick_name, nick, MAX_CHARS);
 	strlcpy(qp->disp_name, disp, MAX_CHARS);
 	strlcpy(qp->host_name, host, MAX_CHARS);
-	strlcpy(qp->host_addr, addr, MAX_CHARS);
+	strlcpy(qp->host_addr, addr, 24);
 	qp->port = port;
 
 	if (team >= 0 && team < MAX_TEAMS)

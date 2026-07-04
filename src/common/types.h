@@ -1,5 +1,4 @@
 /*
- *
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -22,23 +21,11 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef TYPES_H
-#define TYPES_H
+#pragma once
 
 #include <sys/types.h>
 
-// TODO: check other archs
-#include <stdint.h>
-
-/*
- * On some systems an enum is smaller than an int.
- * On others bool is already a builtin type.
- * Using preprocessor macros to circumvent both situations.
- */
-#define false 0
-#define true 1
-
-#define bool int
+#include <cstdint>
 
 typedef float DFLOAT;
 
@@ -48,10 +35,10 @@ typedef struct
 } vector_t;
 
 typedef vector_t position_t;
+
 typedef struct
 {
 	int32_t x, y;
 } ivec_t;
-typedef ivec_t ipos_t;
 
-#endif
+typedef ivec_t ipos_t;

@@ -26,7 +26,7 @@
 #include <cstring>
 #include <cstdio>
 #include <cctype>
-#include <limits.h>
+#include <climits>
 #include <cerrno>
 #include <sys/types.h>
 
@@ -43,8 +43,6 @@
 #include "types.h"
 #include "commonproto.h"
 #include "fileparser.h"
-
-char fileparser_version[] = VERSION;
 
 static char *FileName;
 static int32_t LineNumber;

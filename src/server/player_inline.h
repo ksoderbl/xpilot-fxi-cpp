@@ -5,10 +5,14 @@
  *      Author: rotunda
  */
 
-#ifndef PLAYER_INLINE_H_
-#define PLAYER_INLINE_H_
+#pragma once
 
-static inline player_t *Player_by_id(int32_t id) {
+#include "bit.h"
+#include "global.h"
+#include "player.h"
+
+static inline player_t *Player_by_id(int32_t id)
+{
 	return Players[GetInd[id]];
 }
 
@@ -76,15 +80,14 @@ static inline void Player_lose_property(player_t *pl, uint32_t type)
 }
 
 // ==============================================================================
-static inline bool Player_is_state(player_t *pl, player_state_t state)
+static inline bool Player_is_state(player_t *pl, int32_t state)
 {
 	return BIT(pl->pl_state, state) ? true : false;
 }
 
 static inline bool Player_is_active(player_t *pl)
 {
-	return (pl->pl_state == PL_STATE_ALIVE || pl->pl_state == PL_STATE_APPEARING || pl->pl_state == PL_STATE_WAITING
-			|| pl->pl_state == PL_STATE_KILLED || pl->pl_state == PL_STATE_DEAD) ? true : false;
+	return (pl->pl_state == PL_STATE_ALIVE || pl->pl_state == PL_STATE_APPEARING || pl->pl_state == PL_STATE_WAITING || pl->pl_state == PL_STATE_KILLED || pl->pl_state == PL_STATE_DEAD) ? true : false;
 }
 
 static inline bool Player_is_uninitialized(player_t *pl)
@@ -122,24 +125,23 @@ static inline bool Player_is_paused(player_t *pl)
 	return pl->pl_state == PL_STATE_PAUSED ? true : false;
 }
 
-//static inline bool Player_is_paused(player_t *pl)
+// static inline bool Player_is_paused(player_t *pl)
 //{
 //	return pl->team->Num == PAUSE_TEAM_NUM ? true : false;
-//}
+// }
 
 // ==============================================================================
-//static inline void Player_add_score(player_t *pl, double points)
+// static inline void Player_add_score(player_t *pl, double points)
 //{
 //	Add_Score(pl, points);
 //	pl->update_scoreboard = true;
 //	updateScores = true;
 //}
 
-
-//static inline void Player_set_score(player_t *pl, double points)
+// static inline void Player_set_score(player_t *pl, double points)
 //{
 //	Score_set(pl, points);
-//}
+// }
 
 static inline void Player_set_mychar(player_t *pl, char mychar)
 {
@@ -170,8 +172,8 @@ static inline bool Player_is_tank(player_t *pl)
 // ==============================================================================
 static inline bool Player_owns_tank(player_t *pl, player_t *tank)
 {
-	if (Player_is_tank(tank) && tank->lock.object /* kps - probably redundant */
-	&& tank->lock.object == pl)
+	if (Player_is_tank(tank) && tank->lock.object_ptr /* kps - probably redundant */
+		&& tank->lock.object_ptr == pl)
 		return true;
 	return false;
 }
@@ -184,12 +186,14 @@ static inline bool Player_is_self_destructing(player_t *pl)
 
 static inline void Player_self_destruct(player_t *pl, bool on)
 {
-	if (on) {
+	if (on)
+	{
 		if (Player_is_self_destructing(pl))
 			return;
 		pl->self_destruct_count = SELF_DESTRUCT_DELAY_TICKS;
 	}
-	else {
+	else
+	{
 		pl->self_destruct_count = 0.0;
 	}
 }
@@ -213,10 +217,9 @@ static inline bool Player_is_thrusting(player_t *pl)
  */
 static inline bool Players_are_teammates(player_t *pl1, player_t *pl2)
 {
-	if (BIT(World.rules->mode, TEAM_PLAY) && pl1->team && pl1->team == pl2->team) {
+	if (BIT(World.rules->mode, TEAM_PLAY) && pl1->team && pl1->team == pl2->team)
+	{
 		return true;
 	}
 	return false;
 }
-
-#endif /* PLAYER_INLINE_H_ */

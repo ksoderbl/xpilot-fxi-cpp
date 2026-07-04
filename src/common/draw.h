@@ -1,5 +1,4 @@
 /*
- *
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -22,20 +21,9 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef DRAW_H
-#define DRAW_H
+#pragma once
 
-#ifndef TYPES_H
-/* need position */
 #include "types.h"
-#endif
-
-/*
- * Abstract (non-display system specific) drawing definitions.
- *
- * This file should not contain any X window stuff as VMS
- * does not accept this in the server.  Rightly so. :-)
- */
 
 /*
  * The server supports only 4 colors, except for spark/debris, which
@@ -47,18 +35,6 @@
 #define WHITE 1
 #define BLUE 2
 #define RED 3
-
-/*
- * Windows deals in Pens, not Colors.  So each pen has to have all of its
- * attributes defined.
- */
-#if defined(_WINDOWS) && !defined(PENS_OF_PLENTY)
-#define CLOAKCOLOROFS 15  /* colors 16 and 17 are dashed white/blue */
-#define MISSILECOLOR 18	  /* wide white pen */
-#define LASERCOLOR 19	  /* wide red pen */
-#define LASERTEAMCOLOR 20 /* wide blue pen */
-#define FUNKCOLORS 6	  /* 5 funky colors here (15-20) */
-#endif
 
 /*
  * The minimum and maximum playing window sizes supported by the server.
@@ -126,5 +102,3 @@ extern void Calculate_shield_radius(shipshape_t *w);
 extern int32_t Validate_shape_str(char *str);
 extern void Convert_ship_2_string(shipshape_t *w, char *buf, char *ext,
 								  uint32_t shape_version);
-
-#endif

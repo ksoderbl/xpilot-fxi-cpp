@@ -1,5 +1,4 @@
 /*
- *
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -22,16 +21,21 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef OBJECT_H
-#define OBJECT_H
+#pragma once
 
-#include "structs.h"
+#include <cstdint>
+
+#include "types.h"
+
 #include "serverconst.h"
 #include "keys.h"
 #include "bit.h"
 #include "draw.h"
 #include "item.h"
 #include "objpos.h"
+
+#include "map.h"
+// #include "team.h"
 
 /*
  * Different types of objects, including player.
@@ -77,21 +81,21 @@
 #define WARPING (1U << 1)
 #define WARPED (1U << 2)
 #define CONFUSED (1U << 3)
-#define FROMCANNON (1U << 4)	 /* Object from cannon */
-#define ATTACHED (1L << 5)		 /* Ball is being carried by a player */
-#define THRUSTING (1U << 6)		 /* Engine is thrusting */
-#define OWNERIMMUNE (1U << 7)	 /* Owner is immune to object */
-#define NOEXPLOSION (1U << 8)	 /* No recreate explosion */
+#define FROMCANNON (1U << 4)     /* Object from cannon */
+#define ATTACHED (1L << 5)       /* Ball is being carried by a player */
+#define THRUSTING (1U << 6)      /* Engine is thrusting */
+#define OWNERIMMUNE (1U << 7)    /* Owner is immune to object */
+#define NOEXPLOSION (1U << 8)    /* No recreate explosion */
 #define COLLISIONSHOVE (1U << 9) /* Collision counts as shove */
-#define RANDOM_ITEM (1U << 10)	 /* Item shows up as random */
-#define FROMBOUNCE (1L << 11)	 /* Spark from wall bounce */
+#define RANDOM_ITEM (1U << 10)   /* Item shows up as random */
+#define FROMBOUNCE (1L << 11)    /* Spark from wall bounce */
 
 /*
  * Some object types are overloaded.
  */
 #define OBJ_EXT_ROBOT (1U << 2)
 
-#define LOCK_NONE 0x00	  /* No lock */
+#define LOCK_NONE 0x00    /* No lock */
 #define LOCK_PLAYER 0x01  /* Locked on player */
 #define LOCK_VISIBLE 0x02 /* Lock information was on HUD */
 /* computed just before frame shown */
@@ -101,85 +105,96 @@
 #define NOT_CONNECTED (-1)
 
 #define Object_update_speed(o_)     \
-	{                               \
-		(o_)->vel.x += (o_)->acc.x; \
-		(o_)->vel.y += (o_)->acc.y; \
-	}
+    {                               \
+        (o_)->vel.x += (o_)->acc.x; \
+        (o_)->vel.y += (o_)->acc.y; \
+    }
 
-#define OBJECT_BASE                                              \
-	int8_t color; /* Color of object */                          \
-	uint8_t dir;  /* Direction of acceleration */                \
-	int32_t id;	  /* ID of the object */                         \
-	team_t *team; /* Team of player or cannon */                 \
-                                                                 \
-	objposition_t pos; /* World coordinates */                   \
-	ipos_t prevpos;	   /* Object's previous position... */       \
-	vector_t vel;                                                \
-	vector_t acc;                                                \
-	objposition_t pos_interp;                                    \
-	vector_t vel_interp;                                         \
-	vector_t acc_interp;                                         \
-                                                                 \
-	DFLOAT max_speed;                                            \
-	DFLOAT mass;                                                 \
-	uint8_t type;                                                \
-	int32_t info;		/* Miscellaneous info (e.g. wreckage) */ \
-	int32_t obj_status; /* gravity, thrusting, etc. */
+// #define OBJECT_BASE                                              \
+//     int8_t color; /* Color of object */                          \
+//     uint8_t dir;  /* Direction of acceleration */                \
+//     int32_t id;   /* ID of the object */                         \
+//     team_t *team; /* Team of player or cannon */                 \
+//                                                                  \
+//     objposition_t pos; /* World coordinates */                   \
+//     ipos_t prevpos;    /* Object's previous position... */       \
+//     vector_t vel;                                                \
+//     vector_t acc;                                                \
+//     objposition_t pos_interp;                                    \
+//     vector_t vel_interp;                                         \
+//     vector_t acc_interp;                                         \
+//                                                                  \
+//     DFLOAT max_speed;                                            \
+//     DFLOAT mass;                                                 \
+//     uint8_t type;                                                \
+//     int32_t info;       /* Miscellaneous info (e.g. wreckage) */ \
+//     int32_t obj_status; /* gravity, thrusting, etc. */
 
-struct _object
+struct player;
+struct team;
+struct treasure;
+
+typedef struct xp_object
 {
-	OBJECT_BASE
+    // OBJECT_BASE
 
-	/* up to here all object types (including players!) should be the same. */
+    int8_t color;      /* Color of object */
+    uint8_t dir;       /* Direction of acceleration */
+    int32_t id;        /* ID of the object */
+    struct team *team; /* Team of player or cannon */
 
-	/*
-	 * Number of frames left to live
-	 * NOTE: the life of sparks and debris is counted in ticks rather than frames.
-	 */
-	int32_t obj_life;
+    objposition_t pos; /* World coordinates */
+    ipos_t prevpos;    /* Object's previous position... */
+    vector_t vel;
+    vector_t acc;
+    objposition_t pos_interp;
+    vector_t vel_interp;
+    vector_t acc_interp;
 
-	object_t *cell_prev; /* previous object in cell, NULL if this object was added first */
-	object_t *cell_next; /* next object in cell, NULL if this object was added to the cell last */
+    DFLOAT max_speed;
+    DFLOAT mass;
+    uint8_t type;
+    int32_t info;       /* Miscellaneous info (e.g. wreckage) */
+    int32_t obj_status; /* gravity, thrusting, etc. */
 
-	player_t *owner;   /* Whose object is this ? */
-	int32_t pl_range;  /* distance to player for collision. */
-	int32_t pl_radius; /* distance to player for hit. */
+    // OBJECT_BASE END
 
-	/* ball-related */
-	DFLOAT length; /* Distance between ball and player */
-	DFLOAT length_interp;
-	treasure_t *treasure;	   /* Which treasure does ball belong */
-	int32_t loose_count;	   /* Number of frames since the ball was taken out of its box */
-	int32_t loose_count_ticks; /* Number of ticks since the ball was taken out of its box */
+    /* up to here all object types (including players!) should be the same. */
 
-	/* shot-, debris- and wreckage-related */
-	int32_t fuselife; /* Ticks left when considered fused */
+    /*
+     * Number of frames left to live
+     * NOTE: the life of sparks and debris is counted in ticks rather than frames.
+     */
+    int32_t obj_life;
 
-	/* wreckage-related */
-	uint8_t size;	  /* Size of object (wreckage) */
-	DFLOAT turnspeed; /* for missiles only */
-	uint8_t rotation; /* Rotation direction */
-};
+    struct xp_object *cell_prev; /* previous object in cell, NULL if this object was added first */
+    struct xp_object *cell_next; /* next object in cell, NULL if this object was added to the cell last */
 
-/*
- * Shove-information.
- *
- * This is for keeping a record of the last N times the player was shoved,
- * for assigning wall-smash-blame, where N=MAX_RECORDED_SHOVES.
- */
-#define MAX_RECORDED_SHOVES 4
+    struct player *owner; /* Whose object is this ? */
+    int32_t pl_range;     /* distance to player for collision. */
+    int32_t pl_radius;    /* distance to player for hit. */
 
-typedef struct
-{
-	player_t *pusher_pl;
-	int32_t time;
-} shove_t;
+    /* ball-related */
+    DFLOAT length; /* Distance between ball and player */
+    DFLOAT length_interp;
+    struct treasure *treasure; /* Which treasure does ball belong */
+    int32_t loose_count;       /* Number of frames since the ball was taken out of its box */
+    int32_t loose_count_ticks; /* Number of ticks since the ball was taken out of its box */
+
+    /* shot-, debris- and wreckage-related */
+    int32_t fuselife; /* Ticks left when considered fused */
+
+    /* wreckage-related */
+    uint8_t size;     /* Size of object (wreckage) */
+    DFLOAT turnspeed; /* for missiles only */
+    uint8_t rotation; /* Rotation direction */
+} object_t;
 
 struct robot_data;
 
 static inline bool Object_is_type(object_t *obj, uint8_t type)
 {
-	return (obj->type == type) ? true : false;
+    return (obj->type == type) ? true : false;
 }
 
 /** \brief Checks if object is attached. Concerns only balls for now.
@@ -188,45 +203,43 @@ static inline bool Object_is_type(object_t *obj, uint8_t type)
  */
 static inline bool Object_is_attached(object_t *obj)
 {
-	return BIT(obj->obj_status, ATTACHED) ? true : false;
+    return BIT(obj->obj_status, ATTACHED) ? true : false;
 }
 
 static inline void Object_set_attached(object_t *obj, bool mode)
 {
-	if (mode)
-	{
-		SET_BIT(obj->obj_status, ATTACHED);
-	}
-	else
-	{
-		CLR_BIT(obj->obj_status, ATTACHED);
-	}
+    if (mode)
+    {
+        SET_BIT(obj->obj_status, ATTACHED);
+    }
+    else
+    {
+        CLR_BIT(obj->obj_status, ATTACHED);
+    }
 }
 
 static inline void Object_expire(object_t *obj)
 {
-	obj->obj_life = 0;
+    obj->obj_life = 0;
 }
 
 static inline bool Object_is_expired(object_t *obj)
 {
-	return (obj->obj_life <= 0) ? true : false;
+    return (obj->obj_life <= 0) ? true : false;
 }
 
-int32_t Object_count_treasures_missing(team_t *team);
+int32_t Object_count_treasures_missing(struct team *team);
 void Objects_remove_timed_out(void);
 void Object_remove(object_t *obj);
 object_t *Object_add(void);
 void Objects_time_out(void);
 
-void Ball_treasure_add(treasure_t *t);
-void Ball_detach(player_t *pl, object_t *ball);
-void Shot_add(player_t *pl);
+void Ball_treasure_add(struct treasure *t);
+void Ball_detach(struct player *pl, object_t *ball);
+void Shot_add(struct player *pl);
 
 void Shots_allocate(int32_t number);
 void Shots_free(void);
 void Ball_move(object_t *ball);
 
 void Objects_interpolation_init(void);
-
-#endif

@@ -1,5 +1,4 @@
 /*
- *
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -49,8 +48,6 @@
 #include "robot.h"
 #include "ship.h"
 #include "update.h"
-
-char player_version[] = VERSION;
 
 player_t **Players;
 int32_t GetInd[NUM_IDS + 1];
@@ -585,7 +582,7 @@ void Player_remove(player_t *pl)
 	{
 		pl2 = Players[i];
 
-		if (BIT(pl2->lock.flags, LOCK_PLAYER | LOCK_VISIBLE) && (pl2->lock.object == pl || NumPlayers <= 1))
+		if (BIT(pl2->lock.flags, LOCK_PLAYER | LOCK_VISIBLE) && (((struct player *)pl2->lock.object_ptr) == pl || NumPlayers <= 1))
 		{
 			CLR_BIT(pl2->lock.flags, LOCK_PLAYER | LOCK_VISIBLE);
 		}
@@ -847,7 +844,7 @@ void Player_unpause(player_t *pl, team_t *team)
 void Player_swap_team(player_t *pl, team_t *team)
 {
 	int32_t i;
-	player_state_t entry_state;
+	int32_t entry_state;
 
 	ASSERT(pl && team)
 
@@ -930,7 +927,7 @@ void Player_swap_team(player_t *pl, team_t *team)
  */
 void Players_swap_teams(player_t *pl1, player_t *pl2)
 {
-	player_state_t entry_state;
+	int32_t entry_state;
 	base_t *tmp_base = pl2->home_base;
 	team_t *tmp_team = pl2->team;
 
@@ -1011,9 +1008,9 @@ void Player_set_state(player_t *pl, int state)
  * \param pl	player
  * \param team	team the player is joining
  */
-player_state_t Player_compute_entry_state(player_t *pl, team_t *team)
+int32_t Player_compute_entry_state(player_t *pl, team_t *team)
 {
-	player_state_t new_state;
+	int32_t new_state;
 	int32_t num_active;
 	int32_t num_active_on_team; /* number of active players on the destination team (including the player pl) */
 
@@ -1199,6 +1196,9 @@ bool Player_refuel_advance(player_t *pl)
 		Player_fuel_add(pl, pl->fs->fuel);
 		return false;
 	}
+
+	// Get rid of "warning: control reaches end of non-void function"
+	return false;
 }
 
 void Player_refuel_stop(player_t *pl)
@@ -1285,7 +1285,7 @@ bool Player_lock_closest(player_t *pl, bool next)
 
 	if (BIT(pl->lock.flags, LOCK_PLAYER))
 	{
-		pl_lock = pl->lock.object;
+		pl_lock = (player_t *)pl->lock.object_ptr;
 		dist = Map_get_distance(&pl->pos, &pl_lock->pos);
 	}
 	else
@@ -1318,7 +1318,7 @@ bool Player_lock_closest(player_t *pl, bool next)
 	}
 
 	SET_BIT(pl->lock.flags, LOCK_PLAYER);
-	pl->lock.object = pl_new;
+	pl->lock.object_ptr = (void *)pl_new;
 
 	return true;
 }
@@ -1327,7 +1327,7 @@ void Player_lock_next(player_t *pl, bool forwards)
 {
 	player_t *pl_tmp1, *pl_tmp2;
 
-	pl_tmp1 = pl_tmp2 = pl->lock.object;
+	pl_tmp1 = pl_tmp2 = (player_t *)pl->lock.object_ptr;
 	if (!BIT(pl->lock.flags, LOCK_PLAYER) || !pl_tmp2)
 	{
 		/* better jump to KEY_LOCK_CLOSE... */
@@ -1371,7 +1371,7 @@ void Player_lock_next(player_t *pl, bool forwards)
 	}
 	else
 	{
-		pl->lock.object = pl_tmp1;
+		pl->lock.object_ptr = (void *)pl_tmp1;
 		SET_BIT(pl->lock.flags, LOCK_PLAYER);
 	}
 }
@@ -1384,7 +1384,7 @@ bool Player_lock_is_initialized(player_t *pl)
 {
 	player_t *pl2;
 
-	if (BIT(pl->lock.flags, LOCK_PLAYER) && NumPlayers > 1 && (pl2 = pl->lock.object) && pl2 != pl)
+	if (BIT(pl->lock.flags, LOCK_PLAYER) && NumPlayers > 1 && (pl2 = (player_t *)pl->lock.object_ptr) && pl2 != pl)
 	{
 		return true;
 	}
@@ -1395,13 +1395,13 @@ bool Player_lock_is_initialized(player_t *pl)
 void Player_lock_set(player_t *pl, player_t *pl_target)
 {
 	SET_BIT(pl->lock.flags, LOCK_PLAYER);
-	pl->lock.object = pl_target;
+	pl->lock.object_ptr = pl_target;
 }
 
 void Player_lock_clear(player_t *pl)
 {
 	CLR_BIT(pl->lock.flags, LOCK_PLAYER);
-	pl->lock.object = NULL;
+	pl->lock.object_ptr = NULL;
 }
 
 void Player_change_home(player_t *pl, base_t *base)

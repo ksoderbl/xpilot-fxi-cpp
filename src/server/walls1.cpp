@@ -45,8 +45,6 @@
 #include "frame.h"
 #include "player_inline.h"
 
-char walls_version[] = VERSION;
-
 #define WALLDIST_MASK \
 	(FILLED_BIT | REC_LU_BIT | REC_LD_BIT | REC_RU_BIT | REC_RD_BIT | FUEL_BIT | TREASURE_BIT)
 

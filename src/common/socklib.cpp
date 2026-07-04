@@ -107,8 +107,6 @@
 #define cmw_priv_deassert_netaccess() /* empty */
 #endif								  /* SUNCMW */
 
-char socklib_version[] = VERSION;
-
 /* Debug macro */
 #ifdef DEBUG
 #define DEB(x) x

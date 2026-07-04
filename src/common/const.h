@@ -25,7 +25,7 @@
 #ifndef CONST_H
 #define CONST_H
 
-#include <limits.h>
+#include <climits>
 #include <cmath>
 
 #include "types.h"
@@ -124,9 +124,6 @@ extern DFLOAT tbl_cos[];
 #ifndef MOD2
 #define MOD2(x, m) ((x) & ((m) - 1))
 #endif /* MOD2 */
-
-/* Use this to remove unused parameter warning. */
-#define UNUSED_PARAM(x) x = x
 
 /* Do NOT change these! */
 #define MAX_CHECKS 26

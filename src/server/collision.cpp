@@ -49,8 +49,6 @@
 #include "ship.h"
 #include "collision.h"
 
-char collision_version[] = VERSION;
-
 /** Array containing last objects on lists storing objects belonging to block (x; y) */
 static object_t ***Cells;
 
@@ -273,7 +271,7 @@ void Collision_cells_cleanup(void)
     /* Clear the structures */
     while (!LIST_IsEmpty(UsedCells))
     {
-        cell = LIST_GetLastData(UsedCells);
+        cell = (object_t **)LIST_GetLastData(UsedCells);
         obj = *cell;
 
         if (obj)

@@ -45,8 +45,6 @@
 /*
  * Globals.
  */
-char event_version[] = VERSION;
-
 int32_t Handle_keyboard(player_t *pl)
 {
 	int32_t key;
@@ -204,20 +202,20 @@ int32_t Handle_keyboard(player_t *pl)
 			case KEY_LOAD_LOCK_3:
 			case KEY_LOAD_LOCK_4:
 			{
-				player_t *lock_pl = pl->lockbank[key - KEY_LOAD_LOCK_1];
+				player_t *lock_pl = (struct player *)pl->lockbank[key - KEY_LOAD_LOCK_1];
 
 				if (BIT(pl->pl_status, REPROGRAM))
 				{
 					if (BIT(pl->lock.flags, LOCK_PLAYER))
 					{
-						pl->lockbank[key - KEY_LOAD_LOCK_1] = pl->lock.object;
+						pl->lockbank[key - KEY_LOAD_LOCK_1] = (void *)pl->lock.object_ptr;
 					}
 				}
 				else
 				{
 					if (lock_pl != NULL && Player_lock_is_allowed(pl, lock_pl))
 					{
-						pl->lock.object = lock_pl;
+						pl->lock.object_ptr = (void *)lock_pl;
 						SET_BIT(pl->lock.flags, LOCK_PLAYER);
 					}
 				}

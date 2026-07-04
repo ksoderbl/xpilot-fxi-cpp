@@ -50,8 +50,6 @@
 
 #include "robot.h"
 
-char frame_version[] = VERSION;
-
 /*
  * Structure for calculating if a pixel is visible by a player.
  * The following always holds:
@@ -371,7 +369,7 @@ static int32_t Frame_status(connection_t *connp, player_t *pl)
 	CLR_BIT(pl->lock.flags, LOCK_VISIBLE);
 	if (BIT(pl->lock.flags, LOCK_PLAYER) && Player_uses_property(pl, USES_COMPASS))
 	{
-		lock_pl = pl->lock.object;
+		lock_pl = (struct player *)pl->lock.object_ptr;
 
 		if (Player_is_alive(lock_pl) && (playersOnRadar || inview(&lock_pl->pos)) && pl->lock.distance != 0)
 		{
@@ -701,7 +699,7 @@ static void Frame_radar(connection_t *connp, player_t *pl)
 				y = pl2->pos_interp.y;
 			}
 
-			if (Player_uses_property(pl, USES_COMPASS) && BIT(pl->lock.flags, LOCK_PLAYER) && pl->lock.object == pl2 && ((frame_loops / frameDivisor) % 5 >= 3))
+			if (Player_uses_property(pl, USES_COMPASS) && BIT(pl->lock.flags, LOCK_PLAYER) && pl->lock.object_ptr == (void *)pl2 && ((frame_loops / frameDivisor) % 5 >= 3))
 			{
 				continue;
 			}
@@ -847,7 +845,7 @@ void Frame_update(void)
 			if (Player_is_recovered(pl) &&
 				(Player_is_waiting(pl) || Player_is_dead(pl) || Player_is_paused(pl)))
 			{
-				pl2 = pl->lock.object;
+				pl2 = (player_t *)pl->lock.object_ptr;
 			}
 			else
 			{

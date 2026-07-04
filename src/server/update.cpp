@@ -1,5 +1,4 @@
 /*
- *
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -46,8 +45,7 @@
 #include "ship.h"
 #include "collision.h"
 #include "update.h"
-
-char update_version[] = VERSION;
+#include "team.h"
 
 bool limitedRoundsGameOver = false;
 
@@ -396,7 +394,7 @@ void Update_players(void)
 			player_t *pl = Players[i];
 			if (BIT(pl->lock.flags, LOCK_PLAYER))
 			{
-				pl->lock.distance = Map_get_distance(&((player_t *)pl->lock.object)->pos, &pl->pos);
+				pl->lock.distance = Map_get_distance(&((player_t *)pl->lock.object_ptr)->pos, &pl->pos);
 			}
 		}
 	}

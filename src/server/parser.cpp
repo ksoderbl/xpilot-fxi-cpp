@@ -43,8 +43,6 @@
 #include "parser.h"
 #include "map.h"
 
-char parser_version[] = VERSION;
-
 /*
  * Print the option list in "-help" format.
  * NT uses this to generate the ServerOpts.txt file
@@ -301,7 +299,7 @@ int32_t Parser_list_option(int32_t *index, char *buf)
 			for (iter = LIST_GetFirstItem(list); iter != LIST_GetLastItem(list); LI_FORWARD(
 					 iter))
 			{
-				char *str = LI_DATA(iter);
+				char *str = (char *)LI_DATA(iter);
 				if (iter != LIST_GetFirstItem(list))
 				{
 					strlcat(buf, ",", MSG_LEN);

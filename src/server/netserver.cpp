@@ -1,5 +1,4 @@
 /*
- *
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -134,11 +133,10 @@
 #include "player_inline.h"
 #include "robot.h"
 #include "metaserver.h"
+#include "team.h"
 
 #define MAX_SELECT_FD (sizeof(int32_t) * 8 - 1)
 #define MAX_RELIABLE_DATA_PACKET_SIZE 1024
-
-char netserver_version[] = VERSION;
 
 connection_t *Conn = NULL;
 static int32_t max_connections = 0;
@@ -947,7 +945,7 @@ static bool Handle_login(connection_t *connp)
 	player_t *pl;
 	bool result = false;
 	int32_t i, conn_bit;
-	player_state_t entry_state;
+	int32_t entry_state;
 
 	if (NumPlayers >= World.NumBases + MAX_PAUSED_PLAYERS)
 	{
@@ -1754,7 +1752,7 @@ int32_t Send_end_of_frame(connection_t *connp)
  * @param pl	player
  * @param attr	requested attribute(s)
  */
-void Send_info(connection_t *connp, player_t *pl, pl_send_t attr)
+void Send_info(connection_t *connp, player_t *pl, int32_t attr)
 {
 	if (BIT(attr, PL_SEND_GENERAL))
 	{
@@ -1775,7 +1773,7 @@ void Send_info(connection_t *connp, player_t *pl, pl_send_t attr)
 /*
  * Tell human player about himself.
  */
-void Send_info_about_myself(player_t *pl, pl_send_t attr)
+void Send_info_about_myself(player_t *pl, int32_t attr)
 {
 	ASSERT(pl->connp)
 	Send_info(pl->connp, pl, attr);
@@ -1784,7 +1782,7 @@ void Send_info_about_myself(player_t *pl, pl_send_t attr)
 /*
  * Tell a human player about others.
  */
-void Send_info_about_others(player_t *pl, pl_send_t attr)
+void Send_info_about_others(player_t *pl, int32_t attr)
 {
 	int32_t i;
 	player_t *pl2;
@@ -1807,7 +1805,7 @@ void Send_info_about_others(player_t *pl, pl_send_t attr)
 	}
 }
 
-void Send_info_about_player(player_t *pl, pl_send_t attr)
+void Send_info_about_player(player_t *pl, int32_t attr)
 {
 	int32_t i;
 	player_t *pl2;

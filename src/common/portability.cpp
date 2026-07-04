@@ -45,8 +45,6 @@
 #include "config.h"
 #include "portability.h"
 
-char portability_version[] = VERSION;
-
 int32_t Get_process_id(void)
 {
 	return getpid();

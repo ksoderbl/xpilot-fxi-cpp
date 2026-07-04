@@ -43,8 +43,6 @@
 #include "debug.h"
 #include "objpos.h"
 
-char map_version[] = VERSION;
-
 /*
  * Globals.
  */

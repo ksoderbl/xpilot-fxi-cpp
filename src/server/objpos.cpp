@@ -34,8 +34,6 @@
 #include "objpos.h"
 #include "map.h"
 
-char objpos_version[] = VERSION;
-
 void Position_copy(objposition_t *dstpos, objposition_t *srcpos)
 {
 	memcpy(dstpos, srcpos, sizeof(objposition_t));

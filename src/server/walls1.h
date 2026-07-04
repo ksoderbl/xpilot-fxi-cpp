@@ -22,12 +22,11 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef WALLS_H
-#define WALLS_H
+#pragma once
 
-extern char walls_version[];
-
+#include "object.h"
 #include "objpos.h"
+#include "player.h"
 
 /*
  * Wall collision detection and bouncing.
@@ -73,8 +72,8 @@ typedef struct
 {
 	int32_t wall_bounce;
 	int32_t treasure_crashes;
-	object_t *obj;
-	player_t *pl;
+	struct xp_object *obj;
+	struct player *pl;
 } move_info_t;
 
 typedef struct
@@ -87,7 +86,7 @@ typedef struct
 	clvec_t todo;
 	clvec_t done;
 	int32_t dir;
-	treasure_t *treasure;
+	struct treasure *treasure;
 } move_state_t;
 
 struct move_parameters
@@ -96,16 +95,17 @@ struct move_parameters
 	uint32_t obj_treasure_mask; /* objects treasure crash? */
 };
 
-void Walls_init(void);
+struct xp_object;
+struct player;
 
-void Move_init(void);
+extern void Walls_init(void);
 
-void Move_object(object_t *obj);
-void Move_player(player_t *pl);
+extern void Move_init(void);
 
-void Turn_player(player_t *pl);
-void Turn_player_old(player_t *pl);
+extern void Move_object(struct xp_object *obj);
+extern void Move_player(struct player *pl);
 
-void Collision_object_wall_check(move_state_t *ms);
+extern void Turn_player(struct player *pl);
+extern void Turn_player_old(struct player *pl);
 
-#endif
+extern void Collision_object_wall_check(move_state_t *ms);

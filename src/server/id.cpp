@@ -32,8 +32,6 @@
 #include "proto.h"
 #include "xperror.h"
 
-char id_version[] = VERSION;
-
 static int32_t ID_queue[NUM_IDS];
 static int32_t ID_inuse[NUM_IDS + 1];
 static int32_t ID_inited = 0;

@@ -42,8 +42,6 @@
 #include "map.h"
 #include "player_inline.h"
 
-char ship_version[] = VERSION;
-
 void Player_thrust(player_t *pl)
 {
 	const int32_t min_dir = (int32_t)(pl->dir + ANGLE_RESOLUTION / 2 - ANGLE_RESOLUTION * 0.2 - 1);

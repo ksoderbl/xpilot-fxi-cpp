@@ -87,8 +87,6 @@
 #define CONTACTADDRESS "xpilot@xpilot.org"
 #endif
 
-char xpconfig_version[] = VERSION;
-
 char *Conf_contactaddress(void);
 char *Conf_datadir(void);
 char *Conf_defaults_file_name(void);

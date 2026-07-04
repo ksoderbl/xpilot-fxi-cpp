@@ -41,8 +41,6 @@
 #include "list.h"
 #include "map.h"
 
-char cmdline_version[] = VERSION;
-
 TList expandList;  /* List of predefined settings. */
 DFLOAT ShipMass;   /* Default mass of ship */
 DFLOAT ballMass;   /* Default mass of balls */

@@ -30,8 +30,6 @@
 #endif
 #endif
 
-char error_version[] = VERSION;
-
 /*
  * This file defines two entry points:
  *
@@ -48,11 +46,11 @@ static char progname[MAX_PROG_LENGTH];
 
 static const char *prog_basename(const char *prog)
 {
-	const char *p;
+    const char *p;
 
-	p = strrchr(prog, '/');
+    p = strrchr(prog, '/');
 
-	return (p != NULL) ? (p + 1) : prog;
+    return (p != NULL) ? (p + 1) : prog;
 }
 
 /*
@@ -60,191 +58,96 @@ static const char *prog_basename(const char *prog)
  */
 void init_error(const char *prog)
 {
-	const char *p = prog_basename(prog); /* Beautify arv[0] */
+    const char *p = prog_basename(prog); /* Beautify arv[0] */
 
-	strlcpy(progname, p, MAX_PROG_LENGTH);
+    strlcpy(progname, p, MAX_PROG_LENGTH);
 }
 
-#if HAVE_STDARG
 /*
  * Ok, let's do it the ANSI C way.
  */
 void error(const char *fmt, ...)
 {
-	va_list ap;
-	int32_t e = errno;
+    va_list ap;
+    int32_t e = errno;
 
-	va_start(ap, fmt);
+    va_start(ap, fmt);
 
-	if (progname[0] != '\0')
-	{
-		fprintf(stderr, "%s: ", progname);
-	}
+    if (progname[0] != '\0')
+    {
+        fprintf(stderr, "%s: ", progname);
+    }
 
-	vfprintf(stderr, fmt, ap);
+    vfprintf(stderr, fmt, ap);
 
-	if (e != 0)
-	{
-		fprintf(stderr, ": (%s)", strerror(e));
-	}
-	fprintf(stderr, "\n");
+    if (e != 0)
+    {
+        fprintf(stderr, ": (%s)", strerror(e));
+    }
+    fprintf(stderr, "\n");
 
-	va_end(ap);
+    va_end(ap);
 }
 
 void warn(const char *fmt, ...)
 {
-	int32_t len;
-	va_list ap;
+    int32_t len;
+    va_list ap;
 
-	va_start(ap, fmt);
+    va_start(ap, fmt);
 
-	if (progname[0] != '\0')
-	{
-		fprintf(stderr, "%s: ", progname);
-	}
+    if (progname[0] != '\0')
+    {
+        fprintf(stderr, "%s: ", progname);
+    }
 
-	vfprintf(stderr, fmt, ap);
+    vfprintf(stderr, fmt, ap);
 
-	len = strlen(fmt);
-	if (len == 0 || fmt[len - 1] != '\n')
-	{
-		fprintf(stderr, "\n");
-	}
+    len = strlen(fmt);
+    if (len == 0 || fmt[len - 1] != '\n')
+    {
+        fprintf(stderr, "\n");
+    }
 
-	va_end(ap);
+    va_end(ap);
 }
 
 void fatal(const char *fmt, ...)
 {
-	va_list ap;
+    va_list ap;
 
-	va_start(ap, fmt);
+    va_start(ap, fmt);
 
-	if (progname[0] != '\0')
-	{
-		fprintf(stderr, "%s: ", progname);
-	}
+    if (progname[0] != '\0')
+    {
+        fprintf(stderr, "%s: ", progname);
+    }
 
-	vfprintf(stderr, fmt, ap);
+    vfprintf(stderr, fmt, ap);
 
-	fprintf(stderr, "\n");
+    fprintf(stderr, "\n");
 
-	va_end(ap);
+    va_end(ap);
 
-	exit(1);
+    exit(1);
 }
 
 void dumpcore(const char *fmt, ...)
 {
-	va_list ap;
+    va_list ap;
 
-	va_start(ap, fmt);
+    va_start(ap, fmt);
 
-	if (progname[0] != '\0')
-	{
-		fprintf(stderr, "%s: ", progname);
-	}
+    if (progname[0] != '\0')
+    {
+        fprintf(stderr, "%s: ", progname);
+    }
 
-	vfprintf(stderr, fmt, ap);
+    vfprintf(stderr, fmt, ap);
 
-	fprintf(stderr, "\n");
+    fprintf(stderr, "\n");
 
-	va_end(ap);
+    va_end(ap);
 
-	abort();
+    abort();
 }
-
-#endif
-
-#if HAVE_VARARG
-/*
- * Hm, we'd better stick to the K&R way.
- */
-void error(va_alist)
-	va_dcl
-{
-	va_list args;
-	int32_t e = errno; /* Store errno */
-	extern int32_t sys_nerr;
-	extern char *sys_errlist[];
-	char *fmt;
-
-	va_start(args);
-
-	if (progname[0] != '\0')
-		fprintf(stderr, "%s: ", progname);
-
-	fmt = va_arg(args, char *);
-	(void)vfprintf(stderr, fmt, args);
-
-	if (e > 0 && e < sys_nerr)
-		fprintf(stderr, " (%s)", sys_errlist[e]);
-
-	fprintf(stderr, "\n");
-
-	va_end(args);
-}
-
-void warn(va_alist)
-	va_dcl
-{
-	va_list args;
-	char *fmt;
-
-	va_start(args);
-
-	if (progname[0] != '\0')
-		fprintf(stderr, "%s: ", progname);
-
-	fmt = va_arg(args, char *);
-	(void)vfprintf(stderr, fmt, args);
-
-	fprintf(stderr, "\n");
-
-	va_end(args);
-}
-
-void fatal(va_alist)
-	va_dcl
-{
-	va_list args;
-	char *fmt;
-
-	va_start(args);
-
-	if (progname[0] != '\0')
-		fprintf(stderr, "%s: ", progname);
-
-	fmt = va_arg(args, char *);
-	(void)vfprintf(stderr, fmt, args);
-
-	fprintf(stderr, "\n");
-
-	va_end(args);
-
-	exit(1);
-}
-
-void dumpcore(va_alist)
-	va_dcl
-{
-	va_list args;
-	char *fmt;
-
-	va_start(args);
-
-	if (progname[0] != '\0')
-		fprintf(stderr, "%s: ", progname);
-
-	fmt = va_arg(args, char *);
-	(void)vfprintf(stderr, fmt, args);
-
-	fprintf(stderr, "\n");
-
-	va_end(args);
-
-	abort();
-}
-
-#endif

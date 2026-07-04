@@ -1,5 +1,4 @@
 /*
- *
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -22,10 +21,9 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef OBJPOS_H
-#define OBJPOS_H
+#pragma once
 
-#include "structs.h"
+#include <cstdint>
 
 /*
  * The wall collision detection routines depend on repeatability
@@ -69,12 +67,12 @@ typedef struct
  *
  * NB: position in pixels used to be a float.
  */
-struct _objposition
+typedef struct
 {
 	int32_t x, y;	/* object position in pixels. */
 	int32_t cx, cy; /* object position in clicks. */
 	int32_t bx, by; /* object position in blocks. */
-};
+} objposition_t;
 
 #define OBJ_X_IN_CLICKS(obj) ((obj)->pos.cx)
 #define OBJ_Y_IN_CLICKS(obj) ((obj)->pos.cy)
@@ -116,10 +114,8 @@ static inline void Position_simple_add(clpos_t *clpos, int32_t delta_cx, int32_t
 	clpos->cy += delta_cy;
 }
 
-void Player_position_debug(player_t *pl, const char *msg);
-void Player_position_restore(player_t *pl);
+// void Player_position_debug(player_t *pl, const char *msg);
+// void Player_position_restore(player_t *pl);
 
 void Position_copy(objposition_t *dstpos, objposition_t *srcpos);
 void Position_set(objposition_t *pos, clpos_t *clpos);
-
-#endif

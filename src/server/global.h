@@ -1,5 +1,4 @@
 /*
- *
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -22,13 +21,16 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef GLOBAL_H
-#define GLOBAL_H
+#pragma once
+
+#include <cstdint>
 
 #include "serverconst.h"
 #include "list.h"
-#include "structs.h"
-// #include "map.h"
+
+#include "object.h"
+#include "player.h"
+#include "map.h"
 
 #ifndef MAX
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
@@ -48,7 +50,7 @@ typedef struct
  */
 
 /* from map.c */
-extern World_map World;
+extern struct World_map World;
 
 /* from player.c */
 extern player_t **Players;
@@ -57,7 +59,7 @@ extern int32_t NumPaused;
 extern int32_t GetInd[NUM_IDS + 1];
 
 /* from object.c */
-extern object_t *Obj[];
+extern struct xp_object *Obj[];
 extern int32_t NumObjs;
 
 /* from player.c */
@@ -202,5 +204,3 @@ extern float ticksPerFrame;
 extern double realTimeStep;
 extern double gameSpeed;
 extern int32_t frame_cycle;
-
-#endif /* GLOBAL_H */

@@ -43,8 +43,6 @@
 #include "server.h"
 #include "portability.h"
 
-char sched_version[] = VERSION;
-
 int32_t sched_running = false;
 
 volatile int32_t timer_ticks; /* SIGALRMs that have occurred */

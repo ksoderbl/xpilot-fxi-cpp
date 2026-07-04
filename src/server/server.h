@@ -2,10 +2,10 @@
  *
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-98 by
  *
- *      Bjørn Stabell        <bjoern@xpilot.org>
- *      Ken Ronny Schouten   <ken@xpilot.org>
- *      Bert Gijsbers        <bert@xpilot.org>
- *      Dick Balaska         <dick@xpilot.org>
+ *      Bjørn Stabell
+ *      Ken Ronny Schouten
+ *      Bert Gijsbers
+ *      Dick Balaska
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@
 
 static inline double timeval_to_seconds(struct timeval tv)
 {
-	return (double) tv.tv_sec + tv.tv_usec * 1e-6;
+	return (double)tv.tv_sec + tv.tv_usec * 1e-6;
 }
 
 void Main_loop(int32_t argv);

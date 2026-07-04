@@ -2,10 +2,10 @@
  *
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-98 by
  *
- *      Bjørn Stabell        <bjoern@xpilot.org>
- *      Ken Ronny Schouten   <ken@xpilot.org>
- *      Bert Gijsbers        <bert@xpilot.org>
- *      Dick Balaska         <dick@xpilot.org>
+ *      Bjørn Stabell
+ *      Ken Ronny Schouten
+ *      Bert Gijsbers
+ *      Dick Balaska
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
 #undef max
 #undef min
 
-#define	strncasecmp(__a, __b, __c)	strnicmp(__a, __b, __c)
+#define strncasecmp(__a, __b, __c) strnicmp(__a, __b, __c)
 
 #endif /* _WINDOWS */
 
@@ -40,29 +40,29 @@
  * Portability fixes for Sony NeWS.
  */
 #ifdef sony_news
-#define setvbuf(A,B,C,D)	setlinebuf(A)
+#define setvbuf(A, B, C, D) setlinebuf(A)
 
 typedef uint32_t sigset_t;
 
-#define sigemptyset(set)        (*(set) = 0)
-#define sigfillset(set)         (*(set) = ~(sigset_t)0, 0)
-#define sigaddset(set,signo)    (*(set) |= sigmask(signo), 0)
-#define sigdelset(set,signo)    (*(set) &= ~sigmask(signo), 0)
-#define sigismember(set,signo)  ((*(set) & sigmask(signo)) != 0)
+#define sigemptyset(set) (*(set) = 0)
+#define sigfillset(set) (*(set) = ~(sigset_t)0, 0)
+#define sigaddset(set, signo) (*(set) |= sigmask(signo), 0)
+#define sigdelset(set, signo) (*(set) &= ~sigmask(signo), 0)
+#define sigismember(set, signo) ((*(set) & sigmask(signo)) != 0)
 
-#define SIG_BLOCK		1
-#define SIG_UNBLOCK		2
-#define SIG_SETMASK		3
+#define SIG_BLOCK 1
+#define SIG_UNBLOCK 2
+#define SIG_SETMASK 3
 
 extern int32_t sigprocmask(int32_t how, const sigset_t *set, sigset_t *oset);
 
 /*
  * Sony NEWS doesn't have sigaction(), using sigvec() instead.
  */
-#define sigaction	sigvec
-#define sa_handler	sv_handler
-#define sa_mask		sv_mask
-#define sa_flags	sv_flags
+#define sigaction sigvec
+#define sa_handler sv_handler
+#define sa_mask sv_mask
+#define sa_flags sv_flags
 
 #endif
 
@@ -78,24 +78,26 @@ extern int32_t sigprocmask(int32_t how, const sigset_t *set, sigset_t *oset);
  * In Windows, just exiting won't tell the user the reason.
  * So, try to gracefully shutdown just the server thread
  */
-#ifdef	_WINDOWS
+#ifdef _WINDOWS
 extern int32_t ServerKilled;
-#define	ServerExit() ServerKilled = TRUE; return;
+#define ServerExit()     \
+    ServerKilled = TRUE; \
+    return;
 #else
-#define	ServerExit() exit(1);
+#define ServerExit() exit(1);
 #endif
 
 /*
  * Macros to block out Windows only code (and never Windows code)
  */
-#ifdef	_WINDOWS
-#define IFWINDOWS(x)	x
+#ifdef _WINDOWS
+#define IFWINDOWS(x) x
 #else
 #define IFWINDOWS(x)
 #endif
 
-#ifndef	_WINDOWS
-#define IFNWINDOWS(x)	x
+#ifndef _WINDOWS
+#define IFNWINDOWS(x) x
 #else
 #define IFNWINDOWS(x)
 #endif

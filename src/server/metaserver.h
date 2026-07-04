@@ -2,10 +2,10 @@
  *
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-98 by
  *
- *      Bjørn Stabell        <bjoern@xpilot.org>
- *      Ken Ronny Schouten   <ken@xpilot.org>
- *      Bert Gijsbers        <bert@xpilot.org>
- *      Dick Balaska         <dick@xpilot.org>
+ *      Bjørn Stabell
+ *      Ken Ronny Schouten
+ *      Bert Gijsbers
+ *      Dick Balaska
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,14 +22,14 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef	METASERVER_H
-#define	METASERVER_H
+#ifndef METASERVER_H
+#define METASERVER_H
 
-#define META_PORT	5500
-#define META_HOST	"meta.xpilot.org"
-#define META_HOST_TWO	"meta2.xpilot.org"
-#define META_IP		"64.235.48.198"
-#define META_IP_TWO	"64.235.48.198"
+#define META_PORT 5500
+#define META_HOST "meta.xpilot.org"
+#define META_HOST_TWO "meta2.xpilot.org"
+#define META_IP "64.235.48.198"
+#define META_IP_TWO "64.235.48.198"
 
 extern double meta_update_count;
 

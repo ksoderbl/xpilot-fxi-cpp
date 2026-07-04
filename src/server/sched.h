@@ -2,10 +2,10 @@
  *
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-98 by
  *
- *      Bjørn Stabell        <bjoern@xpilot.org>
- *      Ken Ronny Schouten   <ken@xpilot.org>
- *      Bert Gijsbers        <bert@xpilot.org>
- *      Dick Balaska         <dick@xpilot.org>
+ *      Bjørn Stabell
+ *      Ken Ronny Schouten
+ *      Bert Gijsbers
+ *      Dick Balaska
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,15 +22,15 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef	SCHED_H
-#define	SCHED_H
+#ifndef SCHED_H
+#define SCHED_H
 
 void block_timer(void);
 void allow_timer(void);
 void setup_timer(int32_t);
-void install_timeout(void(*func)(void *), int32_t offset, void *arg);
-void remove_timeout(void(*func)(void *), void *arg);
-void install_input(void(*func)(int32_t, void *), int32_t fd, void *arg);
+void install_timeout(void (*func)(void *), int32_t offset, void *arg);
+void remove_timeout(void (*func)(void *), void *arg);
+void install_input(void (*func)(int32_t, void *), int32_t fd, void *arg);
 void remove_input(int32_t fd);
 void sched(void);
 void stop_sched(void);

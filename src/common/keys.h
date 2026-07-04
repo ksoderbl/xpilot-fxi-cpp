@@ -2,10 +2,10 @@
  *
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-98 by
  *
- *      Bjørn Stabell        <bjoern@xpilot.org>
- *      Ken Ronny Schouten   <ken@xpilot.org>
- *      Bert Gijsbers        <bert@xpilot.org>
- *      Dick Balaska         <dick@xpilot.org>
+ *      Bjørn Stabell
+ *      Ken Ronny Schouten
+ *      Bert Gijsbers
+ *      Dick Balaska
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,8 @@
  * NB, if you add your own keys then please use the last ones first,
  * so that they don't clash with our future keys.
  */
-typedef enum {
+typedef enum
+{
 	KEY_DUMMY, /* 0 */
 	KEY_LOCK_NEXT,
 	KEY_LOCK_PREV,
@@ -43,7 +44,7 @@ typedef enum {
 	KEY_FIRE_MISSILE,
 	KEY_FIRE_TORPEDO,
 	KEY_TOGGLE_NUCLEAR, /* Was KEY_FIRE_NUKE */
-	KEY_FIRE_HEAT, /* 10 */
+	KEY_FIRE_HEAT,		/* 10 */
 	KEY_DROP_MINE,
 	KEY_DETACH_MINE,
 	KEY_TURN_LEFT,
@@ -86,7 +87,7 @@ typedef enum {
 	KEY_LOAD_MODIFIERS_3, /* 50 */
 	KEY_LOAD_MODIFIERS_4,
 	KEY_SELECT_ITEM, /* Was KEY_TOGGLE_OWNED_ITEMS up to 3.2.5 */
-	KEY_PHASING, /* Was KEY_TOGGLE_MESSAGES up to 3.2.5 */
+	KEY_PHASING,	 /* Was KEY_TOGGLE_MESSAGES up to 3.2.5 */
 	KEY_REPAIR,
 	KEY_TOGGLE_IMPLOSION,
 	KEY_REPROGRAM,

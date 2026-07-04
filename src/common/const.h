@@ -2,10 +2,10 @@
  *
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-98 by
  *
- *      Bjørn Stabell        <bjoern@xpilot.org>
- *      Ken Ronny Schouten   <ken@xpilot.org>
- *      Bert Gijsbers        <bert@xpilot.org>
- *      Dick Balaska         <dick@xpilot.org>
+ *      Bjørn Stabell
+ *      Ken Ronny Schouten
+ *      Bert Gijsbers
+ *      Dick Balaska
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
  */
 
 #ifndef CONST_H
-#define	CONST_H
+#define CONST_H
 
 #include <limits.h>
 #include <math.h>
@@ -34,26 +34,26 @@
  * FLT_MAX and RAND_MAX is ANSI C standard, but some systems (BSD) use
  * MAXFLOAT and INT_MAX instead.
  */
-#ifndef	FLT_MAX
-#   if defined(__sgi) || defined(__FreeBSD__)
-#       include <float.h>	/* FLT_MAX for SGI Personal Iris or FreeBSD */
-#   else
-#	if defined(__sun__)
-#           include <values.h>	/* MAXFLOAT for suns */
-#	endif
-#	ifdef VMS
-#	    include <float.h>
-#	endif
-#   endif
-#   if !defined(FLT_MAX)
-#	if defined(MAXFLOAT)
-#	    define FLT_MAX	MAXFLOAT
-#	else
-#	    define FLT_MAX	1e30f	/* should suffice :-) */
-#	endif
-#   endif
+#ifndef FLT_MAX
+#if defined(__sgi) || defined(__FreeBSD__)
+#include <float.h> /* FLT_MAX for SGI Personal Iris or FreeBSD */
+#else
+#if defined(__sun__)
+#include <values.h> /* MAXFLOAT for suns */
 #endif
-#ifndef	RAND_MAX
+#ifdef VMS
+#include <float.h>
+#endif
+#endif
+#if !defined(FLT_MAX)
+#if defined(MAXFLOAT)
+#define FLT_MAX MAXFLOAT
+#else
+#define FLT_MAX 1e30f /* should suffice :-) */
+#endif
+#endif
+#endif
+#ifndef RAND_MAX
 /*
  * Ough!  If this is possible then we shouldn't be using RAND_MAX!
  * Older systems which don't have RAND_MAX likely should have it
@@ -61,123 +61,123 @@
  * We better get our own pseudo-random library to overcome this mess
  * and get a uniform solution for everything.
  */
-#   define  RAND_MAX	INT_MAX
+#define RAND_MAX INT_MAX
 #endif
 
 /* Not everyone has PI (or M_PI defined). */
-#ifndef	M_PI
-#   define PI		3.14159265358979323846
+#ifndef M_PI
+#define PI 3.14159265358979323846
 #else
-#   define PI		M_PI
+#define PI M_PI
 #endif
 
 /* Not everyone has LINE_MAX either, *sigh* */
 #ifdef VMS
-#   undef LINE_MAX
+#undef LINE_MAX
 #endif
 #ifndef LINE_MAX
-#   define LINE_MAX 2048
+#define LINE_MAX 2048
 #endif
 
-#define ANGLE_RESOLUTION		128
+#define ANGLE_RESOLUTION 128
 
-#define BLOCK_SZ	35
+#define BLOCK_SZ 35
 
-#define TABLE_SIZE	ANGLE_RESOLUTION
+#define TABLE_SIZE ANGLE_RESOLUTION
 
 extern DFLOAT tbl_sin[];
 extern DFLOAT tbl_cos[];
 
 #if 0
 /* The way it was: one table, and always range checking. */
-# define tsin(x)	(tbl_sin[MOD2(x, TABLE_SIZE)])
-# define tcos(x)	(tbl_sin[MOD2((x)+TABLE_SIZE/4, TABLE_SIZE)])
+#define tsin(x) (tbl_sin[MOD2(x, TABLE_SIZE)])
+#define tcos(x) (tbl_sin[MOD2((x) + TABLE_SIZE / 4, TABLE_SIZE)])
 #else
-# if 0
+#if 0
 /* Range checking: find out where the table size is exceeded. */
-#  define CHK2(x, m)	((MOD2(x, m) != x) ? (printf("MOD %s:%d:%s\n", __FILE__, __LINE__, #x), MOD2(x, m)) : (x))
-# else
+#define CHK2(x, m) ((MOD2(x, m) != x) ? (printf("MOD %s:%d:%s\n", __FILE__, __LINE__, #x), MOD2(x, m)) : (x))
+#else
 /* No range checking. */
-#  define CHK2(x, m)	(x)
-# endif
+#define CHK2(x, m) (x)
+#endif
 /* New table lookup with optional range checking and no extra calculations. */
-# define tsin(x)	(tbl_sin[CHK2(x, TABLE_SIZE)])
-# define tcos(x)	(tbl_cos[CHK2(x, TABLE_SIZE)])
+#define tsin(x) (tbl_sin[CHK2(x, TABLE_SIZE)])
+#define tcos(x) (tbl_cos[CHK2(x, TABLE_SIZE)])
 #endif
 
-#define NELEM(a)	((int32_t)(sizeof(a) / sizeof((a)[0])))
+#define NELEM(a) ((int32_t)(sizeof(a) / sizeof((a)[0])))
 
 #undef ABS
-#define ABS(x)			( (x)<0 ? -(x) : (x) )
+#define ABS(x) ((x) < 0 ? -(x) : (x))
 #ifndef MAX
-#   define MIN(x, y)		( (x)>(y) ? (y) : (x) )
-#   define MAX(x, y)		( (x)>(y) ? (x) : (y) )
+#define MIN(x, y) ((x) > (y) ? (y) : (x))
+#define MAX(x, y) ((x) > (y) ? (x) : (y))
 #endif
 
-#define sqr(x)			( (x)*(x) )
-#define DELTA(a, b)		(((a) >= (b)) ? ((a) - (b)) : ((b) - (a)))
-#define LENGTH(x, y)		( hypot( (double) (x), (double) (y) ) )
-#define VECTOR_LENGTH(v)	( hypot( (double) (v).x, (double) (v).y ) )
-#define QUICK_LENGTH(x,y)	( ABS(x)+ABS(y) ) /*-BA Only approx, but v. quick */
-#define LIMIT(val, lo, hi)	( val=(val)>(hi)?(hi):((val)<(lo)?(lo):(val)) )
+#define sqr(x) ((x) * (x))
+#define DELTA(a, b) (((a) >= (b)) ? ((a) - (b)) : ((b) - (a)))
+#define LENGTH(x, y) (hypot((double)(x), (double)(y)))
+#define VECTOR_LENGTH(v) (hypot((double)(v).x, (double)(v).y))
+#define QUICK_LENGTH(x, y) (ABS(x) + ABS(y)) /*-BA Only approx, but v. quick */
+#define LIMIT(val, lo, hi) (val = (val) > (hi) ? (hi) : ((val) < (lo) ? (lo) : (val)))
 
 #ifndef MOD2
-#  define MOD2(x, m)		( (x) & ((m) - 1) )
-#endif	/* MOD2 */
+#define MOD2(x, m) ((x) & ((m) - 1))
+#endif /* MOD2 */
 
 /* Use this to remove unused parameter warning. */
 #define UNUSED_PARAM(x) x = x
 
 /* Do NOT change these! */
-#define MAX_CHECKS		26
+#define MAX_CHECKS 26
 
-#define MAX_TEAMS		10
-#define PAUSE_TEAM_NUM		0
+#define MAX_TEAMS 10
+#define PAUSE_TEAM_NUM 0
 
-#define EXPIRED_MINE_ID		4096   /* assume no player has this id */
+#define EXPIRED_MINE_ID 4096 /* assume no player has this id */
 
-#define MAX_CHARS		80
-#define MSG_LEN			256
+#define MAX_CHARS 80
+#define MSG_LEN 256
 
-#define FONT_LEN		256
+#define FONT_LEN 256
 
-#define NUM_MODBANKS		4
+#define NUM_MODBANKS 4
 
-#define SPEED_LIMIT		65.0
-#define MAX_PLAYER_TURNSPEED	64.0
-#define MIN_PLAYER_TURNSPEED	0.1
-#define MAX_PLAYER_POWER	55.0
-#define MIN_PLAYER_POWER	5.0
-#define MAX_PLAYER_TURNRESISTANCE	1.0
-#define MIN_PLAYER_TURNRESISTANCE	0.0
+#define SPEED_LIMIT 65.0
+#define MAX_PLAYER_TURNSPEED 64.0
+#define MIN_PLAYER_TURNSPEED 0.1
+#define MAX_PLAYER_POWER 55.0
+#define MIN_PLAYER_POWER 5.0
+#define MAX_PLAYER_TURNRESISTANCE 1.0
+#define MIN_PLAYER_TURNRESISTANCE 0.0
 
-#define FUEL_SCALE_BITS         8
-#define FUEL_SCALE_FACT         (1<<FUEL_SCALE_BITS)
-#define FUEL_MASS(f)            ((f)*0.005/FUEL_SCALE_FACT)
-#define MAX_STATION_FUEL	(500<<FUEL_SCALE_BITS)
-#define START_STATION_FUEL	MAX_STATION_FUEL
-#define STATION_REGENERATION	(0.06*FUEL_SCALE_FACT)
-#define MAX_PLAYER_FUEL		(2600<<FUEL_SCALE_BITS)
-#define MIN_PLAYER_FUEL		(350<<FUEL_SCALE_BITS)
-#define REFUEL_RATE		(5<<FUEL_SCALE_BITS)
-#define DEFAULT_PLAYER_FUEL	(1000<<FUEL_SCALE_BITS)
+#define FUEL_SCALE_BITS 8
+#define FUEL_SCALE_FACT (1 << FUEL_SCALE_BITS)
+#define FUEL_MASS(f) ((f) * 0.005 / FUEL_SCALE_FACT)
+#define MAX_STATION_FUEL (500 << FUEL_SCALE_BITS)
+#define START_STATION_FUEL MAX_STATION_FUEL
+#define STATION_REGENERATION (0.06 * FUEL_SCALE_FACT)
+#define MAX_PLAYER_FUEL (2600 << FUEL_SCALE_BITS)
+#define MIN_PLAYER_FUEL (350 << FUEL_SCALE_BITS)
+#define REFUEL_RATE (5 << FUEL_SCALE_BITS)
+#define DEFAULT_PLAYER_FUEL (1000 << FUEL_SCALE_BITS)
 
-#define FUEL_NOTIFY             (3*FPS)
-#define TARGET_DAMAGE		(250<<FUEL_SCALE_BITS)
+#define FUEL_NOTIFY (3 * FPS)
+#define TARGET_DAMAGE (250 << FUEL_SCALE_BITS)
 
 /*
  * Size (pixels) of radius for legal HIT!
  * Was 14 until 4.2. Increased due to `analytical collision detection'
  * which inspects a real circle and not just a square anymore.
  */
-#define SHIP_SZ		        16
-#define VISIBILITY_DISTANCE	1000.0
-#define WARNING_DISTANCE	(VISIBILITY_DISTANCE*0.8)
-#define BALL_RADIUS		10
+#define SHIP_SZ 16
+#define VISIBILITY_DISTANCE 1000.0
+#define WARNING_DISTANCE (VISIBILITY_DISTANCE * 0.8)
+#define BALL_RADIUS 10
 
-#define TEAM_NOT_SET		0xffff
-#define TEAM_NOT_SET_STR	"4095"
+#define TEAM_NOT_SET 0xffff
+#define TEAM_NOT_SET_STR "4095"
 
-#define DEBRIS_TYPES		(8 * 4 * 4)
+#define DEBRIS_TYPES (8 * 4 * 4)
 
 #endif

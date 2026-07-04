@@ -2,10 +2,10 @@
  *
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-98 by
  *
- *      Bjørn Stabell        <bjoern@xpilot.org>
- *      Ken Ronny Schouten   <ken@xpilot.org>
- *      Bert Gijsbers        <bert@xpilot.org>
- *      Dick Balaska         <dick@xpilot.org>
+ *      Bjørn Stabell
+ *      Ken Ronny Schouten
+ *      Bert Gijsbers
+ *      Dick Balaska
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,11 +36,11 @@
  #define MAX_ROBOT_SPEED		20.0
  */
 
-#define	NORMAL_ROBOT_SPEED	10.0
-#define	ATTACK_ROBOT_SPEED	20.0
-#define MAX_ROBOT_SPEED		20.0
+#define NORMAL_ROBOT_SPEED 10.0
+#define ATTACK_ROBOT_SPEED 20.0
+#define MAX_ROBOT_SPEED 20.0
 
-#define ROB_LOOK_AH		2
+#define ROB_LOOK_AH 2
 
 /*
  * We would like to support several different robot types.
@@ -99,7 +99,8 @@
  * specific initialisation function prototype in robot.c and add one
  * function pointer to the robot_type_setups array.
  */
-typedef struct {
+typedef struct
+{
 	const char *name;
 	void (*create)(player_t *pl, char *str);
 	void (*go_home)(player_t *pl);
@@ -115,7 +116,8 @@ typedef struct {
  * The talk code is done by the robot manager,
  * not by the robot type implementation.
  */
-enum robot_talk_t {
+enum robot_talk_t
+{
 	ROBOT_TALK_ENTER,
 	ROBOT_TALK_LEAVE,
 	ROBOT_TALK_KILL,
@@ -126,43 +128,46 @@ enum robot_talk_t {
 /*
  * Configuration data for each robot available.
  */
-typedef struct {
+typedef struct
+{
 	char driver[MAX_NAME_LEN]; /* which robot code controls robot? */
-	char name[MAX_NAME_LEN]; /* Name of this robot. */
-	char config[MAX_CHARS]; /* Attack + defense ~ 100 */
-	uint32_t used; /* How often has this robot been used */
-	char shape[2 * MSG_LEN]; /* shipshape string definition */
+	char name[MAX_NAME_LEN];   /* Name of this robot. */
+	char config[MAX_CHARS];	   /* Attack + defense ~ 100 */
+	uint32_t used;			   /* How often has this robot been used */
+	char shape[2 * MSG_LEN];   /* shipshape string definition */
 } robot_t;
 
 /*
  * Robot manager data for each robot instance.
  */
-typedef struct robot_data {
-	int32_t robots_ind; /* index into Robots[] */
+typedef struct robot_data
+{
+	int32_t robots_ind;		 /* index into Robots[] */
 	int32_t robot_types_ind; /* index into robot_types[] */
-	void *private_data; /* robot type private data */
+	void *private_data;		 /* robot type private data */
 } robot_data_t;
 
 /*
  * The private robot instance data for the default robot.
  */
-typedef struct robot_default_data {
-	int32_t robot_lock; /* lock mode */
+typedef struct robot_default_data
+{
+	int32_t robot_lock;		 /* lock mode */
 	player_t *robot_lock_pl; /* target player if in war mode */
-	int32_t robot_mode; /* ultrashort term mode of robot. */
-	int32_t robot_count; /* Misc timings, minimizes rand()use */
-	int32_t attack; /* how aggressive (1-99) */
-	int32_t defense; /* how defensive (1-99) */
+	int32_t robot_mode;		 /* ultrashort term mode of robot. */
+	int32_t robot_count;	 /* Misc timings, minimizes rand()use */
+	int32_t attack;			 /* how aggressive (1-99) */
+	int32_t defense;		 /* how defensive (1-99) */
 	DFLOAT robot_normal_speed;
 	DFLOAT robot_attack_speed;
 	DFLOAT robot_max_speed;
-	int32_t last_used_ecm; /* relative to robot_count */
-	int32_t last_dropped_mine; /* relative to robot_count */
+	int32_t last_used_ecm;		/* relative to robot_count */
+	int32_t last_dropped_mine;	/* relative to robot_count */
 	int32_t last_fired_missile; /* relative to robot_count */
-	int32_t last_thrown_ball; /* relative to robot_count */
-	int32_t longterm_mode; /* long term robot mode */
-	int32_t lock_last_seen; /* last time robot saw target */
-	position_t lock_last_pos; /* last known position of target */
+	int32_t last_thrown_ball;	/* relative to robot_count */
+	int32_t longterm_mode;		/* long term robot mode */
+	int32_t lock_last_seen;		/* last time robot saw target */
+	position_t lock_last_pos;	/* last known position of target */
 } robot_default_data_t;
 
 void Robot_add_remove(void);

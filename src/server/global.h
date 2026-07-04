@@ -2,10 +2,10 @@
  *
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
- *      Bjørn Stabell        <bjoern@xpilot.org>
- *      Ken Ronny Schouten   <ken@xpilot.org>
- *      Bert Gijsbers        <bert@xpilot.org>
- *      Dick Balaska         <dick@xpilot.org>
+ *      Bjørn Stabell
+ *      Ken Ronny Schouten
+ *      Bert Gijsbers
+ *      Dick Balaska
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,22 +22,23 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef	GLOBAL_H
-#define	GLOBAL_H
+#ifndef GLOBAL_H
+#define GLOBAL_H
 
 #include "serverconst.h"
 #include "list.h"
 #include "structs.h"
-//#include "map.h"
+// #include "map.h"
 
 #ifndef MAX
-#define MAX(a,b)  ((a) > (b) ? (a) : (b))
-#define MIN(a,b)  ((a) < (b) ? (a) : (b))
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
 #endif
 
-#define	STR80	(80)
+#define STR80 (80)
 
-typedef struct {
+typedef struct
+{
 	char owner[STR80];
 	char host[STR80];
 } server_t;
@@ -61,7 +62,6 @@ extern int32_t NumObjs;
 
 /* from player.c */
 extern bool updateScores;
-
 
 extern int32_t NumQueuedPlayers;
 extern int32_t frame_loops;
@@ -132,7 +132,7 @@ extern bool teamImmunity;
 extern bool teamShareScore;
 extern bool extraBorder;
 
-//extern bool updateScores;
+// extern bool updateScores;
 extern bool allowShipShapes;
 
 extern bool reportToMetaServer;

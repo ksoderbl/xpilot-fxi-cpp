@@ -2,10 +2,10 @@
  *
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
- *      Bjørn Stabell        <bjoern@xpilot.org>
- *      Ken Ronny Schouten   <ken@xpilot.org>
- *      Bert Gijsbers        <bert@xpilot.org>
- *      Dick Balaska         <dick@xpilot.org>
+ *      Bjørn Stabell
+ *      Ken Ronny Schouten
+ *      Bert Gijsbers
+ *      Dick Balaska
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,13 +22,18 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef	COMMONPROTO_H
-#define	COMMONPROTO_H
+#ifndef COMMONPROTO_H
+#define COMMONPROTO_H
 
 #include "types.h"
 #include "config.h"
 
-#define SWAP(_a, _b)	    {DFLOAT _tmp = _a; _a = _b; _b = _tmp;}
+#define SWAP(_a, _b)      \
+    {                     \
+        DFLOAT _tmp = _a; \
+        _a = _b;          \
+        _b = _tmp;        \
+    }
 
 /* randommt.c */
 void seedMT(uint32_t seed);

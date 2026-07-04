@@ -2,10 +2,10 @@
  *
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-98 by
  *
- *      Bjørn Stabell        <bjoern@xpilot.org>
- *      Ken Ronny Schouten   <ken@xpilot.org>
- *      Bert Gijsbers        <bert@xpilot.org>
- *      Dick Balaska         <dick@xpilot.org>
+ *      Bjørn Stabell
+ *      Ken Ronny Schouten
+ *      Bert Gijsbers
+ *      Dick Balaska
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,10 +41,11 @@ extern char walls_version[];
  * Therefore a fixed point sub-pixel resolution is used called clicks.
  */
 
-#define FLOAT_TO_INT32(F)	((F) < 0 ? -(int32_t)(0.5f-(F)) : (int32_t)((F)+0.5f))
-#define DOUBLE_TO_INT32(D)	((D) < 0 ? -(int32_t)(0.5-(D)) : (int32_t)((D)+0.5))
+#define FLOAT_TO_INT32(F) ((F) < 0 ? -(int32_t)(0.5f - (F)) : (int32_t)((F) + 0.5f))
+#define DOUBLE_TO_INT32(D) ((D) < 0 ? -(int32_t)(0.5 - (D)) : (int32_t)((D) + 0.5))
 
-typedef enum {
+typedef enum
+{
 	NotACrash = 0,
 	CrashUniverse = 0x01,
 	CrashWall = 0x02,
@@ -54,7 +55,8 @@ typedef enum {
 	CrashWallNoFuel = 0x100
 } move_crash_t;
 
-typedef enum {
+typedef enum
+{
 	NotABounce = 0,
 	BounceHorLo = 0x01,
 	BounceHorHi = 0x02,
@@ -67,14 +69,16 @@ typedef enum {
 	BounceEdge = 0x0100
 } move_bounce_t;
 
-typedef struct {
+typedef struct
+{
 	int32_t wall_bounce;
 	int32_t treasure_crashes;
 	object_t *obj;
 	player_t *pl;
 } move_info_t;
 
-typedef struct {
+typedef struct
+{
 	const move_info_t *mip;
 	move_crash_t crash;
 	move_bounce_t bounce;
@@ -86,8 +90,9 @@ typedef struct {
 	treasure_t *treasure;
 } move_state_t;
 
-struct move_parameters {
-	uint32_t obj_bounce_mask; /* which objects bounce? */
+struct move_parameters
+{
+	uint32_t obj_bounce_mask;	/* which objects bounce? */
 	uint32_t obj_treasure_mask; /* objects treasure crash? */
 };
 

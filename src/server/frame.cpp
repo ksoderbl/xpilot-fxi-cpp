@@ -1,6 +1,6 @@
 /*
  *
- * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-98 by
+ * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
  *      Ken Ronny Schouten
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include <unistd.h>
@@ -28,7 +28,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <cstdio>
-#include <math.h>
+#include <cmath>
 #include <time.h>
 
 #include "version.h"

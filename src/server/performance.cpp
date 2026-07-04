@@ -1,4 +1,4 @@
-#include <math.h>
+#include <cmath>
 #include <cstdio>
 #include <time.h>
 #include <sys/time.h>

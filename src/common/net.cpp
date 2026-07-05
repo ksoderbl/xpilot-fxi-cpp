@@ -641,7 +641,7 @@ int32_t Packet_printf(sockbuf_t *sbuf, const char *fmt, ...)
     return count;
 }
 
-inline int32_t Packet_scanf(sockbuf_t *sbuf, const char *fmt, ...)
+int32_t Packet_scanf(sockbuf_t *sbuf, const char *fmt, ...)
 {
     int32_t i, j, k, *iptr, count = 0, failure = 0, max_str_size;
     uint32_t *uptr;

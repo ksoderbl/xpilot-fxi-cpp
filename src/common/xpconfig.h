@@ -25,7 +25,7 @@
 #ifndef XPCONFIG_H
 #define XPCONFIG_H
 
-#include <stdint.h>
+#include <cstdint>
 
 #ifdef MOD2
 #error "MOD2 already defined - xpconfig.h should be included before const.h"

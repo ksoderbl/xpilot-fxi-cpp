@@ -22,9 +22,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef _WINDOWS
 #include <unistd.h>
-#endif
 #include <cstdlib>
 #include <cstdio>
 #include <cerrno>

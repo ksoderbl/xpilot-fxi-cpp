@@ -8,7 +8,7 @@
 #ifndef COLLISION_H_
 #define COLLISION_H_
 
-#include <stdint.h>
+#include <cstdint>
 #include "player.h"
 
 /* proposed edgewrap version: */

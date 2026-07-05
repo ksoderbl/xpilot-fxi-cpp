@@ -52,7 +52,7 @@
  **
  */
 
-#include <stdint.h>
+#include <cstdint>
 #include "commonproto.h"
 
 /*

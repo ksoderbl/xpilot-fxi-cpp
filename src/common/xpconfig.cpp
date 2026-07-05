@@ -23,7 +23,7 @@
  */
 
 #include <cstdlib>
-#include <stdint.h>
+#include <cstdint>
 #include <cstring>
 #include <cctype>
 

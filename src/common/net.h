@@ -30,12 +30,7 @@
 #define MAX_SOCKBUF_SIZE (50 * 1024)
 
 #define SERVER_RECV_SIZE MIN_SOCKBUF_SIZE
-#if defined(LINUX0)
-/* bwahg, linux tcp/ip still has silly limitations in 0.99.15 */
-#define SERVER_SEND_SIZE (3 * 512 + 3 * 128)
-#else
 #define SERVER_SEND_SIZE (4 * 1024)
-#endif
 
 #define CLIENT_SEND_SIZE SERVER_RECV_SIZE
 #define CLIENT_RECV_SIZE SERVER_SEND_SIZE

@@ -37,53 +37,18 @@
 #define _SOCKLIB_LIBSOURCE
 
 /* Include files */
-#ifndef _WINDOWS
 #include <unistd.h>
-#endif
 #include <sys/types.h>
-#ifdef VMS
-#include <ucx$inetdef.h>
-#else
-#ifndef _WINDOWS
-#ifdef _AIX
-#include <sys/select.h> /* _BSD not defined in <sys/types.h>, so done by hand */
-#endif
 #include <sys/param.h>
 #include <sys/ioctl.h>
-#endif
-#endif
-#if (SVR4)
-#include <sys/filio.h>
-#endif
-#if (_SEQUENT_)
-#include <sys/fcntl.h>
-#else
 #include <fcntl.h>
-#endif
-#if defined(__hpux) || defined(_WINDOWS)
-#include <time.h>
-#else
 #include <sys/time.h>
-#endif
 
-#if defined(_WINDOWS)
-#include "NT/winNet.h"
-/* Windows needs specific system calls for sockets: */
-#undef close
-#define close(x__) closesocket(x__)
-#undef ioctl
-#define ioctl(x__, y__, z__) ioctlsocket(x__, y__, z__)
-#undef read
-#define read(x__, y__, z__) recv(x__, y__, z__, 0)
-#undef write
-#define write(x__, y__, z__) send(x__, y__, z__, 0)
-#else
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #include <arpa/inet.h>
 #include <netdb.h>
-#endif
 
 #include <cstring>
 #include <cstdlib>
@@ -92,20 +57,10 @@
 #include <signal.h>
 #include <setjmp.h>
 #include <cerrno>
-#if defined(__sun__)
-#include <arpa/nameser.h>
-#include <resolv.h>
-#endif
 
 /* Socklib Includes And Definitions */
 #include "version.h"
 #include "socklib.h"
-#ifdef SUNCMW
-#include "cmw.h"
-#else
-#define cmw_priv_assert_netaccess()	  /* empty */
-#define cmw_priv_deassert_netaccess() /* empty */
-#endif								  /* SUNCMW */
 
 /* Debug macro */
 #ifdef DEBUG
@@ -140,13 +95,6 @@ int32_t sl_broadcast_enabled = 0;
 /* Local variable containing the last address from DgramReceiveAny */
 static struct sockaddr_in sl_dgram_lastaddr;
 
-#ifdef _WINDOWS
-char gethostbuf[MAXGETHOSTSTRUCT + 1];
-BOOL hostnameCancelled;
-BOOL *hostnameFound;
-HANDLE gethosthandle;
-#endif
-
 /*
  *******************************************************************************
  *
@@ -180,8 +128,8 @@ HANDLE gethosthandle;
  */
 void SetTimeout(int32_t s, int32_t us)
 {
-	sl_timeout_us = us;
-	sl_timeout_s = s;
+    sl_timeout_us = us;
+    sl_timeout_s = s;
 } /* SetTimeout */
 
 /*
@@ -219,39 +167,39 @@ void SetTimeout(int32_t s, int32_t us)
  */
 int32_t CreateServerSocket(int32_t port)
 {
-	struct sockaddr_in addr_in;
-	int32_t fd;
-	int32_t retval;
+    struct sockaddr_in addr_in;
+    int32_t fd;
+    int32_t retval;
 
-	fd = socket(AF_INET, SOCK_STREAM, 0);
-	if (fd < 0)
-	{
-		sl_errno = SL_ESOCKET;
-		return (-1);
-	}
-	memset((char *)&addr_in, 0, sizeof(struct sockaddr_in));
-	addr_in.sin_family = AF_INET;
-	addr_in.sin_addr.s_addr = INADDR_ANY;
-	addr_in.sin_port = htons((uint16_t)port);
+    fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (fd < 0)
+    {
+        sl_errno = SL_ESOCKET;
+        return (-1);
+    }
+    memset((char *)&addr_in, 0, sizeof(struct sockaddr_in));
+    addr_in.sin_family = AF_INET;
+    addr_in.sin_addr.s_addr = INADDR_ANY;
+    addr_in.sin_port = htons((uint16_t)port);
 
-	retval = bind(fd, (struct sockaddr *)&addr_in,
-				  sizeof(struct sockaddr_in));
-	if (retval < 0)
-	{
-		sl_errno = SL_EBIND;
-		close(fd);
-		return (-1);
-	}
+    retval = bind(fd, (struct sockaddr *)&addr_in,
+                  sizeof(struct sockaddr_in));
+    if (retval < 0)
+    {
+        sl_errno = SL_EBIND;
+        close(fd);
+        return (-1);
+    }
 
-	retval = listen(fd, 5);
-	if (retval < 0)
-	{
-		sl_errno = SL_ELISTEN;
-		close(fd);
-		return (-1);
-	}
+    retval = listen(fd, 5);
+    if (retval < 0)
+    {
+        sl_errno = SL_ELISTEN;
+        close(fd);
+        return (-1);
+    }
 
-	return (fd);
+    return (fd);
 } /* CreateServerSocket */
 
 /*
@@ -285,14 +233,14 @@ int32_t CreateServerSocket(int32_t port)
  */
 int32_t GetPortNum(int32_t fd)
 {
-	socklen_t len;
-	struct sockaddr_in addr;
+    socklen_t len;
+    struct sockaddr_in addr;
 
-	len = sizeof(struct sockaddr_in);
-	if (getsockname(fd, (struct sockaddr *)&addr, &len) < 0)
-		return (-1);
+    len = sizeof(struct sockaddr_in);
+    if (getsockname(fd, (struct sockaddr *)&addr, &len) < 0)
+        return (-1);
 
-	return (ntohs(addr.sin_port));
+    return (ntohs(addr.sin_port));
 } /* GetPortNum */
 
 /*
@@ -330,14 +278,14 @@ int32_t GetPortNum(int32_t fd)
  */
 char *GetSockAddr(int32_t fd)
 {
-	socklen_t len;
-	struct sockaddr_in addr;
+    socklen_t len;
+    struct sockaddr_in addr;
 
-	len = sizeof(struct sockaddr_in);
-	if (getsockname(fd, (struct sockaddr *)&addr, &len) < 0)
-		return (NULL);
+    len = sizeof(struct sockaddr_in);
+    if (getsockname(fd, (struct sockaddr *)&addr, &len) < 0)
+        return (NULL);
 
-	return (inet_ntoa(addr.sin_addr));
+    return (inet_ntoa(addr.sin_addr));
 } /* GetSockAddr */
 
 /*
@@ -374,26 +322,26 @@ char *GetSockAddr(int32_t fd)
  */
 int32_t GetRemoteHostName(int32_t fd, char *name, int32_t namelen)
 {
-	socklen_t len;
-	struct sockaddr_in addr;
-	struct hostent *hp;
+    socklen_t len;
+    struct sockaddr_in addr;
+    struct hostent *hp;
 
-	len = sizeof(struct sockaddr_in);
-	if (getpeername(fd, (struct sockaddr *)&addr, &len) < 0)
-		return (-1);
+    len = sizeof(struct sockaddr_in);
+    if (getpeername(fd, (struct sockaddr *)&addr, &len) < 0)
+        return (-1);
 
-	hp = gethostbyaddr((char *)&addr.sin_addr.s_addr, 4, AF_INET);
-	if (hp != NULL)
-	{
-		strncpy(name, hp->h_name, namelen);
-	}
-	else
-	{
-		strncpy(name, inet_ntoa(addr.sin_addr), namelen);
-	}
-	name[namelen - 1] = '\0';
+    hp = gethostbyaddr((char *)&addr.sin_addr.s_addr, 4, AF_INET);
+    if (hp != NULL)
+    {
+        strncpy(name, hp->h_name, namelen);
+    }
+    else
+    {
+        strncpy(name, inet_ntoa(addr.sin_addr), namelen);
+    }
+    name[namelen - 1] = '\0';
 
-	return (0);
+    return (0);
 } /* GetRemoteHostName */
 
 /*
@@ -434,41 +382,41 @@ int32_t GetRemoteHostName(int32_t fd, char *name, int32_t namelen)
  */
 int32_t CreateClientSocket(char *host, int32_t port)
 {
-	struct sockaddr_in peer;
-	struct hostent *hp;
-	int32_t fd;
+    struct sockaddr_in peer;
+    struct hostent *hp;
+    int32_t fd;
 
-	memset((char *)&peer, 0, sizeof(struct sockaddr_in));
-	peer.sin_family = AF_INET;
-	peer.sin_port = htons((uint16_t)port);
-	peer.sin_addr.s_addr = inet_addr(host);
-	if (peer.sin_addr.s_addr == (int32_t)-1)
-	{
-		hp = gethostbyname(host);
-		if (hp == NULL)
-		{
-			sl_errno = SL_EHOSTNAME;
-			return (-1);
-		}
-		else
-			peer.sin_addr.s_addr = ((struct in_addr *)(hp->h_addr))->s_addr;
-	}
+    memset((char *)&peer, 0, sizeof(struct sockaddr_in));
+    peer.sin_family = AF_INET;
+    peer.sin_port = htons((uint16_t)port);
+    peer.sin_addr.s_addr = inet_addr(host);
+    if (peer.sin_addr.s_addr == (int32_t)-1)
+    {
+        hp = gethostbyname(host);
+        if (hp == NULL)
+        {
+            sl_errno = SL_EHOSTNAME;
+            return (-1);
+        }
+        else
+            peer.sin_addr.s_addr = ((struct in_addr *)(hp->h_addr))->s_addr;
+    }
 
-	fd = socket(AF_INET, SOCK_STREAM, 0);
-	if (fd < 0)
-	{
-		sl_errno = SL_ESOCKET;
-		return (-1);
-	}
+    fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (fd < 0)
+    {
+        sl_errno = SL_ESOCKET;
+        return (-1);
+    }
 
-	if (connect(fd, (struct sockaddr *)&peer, sizeof(struct sockaddr_in)) < 0)
-	{
-		sl_errno = SL_ECONNECT;
-		close(fd);
-		return (-1);
-	}
+    if (connect(fd, (struct sockaddr *)&peer, sizeof(struct sockaddr_in)) < 0)
+    {
+        sl_errno = SL_ECONNECT;
+        close(fd);
+        return (-1);
+    }
 
-	return (fd);
+    return (fd);
 } /* CreateClientSocket */
 
 /*
@@ -512,46 +460,46 @@ int32_t CreateClientSocket(char *host, int32_t port)
  */
 int32_t CreateClientSocketNonBlocking(char *host, int32_t port)
 {
-	struct sockaddr_in peer;
-	struct hostent *hp;
-	int32_t fd;
+    struct sockaddr_in peer;
+    struct hostent *hp;
+    int32_t fd;
 
-	memset((char *)&peer, 0, sizeof(struct sockaddr_in));
-	peer.sin_family = AF_INET;
-	peer.sin_port = htons((uint16_t)port);
-	peer.sin_addr.s_addr = inet_addr(host);
-	if (peer.sin_addr.s_addr == (int32_t)-1)
-	{
-		hp = gethostbyname(host);
-		if (hp == NULL)
-		{
-			sl_errno = SL_EHOSTNAME;
-			return (-1);
-		}
-		else
-			peer.sin_addr.s_addr = ((struct in_addr *)(hp->h_addr))->s_addr;
-	}
+    memset((char *)&peer, 0, sizeof(struct sockaddr_in));
+    peer.sin_family = AF_INET;
+    peer.sin_port = htons((uint16_t)port);
+    peer.sin_addr.s_addr = inet_addr(host);
+    if (peer.sin_addr.s_addr == (int32_t)-1)
+    {
+        hp = gethostbyname(host);
+        if (hp == NULL)
+        {
+            sl_errno = SL_EHOSTNAME;
+            return (-1);
+        }
+        else
+            peer.sin_addr.s_addr = ((struct in_addr *)(hp->h_addr))->s_addr;
+    }
 
-	fd = socket(AF_INET, SOCK_STREAM, 0);
-	if (fd < 0)
-	{
-		sl_errno = SL_ESOCKET;
-		return (-1);
-	}
+    fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (fd < 0)
+    {
+        sl_errno = SL_ESOCKET;
+        return (-1);
+    }
 
-	/* no need to check return code since a message would be printed already. */
-	SetSocketNonBlocking(fd, 1);
+    /* no need to check return code since a message would be printed already. */
+    SetSocketNonBlocking(fd, 1);
 
 #ifndef _WINDOWS
-	if (connect(fd, (struct sockaddr *)&peer, sizeof(struct sockaddr_in)) < 0 && errno != EINPROGRESS)
-	{
-		sl_errno = SL_ECONNECT;
-		close(fd);
-		return (-1);
-	}
+    if (connect(fd, (struct sockaddr *)&peer, sizeof(struct sockaddr_in)) < 0 && errno != EINPROGRESS)
+    {
+        sl_errno = SL_ECONNECT;
+        close(fd);
+        return (-1);
+    }
 #endif
 
-	return (fd);
+    return (fd);
 } /* CreateClientSocketNonBlocking */
 
 /*
@@ -586,13 +534,11 @@ int32_t CreateClientSocketNonBlocking(char *host, int32_t port)
  */
 int32_t SocketAccept(int32_t fd)
 {
-	int32_t retval;
+    int32_t retval;
 
-	cmw_priv_assert_netaccess();
-	retval = accept(fd, NULL, 0);
-	cmw_priv_deassert_netaccess();
+    retval = accept(fd, NULL, 0);
 
-	return retval;
+    return retval;
 } /* SocketAccept */
 
 /*
@@ -627,20 +573,20 @@ int32_t SocketAccept(int32_t fd)
 int32_t SocketLinger(int32_t fd)
 {
 #if defined(LINUX0) || !defined(SO_LINGER)
-	/*
-	 * As of 0.99.12 Linux doesn't have LINGER stuff.
-	 */
-	return 0;
+    /*
+     * As of 0.99.12 Linux doesn't have LINGER stuff.
+     */
+    return 0;
 #else
 #ifdef __hp9000s300
-	int32_t linger = 1;
-	int32_t lsize = sizeof(int32_t);
+    int32_t linger = 1;
+    int32_t lsize = sizeof(int32_t);
 #else
-	static struct linger linger =
-		{1, 300};
-	int32_t lsize = sizeof(struct linger);
+    static struct linger linger =
+        {1, 300};
+    int32_t lsize = sizeof(struct linger);
 #endif
-	return setsockopt(fd, SOL_SOCKET, SO_LINGER, (void *)&linger, lsize);
+    return setsockopt(fd, SOL_SOCKET, SO_LINGER, (void *)&linger, lsize);
 #endif
 } /* SocketLinger */
 
@@ -676,8 +622,8 @@ int32_t SocketLinger(int32_t fd)
  */
 int32_t SetSocketReceiveBufferSize(int32_t fd, int32_t size)
 {
-	return (setsockopt(fd, SOL_SOCKET, SO_RCVBUF, (void *)&size,
-					   sizeof(size)));
+    return (setsockopt(fd, SOL_SOCKET, SO_RCVBUF, (void *)&size,
+                       sizeof(size)));
 } /* SetSocketReceiveBufferSize */
 
 /*
@@ -712,8 +658,8 @@ int32_t SetSocketReceiveBufferSize(int32_t fd, int32_t size)
  */
 int32_t SetSocketSendBufferSize(int32_t fd, int32_t size)
 {
-	return (setsockopt(fd, SOL_SOCKET, SO_SNDBUF, (void *)&size,
-					   sizeof(size)));
+    return (setsockopt(fd, SOL_SOCKET, SO_SNDBUF, (void *)&size,
+                       sizeof(size)));
 } /* SetSocketSendBufferSize */
 
 /*
@@ -749,13 +695,13 @@ int32_t SetSocketSendBufferSize(int32_t fd, int32_t size)
 #ifdef TCP_NODELAY
 int32_t SetSocketNoDelay(int32_t fd, int32_t flag)
 {
-	/*
-	 * The fcntl(O_NDELAY) option has nothing to do
-	 * with the setsockopt(TCP_NODELAY) option.
-	 * They control completely different features!
-	 */
-	return setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, (void *)&flag,
-					  sizeof(flag));
+    /*
+     * The fcntl(O_NDELAY) option has nothing to do
+     * with the setsockopt(TCP_NODELAY) option.
+     * They control completely different features!
+     */
+    return setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, (void *)&flag,
+                      sizeof(flag));
 } /* SetSocketNoDelay */
 #endif
 
@@ -791,12 +737,12 @@ int32_t SetSocketNoDelay(int32_t fd, int32_t flag)
  */
 int32_t SetSocketNonBlocking(int32_t fd, int32_t flag)
 {
-	/*
-	 * There are some problems on some particular systems (suns) with
-	 * getting sockets to be non-blocking.  Just try all possible ways
-	 * until one of them succeeds.  Please keep us informed by e-mail
-	 * to xpilot@xpilot.org.
-	 */
+    /*
+     * There are some problems on some particular systems (suns) with
+     * getting sockets to be non-blocking.  Just try all possible ways
+     * until one of them succeeds.  Please keep us informed by e-mail
+     * to xpilot@xpilot.org.
+     */
 
 #ifndef USE_FCNTL_O_NONBLOCK
 #ifndef USE_FCNTL_O_NDELAY
@@ -837,37 +783,37 @@ int32_t SetSocketNonBlocking(int32_t fd, int32_t flag)
 #endif
 #endif
 
-	char buf[128];
+    char buf[128];
 
 #ifdef USE_FCNTL_FNDELAY
-	if (fcntl(fd, F_SETFL, (flag != 0) ? FNDELAY : 0) != -1)
-		return 0;
-	sprintf(buf, "fcntl FNDELAY failed in socklib.c line %d", __LINE__);
-	perror(buf);
+    if (fcntl(fd, F_SETFL, (flag != 0) ? FNDELAY : 0) != -1)
+        return 0;
+    sprintf(buf, "fcntl FNDELAY failed in socklib.c line %d", __LINE__);
+    perror(buf);
 #endif
 
 #ifdef USE_IOCTL_FIONBIO
-	if (ioctl(fd, FIONBIO, &flag) == 0)
-		return 0;
-	sprintf(buf, "ioctl FIONBIO failed in socklib.c line %d", __LINE__);
-	perror(buf);
+    if (ioctl(fd, FIONBIO, &flag) == 0)
+        return 0;
+    sprintf(buf, "ioctl FIONBIO failed in socklib.c line %d", __LINE__);
+    perror(buf);
 #endif
 
 #ifdef USE_FCNTL_O_NONBLOCK
-	if (fcntl(fd, F_SETFL, (flag != 0) ? O_NONBLOCK : 0) != -1)
-		return 0;
-	sprintf(buf, "fcntl O_NONBLOCK failed in socklib.c line %d", __LINE__);
-	perror(buf);
+    if (fcntl(fd, F_SETFL, (flag != 0) ? O_NONBLOCK : 0) != -1)
+        return 0;
+    sprintf(buf, "fcntl O_NONBLOCK failed in socklib.c line %d", __LINE__);
+    perror(buf);
 #endif
 
 #ifdef USE_FCNTL_O_NDELAY
-	if (fcntl(fd, F_SETFL, (flag != 0) ? O_NDELAY : 0) != -1)
-		return 0;
-	sprintf(buf, "fcntl O_NDELAY failed in socklib.c line %d", __LINE__);
-	perror(buf);
+    if (fcntl(fd, F_SETFL, (flag != 0) ? O_NDELAY : 0) != -1)
+        return 0;
+    sprintf(buf, "fcntl O_NDELAY failed in socklib.c line %d", __LINE__);
+    perror(buf);
 #endif
 
-	return (-1);
+    return (-1);
 } /* SetSocketNonBlocking */
 
 /*
@@ -902,8 +848,8 @@ int32_t SetSocketNonBlocking(int32_t fd, int32_t flag)
  */
 int32_t SetSocketBroadcast(int32_t fd, int32_t flag)
 {
-	return setsockopt(fd, SOL_SOCKET, SO_BROADCAST, (void *)&flag,
-					  sizeof(flag));
+    return setsockopt(fd, SOL_SOCKET, SO_BROADCAST, (void *)&flag,
+                      sizeof(flag));
 } /* SetSocketBroadcast */
 
 /*
@@ -937,16 +883,16 @@ int32_t SetSocketBroadcast(int32_t fd, int32_t flag)
  */
 int32_t GetSocketError(int32_t fd)
 {
-	int32_t error;
-	socklen_t size;
+    int32_t error;
+    socklen_t size;
 
-	size = sizeof(error);
-	if (getsockopt(fd, SOL_SOCKET, SO_ERROR, (char *)&error, &size) == -1)
-	{
-		return -1;
-	}
-	errno = error;
-	return 0;
+    size = sizeof(error);
+    if (getsockopt(fd, SOL_SOCKET, SO_ERROR, (char *)&error, &size) == -1)
+    {
+        return -1;
+    }
+    errno = error;
+    return 0;
 } /* GetSocketError */
 
 /*
@@ -980,29 +926,29 @@ int32_t GetSocketError(int32_t fd)
  */
 int32_t SocketReadable(int32_t fd)
 {
-	fd_set readfds;
-	struct timeval timeout;
+    fd_set readfds;
+    struct timeval timeout;
 
 #ifndef timerclear
 #define timerclear(tvp) (tvp)->tv_sec = (tvp)->tv_usec = 0
 #endif
-	timerclear(&timeout); /* macro function */
-	timeout.tv_sec = sl_timeout_s;
-	timeout.tv_usec = sl_timeout_us;
+    timerclear(&timeout); /* macro function */
+    timeout.tv_sec = sl_timeout_s;
+    timeout.tv_usec = sl_timeout_us;
 
 #if a_very_bad_idea
-	memset(&readfds, 0, (fd / 8) + 1);
+    memset(&readfds, 0, (fd / 8) + 1);
 #else
-	FD_ZERO(&readfds);
-	FD_SET(fd, &readfds);
+    FD_ZERO(&readfds);
+    FD_SET(fd, &readfds);
 #endif
-	if (select(fd + 1, &readfds, NULL, NULL, &timeout) == -1)
-		return ((errno == EINTR) ? 0 : -1);
+    if (select(fd + 1, &readfds, NULL, NULL, &timeout) == -1)
+        return ((errno == EINTR) ? 0 : -1);
 
-	if (FD_ISSET(fd, &readfds))
-		return (1);
+    if (FD_ISSET(fd, &readfds))
+        return (1);
 
-	return (0);
+    return (0);
 } /* SocketReadable */
 
 /*
@@ -1040,8 +986,8 @@ static void inthandler(int32_t signum)
 static inthandler()
 #endif /* __STDC__ */
 {
-	DEB(fprintf(stderr, "Connection interrupted, timeout\n"));
-	(void)longjmp(env, 1);
+    DEB(fprintf(stderr, "Connection interrupted, timeout\n"));
+    (void)longjmp(env, 1);
 } /* inthandler */
 
 /*
@@ -1080,42 +1026,33 @@ static inthandler()
  */
 int32_t SocketRead(int32_t fd, char *buf, int32_t size)
 {
-	int32_t ret, ret1;
+    int32_t ret, ret1;
 
-	if (setjmp(env))
-	{
-#ifndef _WINDOWS
-		(void)alarm(0);
-		(void)signal(SIGALRM, SIG_DFL);
-#else
-		alarm(0, NULL);
-#endif
-		return (-1);
-	}
-	ret = 0;
-	cmw_priv_assert_netaccess();
-	while (ret < size)
-	{
-#ifndef _WINDOWS
-		(void)signal(SIGALRM, inthandler);
-		(void)alarm(sl_timeout_s);
-#else
-		(void)alarm(sl_timeout_s, inthandler);
-#endif
-		ret1 = recv(fd, &buf[ret], size - ret, 0);
-		DEB(fprintf(stderr, "Read %d bytes\n", ret1));
-#ifndef _WINDOWS
-		(void)alarm(0);
-		(void)signal(SIGALRM, SIG_DFL);
-#else
-		(void)alarm(0, NULL);
-#endif
-		ret += ret1;
-		if (ret1 <= 0)
-			return (-1);
-	}
-	cmw_priv_deassert_netaccess();
-	return (ret);
+    if (setjmp(env))
+    {
+        (void)alarm(0);
+        (void)signal(SIGALRM, SIG_DFL);
+
+        return (-1);
+    }
+    ret = 0;
+
+    while (ret < size)
+    {
+        (void)signal(SIGALRM, inthandler);
+        (void)alarm(sl_timeout_s);
+
+        ret1 = recv(fd, &buf[ret], size - ret, 0);
+        DEB(fprintf(stderr, "Read %d bytes\n", ret1));
+
+        (void)alarm(0);
+        (void)signal(SIGALRM, SIG_DFL);
+
+        ret += ret1;
+        if (ret1 <= 0)
+            return (-1);
+    }
+    return (ret);
 } /* SocketRead */
 
 /*
@@ -1151,16 +1088,14 @@ int32_t SocketRead(int32_t fd, char *buf, int32_t size)
  */
 int32_t SocketWrite(int32_t fd, char *buf, int32_t size)
 {
-	int32_t retval;
+    int32_t retval;
 
-	cmw_priv_assert_netaccess();
-	/*
-	 * A SIGPIPE exception may occur if the peer entity has disconnected.
-	 */
-	retval = send(fd, buf, size, 0);
-	cmw_priv_deassert_netaccess();
+    /*
+     * A SIGPIPE exception may occur if the peer entity has disconnected.
+     */
+    retval = send(fd, buf, size, 0);
 
-	return retval;
+    return retval;
 } /* SocketWrite */
 
 /*
@@ -1197,18 +1132,18 @@ int32_t SocketWrite(int32_t fd, char *buf, int32_t size)
  */
 int32_t SocketClose(int32_t fd)
 {
-	if (shutdown(fd, 2) == -1)
-	{
-		sl_errno = SL_ESHUTD;
-		/* return (-1);  ***BG: need close always */
-	}
+    if (shutdown(fd, 2) == -1)
+    {
+        sl_errno = SL_ESHUTD;
+        /* return (-1);  ***BG: need close always */
+    }
 
-	if (close(fd) == -1)
-	{
-		sl_errno = SL_ECLOSE;
-		return (-1);
-	}
-	return (1);
+    if (close(fd) == -1)
+    {
+        sl_errno = SL_ECLOSE;
+        return (-1);
+    }
+    return (1);
 } /* SocketClose */
 
 /*
@@ -1246,33 +1181,33 @@ int32_t SocketClose(int32_t fd)
  */
 int32_t CreateDgramSocket(int32_t port)
 {
-	struct sockaddr_in addr_in;
-	int32_t fd;
-	int32_t retval;
+    struct sockaddr_in addr_in;
+    int32_t fd;
+    int32_t retval;
 
-	fd = socket(AF_INET, SOCK_DGRAM, 0);
-	if (fd < 0)
-	{
-		sl_errno = SL_ESOCKET;
-		return (-1);
-	}
+    fd = socket(AF_INET, SOCK_DGRAM, 0);
+    if (fd < 0)
+    {
+        sl_errno = SL_ESOCKET;
+        return (-1);
+    }
 
-	memset((char *)&addr_in, 0, sizeof(struct sockaddr_in));
-	addr_in.sin_family = AF_INET;
-	addr_in.sin_addr.s_addr = INADDR_ANY;
-	addr_in.sin_port = htons((uint16_t)port);
-	retval = bind(fd, (struct sockaddr *)&addr_in,
-				  sizeof(struct sockaddr_in));
-	if (retval < 0)
-	{
-		sl_errno = SL_EBIND;
-		retval = errno;
-		close(fd);
-		errno = retval;
-		return (-1);
-	}
+    memset((char *)&addr_in, 0, sizeof(struct sockaddr_in));
+    addr_in.sin_family = AF_INET;
+    addr_in.sin_addr.s_addr = INADDR_ANY;
+    addr_in.sin_port = htons((uint16_t)port);
+    retval = bind(fd, (struct sockaddr *)&addr_in,
+                  sizeof(struct sockaddr_in));
+    if (retval < 0)
+    {
+        sl_errno = SL_EBIND;
+        retval = errno;
+        close(fd);
+        errno = retval;
+        return (-1);
+    }
 
-	return (fd);
+    return (fd);
 } /* CreateDgramSocket */
 
 /*
@@ -1312,36 +1247,36 @@ int32_t CreateDgramSocket(int32_t port)
  */
 int32_t CreateDgramAddrSocket(char *dotaddr, int32_t port)
 {
-	struct sockaddr_in addr_in;
-	int32_t fd;
-	int32_t retval;
+    struct sockaddr_in addr_in;
+    int32_t fd;
+    int32_t retval;
 
-	fd = socket(AF_INET, SOCK_DGRAM, 0);
-	if (fd < 0)
-	{
-		sl_errno = SL_ESOCKET;
-		return (-1);
-	}
+    fd = socket(AF_INET, SOCK_DGRAM, 0);
+    if (fd < 0)
+    {
+        sl_errno = SL_ESOCKET;
+        return (-1);
+    }
 
-	memset((char *)&addr_in, 0, sizeof(struct sockaddr_in));
-	addr_in.sin_family = AF_INET;
-	addr_in.sin_port = htons((uint16_t)port);
-	if (dotaddr != NULL)
-	{
-		addr_in.sin_addr.s_addr = inet_addr(dotaddr);
-	}
-	retval = bind(fd, (struct sockaddr *)&addr_in,
-				  sizeof(struct sockaddr_in));
-	if (retval < 0)
-	{
-		sl_errno = SL_EBIND;
-		retval = errno;
-		close(fd);
-		errno = retval;
-		return (-1);
-	}
+    memset((char *)&addr_in, 0, sizeof(struct sockaddr_in));
+    addr_in.sin_family = AF_INET;
+    addr_in.sin_port = htons((uint16_t)port);
+    if (dotaddr != NULL)
+    {
+        addr_in.sin_addr.s_addr = inet_addr(dotaddr);
+    }
+    retval = bind(fd, (struct sockaddr *)&addr_in,
+                  sizeof(struct sockaddr_in));
+    if (retval < 0)
+    {
+        sl_errno = SL_EBIND;
+        retval = errno;
+        close(fd);
+        errno = retval;
+        return (-1);
+    }
 
-	return (fd);
+    return (fd);
 } /* CreateDgramAddrSocket */
 
 /*
@@ -1379,22 +1314,22 @@ int32_t CreateDgramAddrSocket(char *dotaddr, int32_t port)
  */
 int32_t DgramBind(int32_t fd, char *dotaddr, int32_t port)
 {
-	struct sockaddr_in addr_in;
-	int32_t retval;
+    struct sockaddr_in addr_in;
+    int32_t retval;
 
-	memset((char *)&addr_in, 0, sizeof(struct sockaddr_in));
-	addr_in.sin_family = AF_INET;
-	addr_in.sin_addr.s_addr = inet_addr(dotaddr);
-	addr_in.sin_port = htons((uint16_t)port);
-	retval = bind(fd, (struct sockaddr *)&addr_in,
-				  sizeof(struct sockaddr_in));
-	if (retval < 0)
-	{
-		sl_errno = SL_EBIND;
-		return (-1);
-	}
+    memset((char *)&addr_in, 0, sizeof(struct sockaddr_in));
+    addr_in.sin_family = AF_INET;
+    addr_in.sin_addr.s_addr = inet_addr(dotaddr);
+    addr_in.sin_port = htons((uint16_t)port);
+    retval = bind(fd, (struct sockaddr *)&addr_in,
+                  sizeof(struct sockaddr_in));
+    if (retval < 0)
+    {
+        sl_errno = SL_EBIND;
+        return (-1);
+    }
 
-	return (fd);
+    return (fd);
 } /* DgramBind */
 
 /*
@@ -1431,33 +1366,33 @@ int32_t DgramBind(int32_t fd, char *dotaddr, int32_t port)
  */
 int32_t DgramConnect(int32_t fd, char *host, int32_t port)
 {
-	struct sockaddr_in addr_in;
-	struct hostent *hp;
-	int32_t retval;
+    struct sockaddr_in addr_in;
+    struct hostent *hp;
+    int32_t retval;
 
-	memset((char *)&addr_in, 0, sizeof(addr_in));
-	addr_in.sin_addr.s_addr = inet_addr(host);
-	if (addr_in.sin_addr.s_addr == (uint32_t)-1)
-	{
-		hp = gethostbyname(host);
-		if (hp == NULL)
-		{
-			sl_errno = SL_EHOSTNAME;
-			return (-1);
-		}
-		else
-			addr_in.sin_addr.s_addr = ((struct in_addr *)(hp->h_addr))->s_addr;
-	}
-	addr_in.sin_family = AF_INET;
-	addr_in.sin_port = htons((uint16_t)port);
-	retval = connect(fd, (struct sockaddr *)&addr_in, sizeof(addr_in));
-	if (retval < 0)
-	{
-		sl_errno = SL_ECONNECT;
-		return (-1);
-	}
+    memset((char *)&addr_in, 0, sizeof(addr_in));
+    addr_in.sin_addr.s_addr = inet_addr(host);
+    if (addr_in.sin_addr.s_addr == (uint32_t)-1)
+    {
+        hp = gethostbyname(host);
+        if (hp == NULL)
+        {
+            sl_errno = SL_EHOSTNAME;
+            return (-1);
+        }
+        else
+            addr_in.sin_addr.s_addr = ((struct in_addr *)(hp->h_addr))->s_addr;
+    }
+    addr_in.sin_family = AF_INET;
+    addr_in.sin_port = htons((uint16_t)port);
+    retval = connect(fd, (struct sockaddr *)&addr_in, sizeof(addr_in));
+    if (retval < 0)
+    {
+        sl_errno = SL_ECONNECT;
+        return (-1);
+    }
 
-	return (0);
+    return (0);
 } /* DgramConnect */
 
 /*
@@ -1499,36 +1434,34 @@ int32_t DgramConnect(int32_t fd, char *host, int32_t port)
  */
 int32_t DgramSend(int32_t fd, char *host, int32_t port, char *sbuf, int32_t size)
 {
-	int32_t retval;
-	struct sockaddr_in the_addr;
-	struct hostent *hp;
+    int32_t retval;
+    struct sockaddr_in the_addr;
+    struct hostent *hp;
 
-	sl_errno = 0;
-	(void)memset((char *)&the_addr, 0, sizeof(struct sockaddr_in));
-	the_addr.sin_family = AF_INET;
-	the_addr.sin_port = htons((uint16_t)port);
-	if (sl_broadcast_enabled)
-		the_addr.sin_addr.s_addr = INADDR_BROADCAST;
-	else
-	{
-		the_addr.sin_addr.s_addr = inet_addr(host);
-		if (the_addr.sin_addr.s_addr == (int32_t)-1)
-		{
-			hp = gethostbyname(host);
-			if (hp == NULL)
-			{
-				sl_errno = SL_EHOSTNAME;
-				return (-1);
-			}
-			else
-				the_addr.sin_addr.s_addr = ((struct in_addr *)(hp->h_addr))->s_addr;
-		}
-	}
-	cmw_priv_assert_netaccess();
-	retval = sendto(fd, sbuf, size, 0, (struct sockaddr *)&the_addr,
-					sizeof(struct sockaddr_in));
-	cmw_priv_deassert_netaccess();
-	return retval;
+    sl_errno = 0;
+    (void)memset((char *)&the_addr, 0, sizeof(struct sockaddr_in));
+    the_addr.sin_family = AF_INET;
+    the_addr.sin_port = htons((uint16_t)port);
+    if (sl_broadcast_enabled)
+        the_addr.sin_addr.s_addr = INADDR_BROADCAST;
+    else
+    {
+        the_addr.sin_addr.s_addr = inet_addr(host);
+        if (the_addr.sin_addr.s_addr == (int32_t)-1)
+        {
+            hp = gethostbyname(host);
+            if (hp == NULL)
+            {
+                sl_errno = SL_EHOSTNAME;
+                return (-1);
+            }
+            else
+                the_addr.sin_addr.s_addr = ((struct in_addr *)(hp->h_addr))->s_addr;
+        }
+    }
+    retval = sendto(fd, sbuf, size, 0, (struct sockaddr *)&the_addr,
+                    sizeof(struct sockaddr_in));
+    return retval;
 } /* DgramSend */
 
 /*
@@ -1563,15 +1496,13 @@ int32_t DgramSend(int32_t fd, char *host, int32_t port, char *sbuf, int32_t size
  */
 int32_t DgramReceiveAny(int32_t fd, char *rbuf, int32_t size)
 {
-	int32_t retval;
-	socklen_t addrlen = sizeof(struct sockaddr_in);
+    int32_t retval;
+    socklen_t addrlen = sizeof(struct sockaddr_in);
 
-	(void)memset((char *)&sl_dgram_lastaddr, 0, addrlen);
-	cmw_priv_assert_netaccess();
-	retval = recvfrom(fd, rbuf, size, 0,
-					  (struct sockaddr *)&sl_dgram_lastaddr, &addrlen);
-	cmw_priv_deassert_netaccess();
-	return retval;
+    (void)memset((char *)&sl_dgram_lastaddr, 0, addrlen);
+    retval = recvfrom(fd, rbuf, size, 0,
+                      (struct sockaddr *)&sl_dgram_lastaddr, &addrlen);
+    return retval;
 } /* DgramReceiveAny */
 
 /*
@@ -1611,29 +1542,29 @@ int32_t DgramReceiveAny(int32_t fd, char *rbuf, int32_t size)
  */
 int32_t DgramReceive(int32_t fd, char *from, char *rbuf, int32_t size)
 {
-	struct sockaddr_in tmp_addr;
-	struct hostent *hp;
-	int32_t retval;
+    struct sockaddr_in tmp_addr;
+    struct hostent *hp;
+    int32_t retval;
 
-	tmp_addr.sin_addr.s_addr = inet_addr(from);
-	if (tmp_addr.sin_addr.s_addr == (int32_t)-1)
-	{
-		hp = gethostbyname(from);
-		if (hp == NULL)
-		{
-			sl_errno = SL_EHOSTNAME;
-			return (-1);
-		}
-		else
-			tmp_addr.sin_addr.s_addr = ((struct in_addr *)(hp->h_addr))->s_addr;
-	}
-	retval = DgramReceiveAny(fd, rbuf, size);
-	if (retval == -1 || tmp_addr.sin_addr.s_addr != sl_dgram_lastaddr.sin_addr.s_addr)
-	{
-		sl_errno = SL_EWRONGHOST;
-		return (-1);
-	}
-	return (retval);
+    tmp_addr.sin_addr.s_addr = inet_addr(from);
+    if (tmp_addr.sin_addr.s_addr == (int32_t)-1)
+    {
+        hp = gethostbyname(from);
+        if (hp == NULL)
+        {
+            sl_errno = SL_EHOSTNAME;
+            return (-1);
+        }
+        else
+            tmp_addr.sin_addr.s_addr = ((struct in_addr *)(hp->h_addr))->s_addr;
+    }
+    retval = DgramReceiveAny(fd, rbuf, size);
+    if (retval == -1 || tmp_addr.sin_addr.s_addr != sl_dgram_lastaddr.sin_addr.s_addr)
+    {
+        sl_errno = SL_EWRONGHOST;
+        return (-1);
+    }
+    return (retval);
 } /* DgramReceive */
 
 /*
@@ -1670,14 +1601,12 @@ int32_t DgramReceive(int32_t fd, char *from, char *rbuf, int32_t size)
  */
 int32_t DgramReply(int32_t fd, char *sbuf, int32_t size)
 {
-	int32_t retval;
+    int32_t retval;
 
-	cmw_priv_assert_netaccess();
-	retval = sendto(fd, sbuf, size, 0,
-					(struct sockaddr *)&sl_dgram_lastaddr,
-					sizeof(struct sockaddr_in));
-	cmw_priv_deassert_netaccess();
-	return retval;
+    retval = sendto(fd, sbuf, size, 0,
+                    (struct sockaddr *)&sl_dgram_lastaddr,
+                    sizeof(struct sockaddr_in));
+    return retval;
 } /* DgramReply */
 
 /*
@@ -1712,12 +1641,10 @@ int32_t DgramReply(int32_t fd, char *sbuf, int32_t size)
  */
 int32_t DgramRead(int32_t fd, char *rbuf, int32_t size)
 {
-	int32_t retval;
+    int32_t retval;
 
-	cmw_priv_assert_netaccess();
-	retval = recv(fd, rbuf, size, 0);
-	cmw_priv_deassert_netaccess();
-	return retval;
+    retval = recv(fd, rbuf, size, 0);
+    return retval;
 } /* DgramRead */
 
 /*
@@ -1753,12 +1680,10 @@ int32_t DgramRead(int32_t fd, char *rbuf, int32_t size)
  */
 int32_t DgramWrite(int32_t fd, char *wbuf, int32_t size)
 {
-	int32_t retval;
+    int32_t retval;
 
-	cmw_priv_assert_netaccess();
-	retval = send(fd, wbuf, size, 0);
-	cmw_priv_deassert_netaccess();
-	return retval;
+    retval = send(fd, wbuf, size, 0);
+    return retval;
 } /* DgramWrite */
 
 /*
@@ -1797,7 +1722,7 @@ static DgramInthandler()
 #endif /* __STDC__ */
 {
 #ifndef _WINDOWS /* hah?  This appears to do nothing. (unblock receive??) */
-	(void)signal(SIGALRM, DgramInthandler);
+    (void)signal(SIGALRM, DgramInthandler);
 #endif
 } /* DgramInthandler */
 
@@ -1846,58 +1771,58 @@ static DgramInthandler()
  * Originally coded by Arne Helme
  */
 int32_t DgramSendRec(int32_t fd, char *host, int32_t port, char *sbuf, int32_t sbuf_size,
-					 char *rbuf, int32_t rbuf_size)
+                     char *rbuf, int32_t rbuf_size)
 {
-	int32_t retval = -1;
-	int32_t retry = sl_default_retries;
+    int32_t retval = -1;
+    int32_t retry = sl_default_retries;
 
 #ifndef _WINDOWS
-	(void)signal(SIGALRM, DgramInthandler);
+    (void)signal(SIGALRM, DgramInthandler);
 #endif
-	while (retry > 0)
-	{
-		if (DgramSend(fd, host, port, sbuf, sbuf_size) == -1)
-			return (-1);
+    while (retry > 0)
+    {
+        if (DgramSend(fd, host, port, sbuf, sbuf_size) == -1)
+            return (-1);
 
 #ifndef _WINDOWS
-		(void)alarm(sl_timeout_s);
+        (void)alarm(sl_timeout_s);
 #else
-		(void)alarm(sl_timeout_s, DgramInthandler);
+        (void)alarm(sl_timeout_s, DgramInthandler);
 #endif
-		retval = DgramReceive(fd, host, rbuf, rbuf_size);
-		if (retval == -1)
-		{
-			if (errno == EINTR || sl_errno == SL_EWRONGHOST)
-			{
-				/* We have a timeout or a message from wrong host */
-				if (--retry)
-				{
-					continue; /* Try one more time */
-				}
-				else
-				{
-					sl_errno = SL_ENORESP;
-					break; /* Unable to get response */
-				}
-			}
-			else
-			{
-				sl_errno = SL_ERECEIVE;
-				break; /* Unable to receive response */
-			}
-		}
-		else
-		{
-			break; /* Datagram from <host> arrived */
-		}
-	}
+        retval = DgramReceive(fd, host, rbuf, rbuf_size);
+        if (retval == -1)
+        {
+            if (errno == EINTR || sl_errno == SL_EWRONGHOST)
+            {
+                /* We have a timeout or a message from wrong host */
+                if (--retry)
+                {
+                    continue; /* Try one more time */
+                }
+                else
+                {
+                    sl_errno = SL_ENORESP;
+                    break; /* Unable to get response */
+                }
+            }
+            else
+            {
+                sl_errno = SL_ERECEIVE;
+                break; /* Unable to receive response */
+            }
+        }
+        else
+        {
+            break; /* Datagram from <host> arrived */
+        }
+    }
 #ifndef _WINDOWS
-	(void)alarm(0);
-	(void)signal(SIGALRM, SIG_DFL);
+    (void)alarm(0);
+    (void)signal(SIGALRM, SIG_DFL);
 #else
-	alarm(0, NULL);
+    alarm(0, NULL);
 #endif
-	return (retval);
+    return (retval);
 } /* DgramInthandler */
 
 /*
@@ -1933,7 +1858,7 @@ int32_t DgramSendRec(int32_t fd, char *host, int32_t port, char *sbuf, int32_t s
  */
 char *DgramLastaddr(void)
 {
-	return (inet_ntoa(sl_dgram_lastaddr.sin_addr));
+    return (inet_ntoa(sl_dgram_lastaddr.sin_addr));
 } /* DgramLastaddr */
 
 /*
@@ -1971,20 +1896,20 @@ char *DgramLastaddr(void)
  */
 char *DgramLastname(void)
 {
-	struct hostent *he;
-	char *str;
+    struct hostent *he;
+    char *str;
 
-	he = gethostbyaddr((char *)&sl_dgram_lastaddr.sin_addr,
-					   sizeof(struct in_addr), AF_INET);
-	if (he == NULL)
-	{
-		str = inet_ntoa(sl_dgram_lastaddr.sin_addr);
-	}
-	else
-	{
-		str = (char *)he->h_name;
-	}
-	return str;
+    he = gethostbyaddr((char *)&sl_dgram_lastaddr.sin_addr,
+                       sizeof(struct in_addr), AF_INET);
+    if (he == NULL)
+    {
+        str = inet_ntoa(sl_dgram_lastaddr.sin_addr);
+    }
+    else
+    {
+        str = (char *)he->h_name;
+    }
+    return str;
 } /* DgramLastname */
 
 /*
@@ -2018,7 +1943,7 @@ char *DgramLastname(void)
  */
 int32_t DgramLastport(void)
 {
-	return ((int32_t)ntohs((uint16_t)sl_dgram_lastaddr.sin_port));
+    return ((int32_t)ntohs((uint16_t)sl_dgram_lastaddr.sin_port));
 } /* DgramLastport */
 
 /*
@@ -2052,7 +1977,7 @@ int32_t DgramLastport(void)
  */
 void DgramClose(int32_t fd)
 {
-	close(fd);
+    close(fd);
 } /* DgramClose */
 
 /*
@@ -2091,121 +2016,121 @@ void DgramClose(int32_t fd)
 #endif
 void GetLocalHostName(char *name, uint32_t size, int32_t search_domain_for_xpilot)
 {
-	struct hostent *he = NULL;
-	struct hostent *xpilot_he = NULL;
+    struct hostent *he = NULL;
+    struct hostent *xpilot_he = NULL;
 #ifndef _WINDOWS
-	int32_t xpilot_len;
-	char *dot;
-	char xpilot_hostname[MAXHOSTNAMELEN];
+    int32_t xpilot_len;
+    char *dot;
+    char xpilot_hostname[MAXHOSTNAMELEN];
 #endif
-	static const char xpilot[] = "xpilot";
+    static const char xpilot[] = "xpilot";
 #ifdef VMS
-	char vms_inethost[MAXHOSTNAMELEN] = "UCX$INET_HOST";
-	char vms_inetdomain[MAXHOSTNAMELEN] = "UCX$INET_DOMAIN";
-	char vms_host[MAXHOSTNAMELEN];
-	char vms_domain[MAXHOSTNAMELEN];
-	int32_t namelen;
+    char vms_inethost[MAXHOSTNAMELEN] = "UCX$INET_HOST";
+    char vms_inetdomain[MAXHOSTNAMELEN] = "UCX$INET_DOMAIN";
+    char vms_host[MAXHOSTNAMELEN];
+    char vms_domain[MAXHOSTNAMELEN];
+    int32_t namelen;
 #endif
 
-	gethostname(name, size);
-	if ((he = gethostbyname(name)) == NULL)
-	{
-		return;
-	}
-	strncpy(name, he->h_name, size);
-	name[size - 1] = '\0';
+    gethostname(name, size);
+    if ((he = gethostbyname(name)) == NULL)
+    {
+        return;
+    }
+    strncpy(name, he->h_name, size);
+    name[size - 1] = '\0';
 
-	/*
-	 * If there are no dots in the name then we don't have the FQDN,
-	 * and if the address is of the normal Internet type
-	 * then we try to get the FQDN via the backdoor of the IP address.
-	 * Let's hope it works :)
-	 * XXX I don't see why we must limit addrtype, why not just pass it
-	 * back into gethostbyaddr blindly?  Could be IPv6 soon...
-	 */
-	if (strchr(he->h_name, '.') == NULL && he->h_addrtype == AF_INET && he->h_length == 4)
-	{
-		uint32_t a = 0;
-		memcpy((void *)&a, he->h_addr_list[0], 4);
-		if ((he = gethostbyaddr((char *)&a, 4, AF_INET)) != NULL && strchr(he->h_name, '.') != NULL)
-		{
-			strncpy(name, he->h_name, size);
-			name[size - 1] = '\0';
-		}
-		else
-		{
+    /*
+     * If there are no dots in the name then we don't have the FQDN,
+     * and if the address is of the normal Internet type
+     * then we try to get the FQDN via the backdoor of the IP address.
+     * Let's hope it works :)
+     * XXX I don't see why we must limit addrtype, why not just pass it
+     * back into gethostbyaddr blindly?  Could be IPv6 soon...
+     */
+    if (strchr(he->h_name, '.') == NULL && he->h_addrtype == AF_INET && he->h_length == 4)
+    {
+        uint32_t a = 0;
+        memcpy((void *)&a, he->h_addr_list[0], 4);
+        if ((he = gethostbyaddr((char *)&a, 4, AF_INET)) != NULL && strchr(he->h_name, '.') != NULL)
+        {
+            strncpy(name, he->h_name, size);
+            name[size - 1] = '\0';
+        }
+        else
+        {
 #if defined(VMS)
-			vms_trnlnm(vms_inethost, namelen, vms_host);
-			vms_trnlnm(vms_inetdomain, namelen, vms_domain);
-			strcpy(name, vms_host);
-			strcat(name, ".");
-			strcat(name, vms_domain);
-			return;
+            vms_trnlnm(vms_inethost, namelen, vms_host);
+            vms_trnlnm(vms_inetdomain, namelen, vms_domain);
+            strcpy(name, vms_host);
+            strcat(name, ".");
+            strcat(name, vms_domain);
+            return;
 #else
-			/* Let's try to find the domain from /etc/resolv.conf. */
-			FILE *fp = fopen("/etc/resolv.conf", "r");
-			if (fp)
-			{
-				char *s, buf[256];
-				while (fgets(buf, sizeof buf, fp))
-				{
-					if ((s = strtok(buf, " \t\r\n")) != NULL && !strcmp(s, "domain") && (s = strtok(NULL, " \t\r\n")) != NULL)
-					{
-						strcat(name, ".");
-						strcat(name, s);
-						break;
-					}
-				}
-				fclose(fp);
-			}
+            /* Let's try to find the domain from /etc/resolv.conf. */
+            FILE *fp = fopen("/etc/resolv.conf", "r");
+            if (fp)
+            {
+                char *s, buf[256];
+                while (fgets(buf, sizeof buf, fp))
+                {
+                    if ((s = strtok(buf, " \t\r\n")) != NULL && !strcmp(s, "domain") && (s = strtok(NULL, " \t\r\n")) != NULL)
+                    {
+                        strcat(name, ".");
+                        strcat(name, s);
+                        break;
+                    }
+                }
+                fclose(fp);
+            }
 #endif
-		}
-		/* make sure this is a valid FQDN. */
-		if ((he = gethostbyname(name)) == NULL)
-		{
-			gethostname(name, size);
-			return;
-		}
-	}
+        }
+        /* make sure this is a valid FQDN. */
+        if ((he = gethostbyname(name)) == NULL)
+        {
+            gethostname(name, size);
+            return;
+        }
+    }
 
-	if (search_domain_for_xpilot != 1)
-	{
-		return;
-	}
+    if (search_domain_for_xpilot != 1)
+    {
+        return;
+    }
 
 #ifndef _WINDOWS /* the lookup of xpilot can take FOREVER! zzzz...  */
 
-	/* if name starts with "xpilot" then we're done. */
-	xpilot_len = strlen(xpilot);
-	if (!strncmp(name, xpilot, xpilot_len))
-	{
-		return;
-	}
+    /* if name starts with "xpilot" then we're done. */
+    xpilot_len = strlen(xpilot);
+    if (!strncmp(name, xpilot, xpilot_len))
+    {
+        return;
+    }
 
-	/* Make a wild guess that a "xpilot" hostname or alias is in this domain */
-	dot = name;
-	while ((dot = strchr(dot, '.')) != NULL)
-	{
-		if (xpilot_len + strlen(dot) < sizeof(xpilot_hostname))
-		{
-			strcpy(xpilot_hostname, xpilot);
-			strcat(xpilot_hostname, dot);
-			/*
-			 * If there is a CNAME the h_name must be identical to the
-			 * FQDN we guessed above.  It is hard to know our IP to know
-			 * that an A record points to us.
-			 */
-			if ((xpilot_he = gethostbyname(xpilot_hostname)) != NULL && !strcmp(name,
-																				xpilot_he->h_name))
-				break;
-			xpilot_he = NULL;
-		}
-		++dot;
-	}
-	if (xpilot_he != NULL)
-	{
-		strncpy(name, xpilot_hostname, size);
-	}
+    /* Make a wild guess that a "xpilot" hostname or alias is in this domain */
+    dot = name;
+    while ((dot = strchr(dot, '.')) != NULL)
+    {
+        if (xpilot_len + strlen(dot) < sizeof(xpilot_hostname))
+        {
+            strcpy(xpilot_hostname, xpilot);
+            strcat(xpilot_hostname, dot);
+            /*
+             * If there is a CNAME the h_name must be identical to the
+             * FQDN we guessed above.  It is hard to know our IP to know
+             * that an A record points to us.
+             */
+            if ((xpilot_he = gethostbyname(xpilot_hostname)) != NULL && !strcmp(name,
+                                                                                xpilot_he->h_name))
+                break;
+            xpilot_he = NULL;
+        }
+        ++dot;
+    }
+    if (xpilot_he != NULL)
+    {
+        strncpy(name, xpilot_hostname, size);
+    }
 
 #endif
 } /* GetLocalHostName */
@@ -2241,7 +2166,7 @@ void GetLocalHostName(char *name, uint32_t size, int32_t search_domain_for_xpilo
  */
 uint32_t GetInetAddr(char *name)
 {
-	return inet_addr(name);
+    return inet_addr(name);
 }
 
 /*
@@ -2279,13 +2204,13 @@ static void ResolveTimeout(int32_t signum)
 static ResolveTimeout()
 #endif /* __STDC__ */
 {
-	DEB(fprintf(stderr, "Resolve timeout\n"));
+    DEB(fprintf(stderr, "Resolve timeout\n"));
 #ifdef _WINDOWS
-	WSACancelAsyncRequest(gethosthandle);
-	hostnameCancelled = TRUE;
-	alarm(0, NULL);
+    WSACancelAsyncRequest(gethosthandle);
+    hostnameCancelled = TRUE;
+    alarm(0, NULL);
 #else
-	(void)longjmp(env, 1);
+    (void)longjmp(env, 1);
 #endif
 }
 
@@ -2324,53 +2249,53 @@ static ResolveTimeout()
 #ifndef _WINDOWS
 char *GetAddrByName(const char *name)
 {
-	struct hostent *hp;
+    struct hostent *hp;
 
-	if (setjmp(env))
-	{
-		sl_errno = SL_ETIMEOUT;
-		alarm(0);
-		signal(SIGALRM, SIG_DFL);
-		return 0;
-	}
-	signal(SIGALRM, ResolveTimeout);
-	alarm(6);
+    if (setjmp(env))
+    {
+        sl_errno = SL_ETIMEOUT;
+        alarm(0);
+        signal(SIGALRM, SIG_DFL);
+        return 0;
+    }
+    signal(SIGALRM, ResolveTimeout);
+    alarm(6);
 
-	hp = gethostbyname(name);
+    hp = gethostbyname(name);
 
-	alarm(0);
-	signal(SIGALRM, SIG_DFL);
-	if (!hp)
-	{
-		sl_errno = SL_EHOSTNAME;
-		return 0;
-	}
-	return inet_ntoa(*(struct in_addr *)(hp->h_addr));
+    alarm(0);
+    signal(SIGALRM, SIG_DFL);
+    if (!hp)
+    {
+        sl_errno = SL_EHOSTNAME;
+        return 0;
+    }
+    return inet_ntoa(*(struct in_addr *)(hp->h_addr));
 }
 #else
 char *GetAddrByName(const char *name)
 {
-	/* If you aren't connected to the net, then gethostbyname()
-	 can take many minutes to time out.  WSACancelBlockingCall()
-	 doesn't affect it.
-	 */
-	char chp[MAXGETHOSTSTRUCT + 1];
-	struct hostent *hp = (struct hostent *)&chp;
-	alarm(6, ResolveTimeout);
-	hostnameCancelled = FALSE;
-	*hostnameFound = FALSE;
-	gethosthandle = WSAAsyncGetHostByName(notifyWnd, WM_GETHOSTNAME, name,
-										  chp, MAXGETHOSTSTRUCT);
-	/*	hp = gethostbyname(name); */
-	while (!hostnameCancelled && !*hostnameFound)
-		Sleep(1000);
-	alarm(0, NULL);
-	if (!*hostnameFound)
-	{
-		sl_errno = SL_EHOSTNAME;
-		return 0;
-	}
-	return inet_ntoa(*(struct in_addr *)(hp->h_addr));
+    /* If you aren't connected to the net, then gethostbyname()
+     can take many minutes to time out.  WSACancelBlockingCall()
+     doesn't affect it.
+     */
+    char chp[MAXGETHOSTSTRUCT + 1];
+    struct hostent *hp = (struct hostent *)&chp;
+    alarm(6, ResolveTimeout);
+    hostnameCancelled = FALSE;
+    *hostnameFound = FALSE;
+    gethosthandle = WSAAsyncGetHostByName(notifyWnd, WM_GETHOSTNAME, name,
+                                          chp, MAXGETHOSTSTRUCT);
+    /*	hp = gethostbyname(name); */
+    while (!hostnameCancelled && !*hostnameFound)
+        Sleep(1000);
+    alarm(0, NULL);
+    if (!*hostnameFound)
+    {
+        sl_errno = SL_EHOSTNAME;
+        return 0;
+    }
+    return inet_ntoa(*(struct in_addr *)(hp->h_addr));
 }
 #endif
 
@@ -2408,47 +2333,47 @@ char *GetAddrByName(const char *name)
  */
 int32_t GetNameByAddr(const char *addr, char *name, int32_t size)
 {
-	struct hostent *hp;
-	struct sockaddr_in saddr;
+    struct hostent *hp;
+    struct sockaddr_in saddr;
 
-	saddr.sin_addr.s_addr = inet_addr(addr);
-	if (saddr.sin_addr.s_addr == (uint32_t)-1)
-	{
-		sl_errno = SL_EADDR;
-		return -1;
-	}
-	if (setjmp(env))
-	{
-		sl_errno = SL_ETIMEOUT;
+    saddr.sin_addr.s_addr = inet_addr(addr);
+    if (saddr.sin_addr.s_addr == (uint32_t)-1)
+    {
+        sl_errno = SL_EADDR;
+        return -1;
+    }
+    if (setjmp(env))
+    {
+        sl_errno = SL_ETIMEOUT;
 #ifndef _WINDOWS
-		signal(SIGALRM, SIG_DFL);
+        signal(SIGALRM, SIG_DFL);
 #endif
-		return -1;
-	}
+        return -1;
+    }
 #ifndef _WINDOWS
-	alarm(0);
-	signal(SIGALRM, ResolveTimeout);
-	alarm(6);
+    alarm(0);
+    signal(SIGALRM, ResolveTimeout);
+    alarm(6);
 #else
-	alarm(0, NULL);
-	alarm(6, ResolveTimeout);
+    alarm(0, NULL);
+    alarm(6, ResolveTimeout);
 #endif
 
-	hp = gethostbyaddr((char *)&saddr.sin_addr.s_addr, 4, AF_INET);
+    hp = gethostbyaddr((char *)&saddr.sin_addr.s_addr, 4, AF_INET);
 #ifndef _WINDOWS
-	alarm(0);
-	signal(SIGALRM, SIG_DFL);
+    alarm(0);
+    signal(SIGALRM, SIG_DFL);
 #else
-	alarm(0, NULL);
+    alarm(0, NULL);
 #endif
-	if (!hp)
-	{
-		sl_errno = SL_EHOSTNAME;
-		return -1;
-	}
-	strncpy(name, hp->h_name, size);
-	name[size - 1] = '\0';
-	return 0;
+    if (!hp)
+    {
+        sl_errno = SL_EHOSTNAME;
+        return -1;
+    }
+    strncpy(name, hp->h_name, size);
+    name[size - 1] = '\0';
+    return 0;
 }
 
 #if defined(__sun__)
@@ -2457,15 +2382,15 @@ int32_t GetNameByAddr(const char *addr, char *name, int32_t size)
  */
 char *inet_ntoa(struct in_addr in)
 {
-	uint32_t addr = ntohl(in.s_addr);
-	static char ascii[16];
+    uint32_t addr = ntohl(in.s_addr);
+    static char ascii[16];
 
-	sprintf(ascii, "%d.%d.%d.%d",
-			addr >> 24 & 0xFF,
-			addr >> 16 & 0xFF,
-			addr >> 8 & 0xFF,
-			addr & 0xFF);
+    sprintf(ascii, "%d.%d.%d.%d",
+            addr >> 24 & 0xFF,
+            addr >> 16 & 0xFF,
+            addr >> 8 & 0xFF,
+            addr & 0xFF);
 
-	return ascii;
+    return ascii;
 }
 #endif

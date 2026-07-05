@@ -23,44 +23,7 @@
 
 #pragma once
 
-#include <cstdint>
-
-/*
- * The wall collision detection routines depend on repeatability
- * (getting the same result even after some "neutral" calculations)
- * and an exact determination whether a point is in space,
- * inside the wall (crash!) or on the edge.
- * This will be hard to achieve if only floating point would be used.
- * However, a resolution of a pixel is a bit rough and ugly.
- * Therefore a fixed point sub-pixel resolution is used called clicks.
- */
-#define CLICK_SHIFT 6
-#define CLICK (1 << CLICK_SHIFT)
-#define PIXEL_CLICKS CLICK
-#define BLOCK_CLICKS (BLOCK_SZ << CLICK_SHIFT)
-
-#define BLOCK_MIDDLE_TO_CLICK(B) ((int32_t)(((B) + 0.5f) * BLOCK_SZ) << CLICK_SHIFT)
-#define BLOCK_MIDDLE_TO_PIXEL(B) ((int32_t)(((B) + 0.5f) * BLOCK_SZ))
-#define BLOCK_TO_CLICK(B) ((int32_t)((B) * BLOCK_SZ) << CLICK_SHIFT)
-#define BLOCK_TO_PIXEL(B) ((int32_t)((B) * BLOCK_SZ))
-#define CLICK_TO_PIXEL(C) ((int32_t)((C) >> CLICK_SHIFT))
-#define CLICK_TO_BLOCK(C) ((int32_t)((C) / (BLOCK_SZ << CLICK_SHIFT)))
-#define CLICK_TO_FLOAT(C) ((DFLOAT)(C) * (1.0f / CLICK))
-#define PIXEL_TO_CLICK(P) ((click_t)(P) << CLICK_SHIFT)
-#define PIXEL_TO_BLOCK(P) ((P) / BLOCK_SZ)
-#define FLOAT_TO_CLICK(F) ((click_t)((F) * CLICK))
-
-typedef int32_t click_t;
-
-typedef struct
-{
-	click_t cx, cy;
-} clpos_t;
-
-typedef struct
-{
-	click_t cx, cy;
-} clvec_t;
+#include "click.h"
 
 /*
  * Object position

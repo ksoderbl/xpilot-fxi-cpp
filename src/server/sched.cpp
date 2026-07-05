@@ -158,7 +158,7 @@ static int32_t input_inited = false;
 
 static void io_dummy(int32_t fd, void *arg)
 {
-	xpprintf("io_dummy called!  (%d, %p)\n", fd, arg);
+	warn("io_dummy called!  (%d, %p)\n", fd, arg);
 }
 
 void install_input(void (*func)(int32_t, void *), int32_t fd, void *arg)

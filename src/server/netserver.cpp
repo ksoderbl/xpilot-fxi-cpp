@@ -329,8 +329,8 @@ static int32_t Init_setup(void)
 
     if (type != SETUP_MAP_UNCOMPRESSED)
     {
-        xpprintf("%s Map compression ratio is %-4.2f%%\n", showtime(),
-                 100.0 * size / (World.x * World.y));
+        warn("%s Map compression ratio is %-4.2f%%\n", showtime(),
+             100.0 * size / (World.x * World.y));
     }
 
     if ((Setup = (setup_t *)malloc(sizeof(setup_t) + size)) == NULL)
@@ -532,10 +532,10 @@ void Destroy_connection(connection_t *connp, const char *reason)
         DgramWrite(sock, pkt, len);
     }
 
-    xpprintf("%s Goodbye %s=%s@%s|%s (\"%s\")\n", showtime(),
-             connp->nick ? ((const char *)(connp->nick)) : "",
-             connp->real ? ((const char *)(connp->real)) : "",
-             connp->host ? ((const char *)(connp->host)) : "", ((const char *)(connp->dpy)) ? ((const char *)(connp->dpy)) : "", reason);
+    warn("%s Goodbye %s=%s@%s|%s (\"%s\")\n", showtime(),
+         connp->nick ? ((const char *)(connp->nick)) : "",
+         connp->real ? ((const char *)(connp->real)) : "",
+         connp->host ? ((const char *)(connp->host)) : "", ((const char *)(connp->dpy)) ? ((const char *)(connp->dpy)) : "", reason);
 
     Conn_set_state(connp, CONN_FREE, CONN_FREE);
 
@@ -644,8 +644,8 @@ int32_t Setup_connection(char *real, char *nick, char *dpy, team_t *team, char *
 
     if (free_conn_index >= max_connections)
     {
-        xpprintf("%s Full house for %s(%s)@%s(%s)\n", showtime(), real,
-                 nick, host, dpy);
+        warn("%s Full house for %s(%s)@%s(%s)\n", showtime(), real,
+             nick, host, dpy);
         return -1;
     }
     connp = &Conn[free_conn_index];
@@ -810,13 +810,13 @@ static int32_t Handle_listening(connection_t *connp)
         }
     }
 
-    xpprintf("%s Welcome %s=%s@%s|%s (%s/%d)", showtime(), connp->nick,
-             connp->real, connp->host, connp->dpy, connp->addr,
-             connp->his_port);
+    warn("%s Welcome %s=%s@%s|%s (%s/%d)", showtime(), connp->nick,
+         connp->real, connp->host, connp->dpy, connp->addr,
+         connp->his_port);
     if (connp->version != MY_VERSION)
-        xpprintf(" (version %04x)\n", connp->version);
+        warn(" (version %04x)\n", connp->version);
     else
-        xpprintf("\n");
+        warn("\n");
 
     if (connp->r.ptr[0] != PKT_VERIFY)
     {
@@ -836,9 +836,9 @@ static int32_t Handle_listening(connection_t *connp)
     Fix_nick_name(nick);
     if (strcmp(real, connp->real))
     {
-        xpprintf("%s Client verified incorrectly (%s,%s)(%s,%s)\n",
-                 showtime(), real, nick, connp->real,
-                 connp->nick);
+        warn("%s Client verified incorrectly (%s,%s)(%s,%s)\n",
+             showtime(), real, nick, connp->real,
+             connp->nick);
         Send_reply(connp, PKT_VERIFY, PKT_FAILURE);
         Send_reliable(connp);
         Destroy_connection(connp, "verify incorrect");
@@ -1039,8 +1039,8 @@ static bool Handle_login(connection_t *connp)
         goto handle_result;
     }
 
-    xpprintf("%s %s (%d) starts at startpos %d.\n", showtime(), pl->name,
-             NumPlayers, pl->home_base->id);
+    warn("%s %s (%d) starts at startpos %d.\n", showtime(), pl->name,
+         NumPlayers, pl->home_base->id);
 
     Send_info_about_myself(pl, PL_SEND_GENERAL | PL_SEND_SCORE | PL_SEND_BASE);
     Send_info_about_others(pl, PL_SEND_GENERAL | PL_SEND_SCORE | PL_SEND_BASE);

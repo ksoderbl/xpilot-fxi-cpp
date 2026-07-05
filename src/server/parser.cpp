@@ -81,7 +81,7 @@ static void Parse_help(char *progname)
 		printf("    %s%s", options[j].type == valBool ? "-/+" : "-",
 			   options[j].name);
 		if (strcasecmp(options[j].commandLineOption, options[j].name))
-			xpprintf(" or %s", options[j].commandLineOption);
+			warn(" or %s", options[j].commandLineOption);
 		printf(
 			" %s\n",
 			options[j].type == valInt	   ? "<integer>"
@@ -153,7 +153,7 @@ static void Parser_dump_options(char *progname)
 		if (options[j].type != valVoid)
 		{
 			int32_t len = strlen(options[j].name);
-			xpprintf(
+			warn(
 				"%s:%*s%s\n",
 				options[j].name,
 				(len < 40) ? (40 - len) : 1,
@@ -162,7 +162,7 @@ static void Parser_dump_options(char *progname)
 												  : "");
 		}
 	}
-	xpprintf("\n");
+	warn("\n");
 }
 
 /*
@@ -206,9 +206,9 @@ static void Parser_dump_flags(char *progname)
 			msg[strlen(msg) - 2] = '\0';
 		}
 		strlcat(msg, "}", sizeof(msg));
-		xpprintf("%s:%*s%s\n", options[j].name, (len < 40) ? (40 - len) : 1, "", msg);
+		warn("%s:%*s%s\n", options[j].name, (len < 40) ? (40 - len) : 1, "", msg);
 	}
-	xpprintf("\n");
+	warn("\n");
 }
 
 /*
@@ -221,17 +221,17 @@ static void Parser_dump_config(char *progname)
 
 	options = Get_option_descs(&option_count);
 
-	xpprintf("\n");
-	xpprintf("# %s option dump\n", progname);
-	xpprintf("# \n");
-	xpprintf("# CONF_DATADIR = %s\n", Conf_datadir());
-	xpprintf("# DEFAULTS_FILE_NAME = %s\n", Conf_defaults_file_name());
-	xpprintf("# PASSWORD_FILE_NAME = %s\n", Conf_password_file_name());
-	xpprintf("# MAPDIR = %s\n", Conf_mapdir());
-	xpprintf("# DEFAULT_MAP = %s\n", Conf_default_map());
-	xpprintf("# SERVERMOTDFILE = %s\n", Conf_servermotdfile());
-	xpprintf("# ROBOTFILE = %s\n", Conf_robotfile());
-	xpprintf("# \n");
+	warn("\n");
+	warn("# %s option dump\n", progname);
+	warn("# \n");
+	warn("# CONF_DATADIR = %s\n", Conf_datadir());
+	warn("# DEFAULTS_FILE_NAME = %s\n", Conf_defaults_file_name());
+	warn("# PASSWORD_FILE_NAME = %s\n", Conf_password_file_name());
+	warn("# MAPDIR = %s\n", Conf_mapdir());
+	warn("# DEFAULT_MAP = %s\n", Conf_default_map());
+	warn("# SERVERMOTDFILE = %s\n", Conf_servermotdfile());
+	warn("# ROBOTFILE = %s\n", Conf_robotfile());
+	warn("# \n");
 }
 
 /*
@@ -476,24 +476,24 @@ bool Parser(int32_t argc, char **argv)
 		{
 			if (strcasecmp(fname, "wild") && !parseMapFile(fname))
 			{
-				xpprintf(
+				warn(
 					"Unable to read %s, trying to open %s\n",
 					fname, Conf_default_map());
 				if (!parseMapFile(Conf_default_map()))
 				{
-					xpprintf("Unable to read %s\n",
-							 Conf_default_map());
+					warn("Unable to read %s\n",
+						 Conf_default_map());
 				}
 			}
 		}
 		else
 		{
-			xpprintf("Map not specified, trying to open %s\n",
-					 Conf_default_map());
+			warn("Map not specified, trying to open %s\n",
+				 Conf_default_map());
 			if (!parseMapFile(Conf_default_map()))
 			{
-				xpprintf("Unable to read %s\n",
-						 Conf_default_map());
+				warn("Unable to read %s\n",
+					 Conf_default_map());
 			}
 		}
 	}

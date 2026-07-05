@@ -4,6 +4,7 @@
 #include <sys/time.h>
 
 #include "xpconfig.h"
+#include "xperror.h"
 #include "debug.h"
 #include "proto.h"
 #include "global.h"
@@ -53,18 +54,18 @@ void measure_time(void)
 		if (((counter + 1) % MEASURE_LOOPS) == 0)
 		{
 			int32_t i = 0;
-			xpprintf("scheduling times:\n");
+			warn("scheduling times:\n");
 			for (i = 0; i < MEASURE_LOOPS; i++)
 			{
-				xpprintf("%.3f\n", measure2[i]);
+				warn("%.3f\n", measure2[i]);
 			}
-			xpprintf("mainloop times:\n");
+			warn("mainloop times:\n");
 			for (i = 0; i < MEASURE_LOOPS; i++)
 			{
-				xpprintf("%.3f\n", measure[i]);
+				warn("%.3f\n", measure[i]);
 			}
-			xpprintf("mainloop time:\n");
-			xpprintf(
+			warn("mainloop time:\n");
+			warn(
 				"mean:%.3f us,  std_dev:%.3f us,  min:%3.f us,  max:%3.f us\n",
 				compute_mean(measure, MEASURE_LOOPS),
 				compute_std(
@@ -74,8 +75,8 @@ void measure_time(void)
 					MEASURE_LOOPS),
 				compute_min(measure, MEASURE_LOOPS),
 				compute_max(measure, MEASURE_LOOPS));
-			xpprintf("scheduling:\n");
-			xpprintf(
+			warn("scheduling:\n");
+			warn(
 				"mean:%.3f us,  std_dev:%.3f us,  min:%3.f us,  max:%3.f us\n",
 				compute_mean(measure2, MEASURE_LOOPS),
 				compute_std(
@@ -86,7 +87,7 @@ void measure_time(void)
 				compute_min(measure2, MEASURE_LOOPS),
 				compute_max(measure2, MEASURE_LOOPS));
 
-			xpprintf("measured for %d frames\n", MEASURE_LOOPS);
+			warn("measured for %d frames\n", MEASURE_LOOPS);
 			End_game();
 		}
 		counter++;

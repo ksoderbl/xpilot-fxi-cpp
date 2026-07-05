@@ -142,10 +142,10 @@ int main(int argc, char **argv)
      * --- Output copyright notice ---
      */
 
-    xpprintf("  " COPYRIGHT ".\n"
-             "  " TITLE " comes with ABSOLUTELY NO WARRANTY; "
-             "for details see the\n"
-             "  provided LICENSE file.\n\n");
+    warn("  " COPYRIGHT ".\n"
+         "  " TITLE " comes with ABSOLUTELY NO WARRANTY; "
+         "for details see the\n"
+         "  provided LICENSE file.\n\n");
 
     init_error(argv[0]);
     srand(time((time_t *)0) * Get_process_id());
@@ -222,13 +222,13 @@ int main(int argc, char **argv)
      */
     serverStartTime = time(NULL);
 
-    xpprintf("%s Server runs at %d frames per second, correction factor is %f\n",
-             showtime(), fps, 1.0 / frameDivisor);
+    warn("%s Server runs at %d frames per second, correction factor is %f\n",
+         showtime(), fps, 1.0 / frameDivisor);
 
     setup_timer(fps);
     main_loops = 0;
     sched();
-    xpprintf("sched returned!?");
+    warn("sched returned!?");
     End_game();
     return 1;
 }
@@ -589,7 +589,7 @@ void Game_Over(void)
         {
             sprintf(msg, "Best team (%d Pts): Team %d", maxsc, win);
             Message_game_print(msg);
-            xpprintf("%s\n", msg);
+            warn("%s\n", msg);
         }
 
         if (loose != -1 && loose != win)
@@ -597,7 +597,7 @@ void Game_Over(void)
             sprintf(msg, "Worst team (%d Pts): Team %d", minsc,
                     loose);
             Message_game_print(msg);
-            xpprintf("%s\n", msg);
+            warn("%s\n", msg);
         }
     }
 
@@ -630,13 +630,13 @@ void Game_Over(void)
     {
         sprintf(msg, "Best human player: %s", Players[win]->name);
         Message_game_print(msg);
-        xpprintf("%s\n", msg);
+        warn("%s\n", msg);
     }
     if (loose != -1 && loose != win)
     {
         sprintf(msg, "Worst human player: %s", Players[loose]->name);
         Message_game_print(msg);
-        xpprintf("%s\n", msg);
+        warn("%s\n", msg);
     }
     Rank_write_webpage();
     Rank_write_rankfile();
@@ -695,7 +695,7 @@ int32_t plock_server(int32_t onoff)
 #else
     if (onoff)
     {
-        xpprintf(
+        warn(
             "Can't plock: Server was not compiled with plock support\n");
     }
     return 0;

@@ -40,8 +40,6 @@
 #define D(x)
 #endif
 
-#define xpprintf printf
-
 void DEBUG_PrintBacktrace(void);
 char *showtime(void);
 

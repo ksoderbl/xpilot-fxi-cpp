@@ -8,6 +8,7 @@
 #include <cstdio>
 #include <cstring>
 
+#include "xperror.h"
 #include "global.h"
 #include "debug.h"
 #include "object.h"
@@ -171,7 +172,7 @@ void Object_remove(object_t *obj)
 		break;
 
 	default:
-		xpprintf("%s Attempted to remove object of unknown type %d.\n", showtime(), obj->type);
+		warn("%s Attempted to remove object of unknown type %d.\n", showtime(), obj->type);
 		ASSERT(0)
 		break;
 	}

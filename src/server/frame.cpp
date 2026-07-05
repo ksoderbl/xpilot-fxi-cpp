@@ -506,7 +506,7 @@ void Frame_shots(connection_t *connp, player_t *pl)
 		}
 		if ((color = obj->color) == BLACK)
 		{
-			xpprintf("black %d\n", obj->type);
+			warn("black %d\n", obj->type);
 			color = WHITE;
 		}
 

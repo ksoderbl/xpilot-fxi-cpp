@@ -149,7 +149,7 @@ static void Robot_default_create(player_t *pl, char *str)
 	{
 		if (str && *str)
 		{
-			xpprintf(
+			warn(
 				"%s invalid parameters for default robot: \"%s\"\n",
 				showtime(), str);
 			my_data->attack = (int32_t)(rfrac() * 99.5f);

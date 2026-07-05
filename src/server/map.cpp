@@ -161,13 +161,13 @@ static void Map_extra_error(int32_t line_num)
 		prev_line_num = line_num;
 		if (++error_count <= max_error)
 		{
-			xpprintf(
+			warn(
 				"Map file contains extranous characters on line %d\n",
 				line_num);
 		}
 		else if (error_count - max_error == 1)
 		{
-			xpprintf("And so on...\n");
+			warn("And so on...\n");
 		}
 	}
 }
@@ -182,12 +182,12 @@ static void Map_missing_error(int32_t line_num)
 		prev_line_num = line_num;
 		if (++error_count <= max_error)
 		{
-			xpprintf("Not enough map data on map data line %d\n",
-					 line_num);
+			warn("Not enough map data on map data line %d\n",
+				 line_num);
 		}
 		else if (error_count - max_error == 1)
 		{
-			xpprintf("And so on...\n");
+			warn("And so on...\n");
 		}
 	}
 }
@@ -553,7 +553,7 @@ bool Map_parse(void)
 		maxRobots = World.NumBases;
 	}
 
-	xpprintf(
+	warn(
 		"World....: %s\nBases....: %d\nMapsize..: %dx%d\nTeam play: %s\n",
 		World.name, World.NumBases, World.x, World.y, BIT(World.rules->mode, TEAM_PLAY) ? "on" : "off");
 

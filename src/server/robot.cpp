@@ -756,8 +756,8 @@ static bool Robot_add(void)
 
 	Robot_talks(ROBOT_TALK_ENTER, robot->name, "");
 
-	xpprintf("%s %s (%d, %s) starts at startpos %d.\n", showtime(),
-			 robot->name, NumPlayers, robot->realname, robot->home_base->id);
+	warn("%s %s (%d, %s) starts at startpos %d.\n", showtime(),
+		 robot->name, NumPlayers, robot->realname, robot->home_base->id);
 
 	result = true;
 

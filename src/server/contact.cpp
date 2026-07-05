@@ -253,7 +253,7 @@ static int32_t Check_names(char *nick_name, char *real_name, char *host_name)
 	{
 		if (strcasecmp(Players[i]->name, nick_name) == 0)
 		{
-			D(xpprintf("%s %s\n", Players[i]->name, nick_name));
+			D(warn("%s %s\n", Players[i]->name, nick_name));
 			return E_IN_USE;
 		}
 	}
@@ -325,7 +325,7 @@ void Contact(int32_t fd, void *arg)
 	 */
 	if (Packet_scanf(&ibuf, "%u", &magic) <= 0 || (magic & 0xFFFF) != (MAGIC & 0xFFFF))
 	{
-		xpprintf("%s Incompatible packet from %s (0x%08x).\n", showtime(), host_addr, magic);
+		warn("%s Incompatible packet from %s (0x%08x).\n", showtime(), host_addr, magic);
 		return;
 	}
 	version = MAGIC2VERSION(magic);
@@ -335,7 +335,7 @@ void Contact(int32_t fd, void *arg)
 	 */
 	if (Packet_scanf(&ibuf, "%s%hu%c", real_name, &port, &ch) <= 0)
 	{
-		xpprintf("%s Incomplete packet from %s.\n", showtime(), host_addr);
+		warn("%s Incomplete packet from %s.\n", showtime(), host_addr);
 		return;
 	}
 	Fix_real_name(real_name);
@@ -353,7 +353,7 @@ void Contact(int32_t fd, void *arg)
 	 */
 	if (version < MIN_CLIENT_VERSION || (version > MAX_CLIENT_VERSION && reply_to != CONTACT_pack))
 	{
-		xpprintf("%s Incompatible version with %s@%s (%04x,%04x).\n", showtime(), real_name, host_addr, MY_VERSION, version);
+		warn("%s Incompatible version with %s@%s (%04x,%04x).\n", showtime(), real_name, host_addr, MY_VERSION, version);
 		Sockbuf_clear(&ibuf);
 		Packet_printf(&ibuf, "%u%c%c", MAGIC, reply_to, E_VERSION);
 		Reply(host_addr, port);
@@ -414,7 +414,7 @@ void Contact(int32_t fd, void *arg)
 		if (Packet_scanf(&ibuf, "%s%s%s%d", nick_name, disp_name, host_name,
 						 &team) <= 0)
 		{
-			xpprintf("%s Incomplete enter queue from %s@%s.\n", showtime(), real_name, host_addr);
+			warn("%s Incomplete enter queue from %s@%s.\n", showtime(), real_name, host_addr);
 			return;
 		}
 		Fix_nick_name(nick_name);
@@ -441,8 +441,8 @@ void Contact(int32_t fd, void *arg)
 		/*
 		 * Someone asked for information.
 		 */
-		xpprintf("%s %s@%s asked for info about current game.\n",
-				 showtime(), real_name, host_addr);
+		warn("%s %s@%s asked for info about current game.\n",
+			 showtime(), real_name, host_addr);
 		Sockbuf_clear(&ibuf);
 		Packet_printf(&ibuf, "%u%c%c", my_magic, reply_to, SUCCESS);
 		Server_info(ibuf.buf + ibuf.len, ibuf.size - ibuf.len);
@@ -487,7 +487,7 @@ void Contact(int32_t fd, void *arg)
 		/*
 		 * Got contact message from client.
 		 */
-		xpprintf("%s Got CONTACT from %s.\n", showtime(), host_addr);
+		warn("%s Got CONTACT from %s.\n", showtime(), host_addr);
 		Sockbuf_clear(&ibuf);
 		Packet_printf(&ibuf, "%u%c%c", my_magic, reply_to, status);
 	}
@@ -635,8 +635,8 @@ void Contact(int32_t fd, void *arg)
 		 */
 		bool bad = false, full, change;
 
-		xpprintf("%s %s@%s asked for an option list.\n",
-				 showtime(), real_name, host_addr);
+		warn("%s %s@%s asked for an option list.\n",
+			 showtime(), real_name, host_addr);
 
 		i = 0;
 		do
@@ -708,7 +708,7 @@ void Contact(int32_t fd, void *arg)
 		/*
 		 * Incorrect packet type.
 		 */
-		xpprintf("%s Unknown packet type (%d) from %s@%s.\n", showtime(), reply_to, real_name, host_addr);
+		warn("%s Unknown packet type (%d) from %s@%s.\n", showtime(), reply_to, real_name, host_addr);
 
 		Sockbuf_clear(&ibuf);
 		Packet_printf(&ibuf, "%u%c%c", my_magic, reply_to, E_VERSION);
@@ -1100,8 +1100,8 @@ static bool Is_owner(char request, char *real_name, char *host_addr, int32_t hos
 		return true;
 	}
 
-	xpprintf("%s Permission denied for %s@%s, command 0x%02x, pass %d.\n",
-			 showtime(), real_name, host_addr, request, pass);
+	warn("%s Permission denied for %s@%s, command 0x%02x, pass %d.\n",
+		 showtime(), real_name, host_addr, request, pass);
 
 	return false;
 }

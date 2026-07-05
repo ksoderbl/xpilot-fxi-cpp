@@ -787,8 +787,8 @@ void Rank_init_saved_scores(void)
 
 	fclose(file);
 
-	xpprintf("%s Rank file with %d entries opened successfully.\n",
-			 showtime(), num_players);
+	warn("%s Rank file with %d entries opened successfully.\n",
+		 showtime(), num_players);
 }
 
 /*
@@ -1139,7 +1139,7 @@ void Rank_write_rankfile(void)
 
 	remove(tmp_file);
 
-	/*xpprintf("%s Rank file with %d entries written successfully.\n",
+	/*warn("%s Rank file with %d entries written successfully.\n",
 	 showtime(), rank_entries);*/
 
 	return;

@@ -393,8 +393,8 @@ void Collision_cells_objects_get(int32_t x, int32_t y, int32_t r, object_t ***li
                 /* Protection against overflow */
                 if (obj_count >= MAX_TOTAL_OBJECTS)
                 {
-                    xpprintf("%s WARNING: Overflow on the list of objects within range (count=%d).\n",
-                             showtime(), obj_count);
+                    warn("%s WARNING: Overflow on the list of objects within range (count=%d).\n",
+                         showtime(), obj_count);
                     break;
                 }
 
@@ -895,7 +895,7 @@ void Collision_player_object_check(player_t *pl)
                 break;
 
             default:
-                xpprintf("%s You were hit by what?\n", showtime());
+                warn("%s You were hit by what?\n", showtime());
                 break;
             }
             if (pl->fuel.sum <= 0)

@@ -53,7 +53,7 @@ typedef struct
 extern struct World_map World;
 
 /* from player.c */
-extern player_t **Players;
+extern struct player **Players;
 extern int32_t NumPlayers;
 extern int32_t NumPaused;
 extern int32_t GetInd[NUM_IDS + 1];

@@ -1,5 +1,4 @@
 /*
- *
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -22,8 +21,10 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef NET_H
-#define NET_H
+#pragma once
+
+#include <cstdarg>
+#include <cstdint>
 
 #define MIN_SOCKBUF_SIZE 1024
 #define MAX_SOCKBUF_SIZE (50 * 1024)
@@ -82,20 +83,5 @@ int32_t Sockbuf_write(sockbuf_t *sbuf, char *buf, int32_t len);
 int32_t Sockbuf_read(sockbuf_t *sbuf);
 int32_t Sockbuf_copy(sockbuf_t *dest, sockbuf_t *src, int32_t len);
 
-#if !defined(STDVA)
-#if defined(__STDC__) && !defined(__sun__) || defined(__cplusplus)
-#define STDVA 1 /* has ANSI stdarg stuff */
-#else
-#define STDVA 0 /* nope, still the K&R way */
-#endif
-#endif
-
-#if STDVA
 int32_t Packet_printf(sockbuf_t *, const char *fmt, ...);
 int32_t Packet_scanf(sockbuf_t *, const char *fmt, ...);
-#else
-int32_t Packet_printf();
-int32_t Packet_scanf();
-#endif
-
-#endif

@@ -490,14 +490,12 @@ int32_t CreateClientSocketNonBlocking(char *host, int32_t port)
     /* no need to check return code since a message would be printed already. */
     SetSocketNonBlocking(fd, 1);
 
-#ifndef _WINDOWS
     if (connect(fd, (struct sockaddr *)&peer, sizeof(struct sockaddr_in)) < 0 && errno != EINPROGRESS)
     {
         sl_errno = SL_ECONNECT;
         close(fd);
         return (-1);
     }
-#endif
 
     return (fd);
 } /* CreateClientSocketNonBlocking */
@@ -980,11 +978,7 @@ int32_t SocketReadable(int32_t fd)
  *
  * Originally coded by Arne Helme
  */
-#if defined(__STDC__) || defined(__cplusplus) || defined(_WINDOWS)
 static void inthandler(int32_t signum)
-#else
-static inthandler()
-#endif /* __STDC__ */
 {
     DEB(fprintf(stderr, "Connection interrupted, timeout\n"));
     (void)longjmp(env, 1);
@@ -1715,15 +1709,9 @@ int32_t DgramWrite(int32_t fd, char *wbuf, int32_t size)
  *
  * Originally coded by Arne Helme
  */
-#if defined(__STDC__) || defined(__cplusplus) || defined(_WINDOWS)
 static void DgramInthandler(int32_t signum)
-#else
-static DgramInthandler()
-#endif /* __STDC__ */
 {
-#ifndef _WINDOWS /* hah?  This appears to do nothing. (unblock receive??) */
     (void)signal(SIGALRM, DgramInthandler);
-#endif
 } /* DgramInthandler */
 
 /*
@@ -1776,19 +1764,15 @@ int32_t DgramSendRec(int32_t fd, char *host, int32_t port, char *sbuf, int32_t s
     int32_t retval = -1;
     int32_t retry = sl_default_retries;
 
-#ifndef _WINDOWS
     (void)signal(SIGALRM, DgramInthandler);
-#endif
+
     while (retry > 0)
     {
         if (DgramSend(fd, host, port, sbuf, sbuf_size) == -1)
             return (-1);
 
-#ifndef _WINDOWS
         (void)alarm(sl_timeout_s);
-#else
-        (void)alarm(sl_timeout_s, DgramInthandler);
-#endif
+
         retval = DgramReceive(fd, host, rbuf, rbuf_size);
         if (retval == -1)
         {
@@ -1816,12 +1800,10 @@ int32_t DgramSendRec(int32_t fd, char *host, int32_t port, char *sbuf, int32_t s
             break; /* Datagram from <host> arrived */
         }
     }
-#ifndef _WINDOWS
+
     (void)alarm(0);
     (void)signal(SIGALRM, SIG_DFL);
-#else
-    alarm(0, NULL);
-#endif
+
     return (retval);
 } /* DgramInthandler */
 
@@ -2018,19 +2000,10 @@ void GetLocalHostName(char *name, uint32_t size, int32_t search_domain_for_xpilo
 {
     struct hostent *he = NULL;
     struct hostent *xpilot_he = NULL;
-#ifndef _WINDOWS
     int32_t xpilot_len;
     char *dot;
     char xpilot_hostname[MAXHOSTNAMELEN];
-#endif
     static const char xpilot[] = "xpilot";
-#ifdef VMS
-    char vms_inethost[MAXHOSTNAMELEN] = "UCX$INET_HOST";
-    char vms_inetdomain[MAXHOSTNAMELEN] = "UCX$INET_DOMAIN";
-    char vms_host[MAXHOSTNAMELEN];
-    char vms_domain[MAXHOSTNAMELEN];
-    int32_t namelen;
-#endif
 
     gethostname(name, size);
     if ((he = gethostbyname(name)) == NULL)
@@ -2098,8 +2071,6 @@ void GetLocalHostName(char *name, uint32_t size, int32_t search_domain_for_xpilo
         return;
     }
 
-#ifndef _WINDOWS /* the lookup of xpilot can take FOREVER! zzzz...  */
-
     /* if name starts with "xpilot" then we're done. */
     xpilot_len = strlen(xpilot);
     if (!strncmp(name, xpilot, xpilot_len))
@@ -2131,8 +2102,6 @@ void GetLocalHostName(char *name, uint32_t size, int32_t search_domain_for_xpilo
     {
         strncpy(name, xpilot_hostname, size);
     }
-
-#endif
 } /* GetLocalHostName */
 
 /*
@@ -2198,20 +2167,11 @@ uint32_t GetInetAddr(char *name)
  *
  * Originally coded by Bert Gijsbers
  */
-#if defined(__STDC__) || defined(__cplusplus) || defined(_WINDOWS)
 static void ResolveTimeout(int32_t signum)
-#else
-static ResolveTimeout()
-#endif /* __STDC__ */
 {
     DEB(fprintf(stderr, "Resolve timeout\n"));
-#ifdef _WINDOWS
-    WSACancelAsyncRequest(gethosthandle);
-    hostnameCancelled = TRUE;
-    alarm(0, NULL);
-#else
+
     (void)longjmp(env, 1);
-#endif
 }
 
 /*
@@ -2246,7 +2206,6 @@ static ResolveTimeout()
  *
  * Originally coded by Bert Gijsbers
  */
-#ifndef _WINDOWS
 char *GetAddrByName(const char *name)
 {
     struct hostent *hp;
@@ -2272,32 +2231,6 @@ char *GetAddrByName(const char *name)
     }
     return inet_ntoa(*(struct in_addr *)(hp->h_addr));
 }
-#else
-char *GetAddrByName(const char *name)
-{
-    /* If you aren't connected to the net, then gethostbyname()
-     can take many minutes to time out.  WSACancelBlockingCall()
-     doesn't affect it.
-     */
-    char chp[MAXGETHOSTSTRUCT + 1];
-    struct hostent *hp = (struct hostent *)&chp;
-    alarm(6, ResolveTimeout);
-    hostnameCancelled = FALSE;
-    *hostnameFound = FALSE;
-    gethosthandle = WSAAsyncGetHostByName(notifyWnd, WM_GETHOSTNAME, name,
-                                          chp, MAXGETHOSTSTRUCT);
-    /*	hp = gethostbyname(name); */
-    while (!hostnameCancelled && !*hostnameFound)
-        Sleep(1000);
-    alarm(0, NULL);
-    if (!*hostnameFound)
-    {
-        sl_errno = SL_EHOSTNAME;
-        return 0;
-    }
-    return inet_ntoa(*(struct in_addr *)(hp->h_addr));
-}
-#endif
 
 /*
  *******************************************************************************
@@ -2345,27 +2278,19 @@ int32_t GetNameByAddr(const char *addr, char *name, int32_t size)
     if (setjmp(env))
     {
         sl_errno = SL_ETIMEOUT;
-#ifndef _WINDOWS
         signal(SIGALRM, SIG_DFL);
-#endif
         return -1;
     }
-#ifndef _WINDOWS
+
     alarm(0);
     signal(SIGALRM, ResolveTimeout);
     alarm(6);
-#else
-    alarm(0, NULL);
-    alarm(6, ResolveTimeout);
-#endif
 
     hp = gethostbyaddr((char *)&saddr.sin_addr.s_addr, 4, AF_INET);
-#ifndef _WINDOWS
+
     alarm(0);
     signal(SIGALRM, SIG_DFL);
-#else
-    alarm(0, NULL);
-#endif
+
     if (!hp)
     {
         sl_errno = SL_EHOSTNAME;
@@ -2375,22 +2300,3 @@ int32_t GetNameByAddr(const char *addr, char *name, int32_t size)
     name[size - 1] = '\0';
     return 0;
 }
-
-#if defined(__sun__)
-/*
- * A workaround for a bug in inet_ntoa() on Suns.
- */
-char *inet_ntoa(struct in_addr in)
-{
-    uint32_t addr = ntohl(in.s_addr);
-    static char ascii[16];
-
-    sprintf(ascii, "%d.%d.%d.%d",
-            addr >> 24 & 0xFF,
-            addr >> 16 & 0xFF,
-            addr >> 8 & 0xFF,
-            addr & 0xFF);
-
-    return ascii;
-}
-#endif

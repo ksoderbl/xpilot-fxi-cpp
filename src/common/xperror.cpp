@@ -20,16 +20,6 @@
 #include "portability.h"
 #include "commonproto.h"
 
-#undef HAVE_STDARG
-#undef HAVE_VARARG
-#ifndef _WINDOWS
-#if (defined(__STDC__) && !defined(__sun__) || defined(__cplusplus))
-#define HAVE_STDARG 1
-#else
-#define HAVE_VARARG 1
-#endif
-#endif
-
 /*
  * This file defines two entry points:
  *

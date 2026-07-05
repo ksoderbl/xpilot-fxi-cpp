@@ -398,7 +398,7 @@ void Individual_game_over(int32_t winner)
 	int32_t average_score;
 	int32_t num_best_players;
 	player_t **best_players;
-	DFLOAT best_ratio;
+	double best_ratio;
 	player_t *pl;
 
 	if (!(best_players = (player_t **)malloc(NumPlayers * sizeof(player_t **))))
@@ -1276,7 +1276,7 @@ bool Player_lock_closest(player_t *pl, bool next)
 	player_t *pl_lock;
 	player_t *pl_i, *pl_new;
 	int32_t i;
-	DFLOAT dist, best, l;
+	double dist, best, l;
 
 	if (!next)
 	{
@@ -1444,7 +1444,7 @@ void Player_change_home(player_t *pl, base_t *base)
 bool Player_is_close_to_base(player_t *pl)
 {
 	int32_t j, k, xi, yi;
-	DFLOAT minv;
+	double minv;
 
 	xi = OBJ_X_IN_BLOCKS(pl);
 	yi = OBJ_Y_IN_BLOCKS(pl);

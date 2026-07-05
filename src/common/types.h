@@ -27,11 +27,9 @@
 
 #include <cstdint>
 
-typedef float DFLOAT;
-
 typedef struct
 {
-	DFLOAT x, y;
+	double x, y;
 } vector_t;
 
 typedef vector_t position_t;

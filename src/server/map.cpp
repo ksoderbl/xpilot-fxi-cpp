@@ -666,8 +666,8 @@ team_t *Map_get_closest_team(objposition_t *pos)
 {
 	team_t *team = NULL;
 	int32_t i;
-	DFLOAT closest = FLT_MAX;
-	DFLOAT l;
+	double closest = FLT_MAX;
+	double l;
 
 	for (i = 0; i < World.NumBases; i++)
 	{
@@ -689,13 +689,13 @@ team_t *Map_get_closest_team(objposition_t *pos)
 }
 
 /* expects positions expressed in pixels */
-DFLOAT Map_get_discrete_angle(objposition_t *p1, objposition_t *p2)
+double Map_get_discrete_angle(objposition_t *p1, objposition_t *p2)
 {
 	return discrete_angle(WRAP_DX(p2->x - p1->x), WRAP_DY(p2->y - p1->y));
 }
 
 /* expects positions expressed in pixels */
-DFLOAT Map_get_distance(objposition_t *p1, objposition_t *p2)
+double Map_get_distance(objposition_t *p1, objposition_t *p2)
 {
 	return LENGTH(WRAP_DX(p2->x - p1->x), WRAP_DY(p2->y - p1->y));
 }

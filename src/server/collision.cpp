@@ -540,7 +540,7 @@ bool Collision_player_attach_ball(player_t *pl)
          */
         else
         {
-            DFLOAT distance = Map_get_distance(&ball->pos, &pl->pos);
+            double distance = Map_get_distance(&ball->pos, &pl->pos);
             if (distance >= ballConnectorLength)
             {
                 Object_set_attached(ball, true);
@@ -803,7 +803,7 @@ void Collision_player_object_check(player_t *pl)
         case OBJ_WRECKAGE:
         case OBJ_DEBRIS:
         {
-            DFLOAT v = VECTOR_LENGTH(obj->vel);
+            double v = VECTOR_LENGTH(obj->vel);
             int32_t tmp = (int32_t)(2 * obj->mass * v);
             int32_t cost = ABS(tmp);
 

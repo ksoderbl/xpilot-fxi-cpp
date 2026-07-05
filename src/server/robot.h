@@ -158,9 +158,9 @@ typedef struct robot_default_data
 	int32_t robot_count;	 /* Misc timings, minimizes rand()use */
 	int32_t attack;			 /* how aggressive (1-99) */
 	int32_t defense;		 /* how defensive (1-99) */
-	DFLOAT robot_normal_speed;
-	DFLOAT robot_attack_speed;
-	DFLOAT robot_max_speed;
+	double robot_normal_speed;
+	double robot_attack_speed;
+	double robot_max_speed;
 	int32_t last_used_ecm;		/* relative to robot_count */
 	int32_t last_dropped_mine;	/* relative to robot_count */
 	int32_t last_fired_missile; /* relative to robot_count */

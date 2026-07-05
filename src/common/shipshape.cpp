@@ -220,8 +220,8 @@ shipshape_t *Circle_ship(void)
         for (i = 0; i < MAX_SHIP_PTS; i++)
         {
             sh.pts[i] = &pts[i][0];
-            sh.pts[i][0].x = (DFLOAT)RADIUS * cos(((double)i / MAX_SHIP_PTS) * 2 * M_PI);
-            sh.pts[i][0].y = (DFLOAT)RADIUS * sin(((double)i / MAX_SHIP_PTS) * 2 * M_PI);
+            sh.pts[i][0].x = (double)RADIUS * cos(((double)i / MAX_SHIP_PTS) * 2 * M_PI);
+            sh.pts[i][0].y = (double)RADIUS * sin(((double)i / MAX_SHIP_PTS) * 2 * M_PI);
         }
         sh.engine[0].x = -RADIUS;
         sh.engine[0].y = 0;

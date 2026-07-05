@@ -567,7 +567,7 @@ void Collision_object_wall_check(move_state_t *ms)
 		/* Ball-treasure collisions */
 		if (mi->treasure_crashes)
 		{
-			const DFLOAT r = 0.5f * BLOCK_CLICKS;
+			const double r = 0.5f * BLOCK_CLICKS;
 
 			/*
 			 * Test if the movement is within the upper half of
@@ -1677,8 +1677,8 @@ void Move_player(player_t *pl)
 
 	for (i = 0; i < ship->num_points; i++)
 	{
-		DFLOAT x = ship->pts[i][pl->dir].x;
-		DFLOAT y = ship->pts[i][pl->dir].y;
+		double x = ship->pts[i][pl->dir].x;
+		double y = ship->pts[i][pl->dir].y;
 
 		if (Frame_is_real())
 		{
@@ -1797,9 +1797,9 @@ void Move_player(player_t *pl)
 			worst = bounce;
 			if (ms[worst].bounce != BounceEdge)
 			{
-				DFLOAT speed = VECTOR_LENGTH(ms[worst].vel);
+				double speed = VECTOR_LENGTH(ms[worst].vel);
 				int32_t delta_dir, abs_delta_dir, wall_dir;
-				DFLOAT max_speed = Player_uses_property(pl, USES_SHIELD)
+				double max_speed = Player_uses_property(pl, USES_SHIELD)
 									   ? maxShieldedWallBounceSpeed
 									   : maxUnshieldedWallBounceSpeed;
 
@@ -1886,8 +1886,8 @@ void Move_player(player_t *pl)
 		{
 			for (i = 0; i < ship->num_points; i++)
 			{
-				r[i].x = (vel.x) ? (DFLOAT)ms[i].todo.cx / vel.x : 0;
-				r[i].y = (vel.y) ? (DFLOAT)ms[i].todo.cy / vel.y : 0;
+				r[i].x = (vel.x) ? (double)ms[i].todo.cx / vel.x : 0;
+				r[i].y = (vel.y) ? (double)ms[i].todo.cy / vel.y : 0;
 				r[i].x = ABS(r[i].x);
 				r[i].y = ABS(r[i].y);
 			}
@@ -2089,7 +2089,7 @@ void Turn_player_old(player_t *pl)
 
 	if (blocked)
 	{
-		pl->float_dir = (DFLOAT)pl->dir;
+		pl->float_dir = (double)pl->dir;
 	}
 
 	if (crash != -1)

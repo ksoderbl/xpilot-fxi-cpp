@@ -124,8 +124,8 @@
 //     vector_t vel_interp;                                         \
 //     vector_t acc_interp;                                         \
 //                                                                  \
-//     DFLOAT max_speed;                                            \
-//     DFLOAT mass;                                                 \
+//     double max_speed;                                            \
+//     double mass;                                                 \
 //     uint8_t type;                                                \
 //     int32_t info;       /* Miscellaneous info (e.g. wreckage) */ \
 //     int32_t obj_status; /* gravity, thrusting, etc. */
@@ -151,8 +151,8 @@ typedef struct xp_object
     vector_t vel_interp;
     vector_t acc_interp;
 
-    DFLOAT max_speed;
-    DFLOAT mass;
+    double max_speed;
+    double mass;
     uint8_t type;
     int32_t info;       /* Miscellaneous info (e.g. wreckage) */
     int32_t obj_status; /* gravity, thrusting, etc. */
@@ -175,8 +175,8 @@ typedef struct xp_object
     int32_t pl_radius;    /* distance to player for hit. */
 
     /* ball-related */
-    DFLOAT length; /* Distance between ball and player */
-    DFLOAT length_interp;
+    double length; /* Distance between ball and player */
+    double length_interp;
     struct treasure *treasure; /* Which treasure does ball belong */
     int32_t loose_count;       /* Number of frames since the ball was taken out of its box */
     int32_t loose_count_ticks; /* Number of ticks since the ball was taken out of its box */
@@ -186,7 +186,7 @@ typedef struct xp_object
 
     /* wreckage-related */
     uint8_t size;     /* Size of object (wreckage) */
-    DFLOAT turnspeed; /* for missiles only */
+    double turnspeed; /* for missiles only */
     uint8_t rotation; /* Rotation direction */
 } object_t;
 

@@ -54,7 +54,7 @@ void SCORE(struct player *pl, int32_t points, objposition_t *pos, const char *ms
 int32_t Rate(int32_t winner, int32_t looser);
 int32_t Punish_team(struct player *pl, struct treasure *td, struct treasure *tt);
 void Score_players(struct player *winner, int32_t winner_score, char *winner_msg, struct player *loser, int32_t loser_score, char *loser_msg);
-void Score_compute_end_of_round(int32_t *average_score, int32_t *num_best_players, DFLOAT *best_ratio, struct player **best_players);
-void Score_give_bonus(int32_t average_score, int32_t num_best_players, DFLOAT best_ratio, struct player **best_players);
+void Score_compute_end_of_round(int32_t *average_score, int32_t *num_best_players, double *best_ratio, struct player **best_players);
+void Score_give_bonus(int32_t average_score, int32_t num_best_players, double best_ratio, struct player **best_players);
 void Score_give_individual_bonus(struct player *pl, int32_t average_score);
 void SCORE_LegacyBallCash(move_state_t *ms, double loose_time);

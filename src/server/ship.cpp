@@ -46,7 +46,7 @@ void Player_thrust(player_t *pl)
 {
 	const int32_t min_dir = (int32_t)(pl->dir + ANGLE_RESOLUTION / 2 - ANGLE_RESOLUTION * 0.2 - 1);
 	const int32_t max_dir = (int32_t)(pl->dir + ANGLE_RESOLUTION / 2 + ANGLE_RESOLUTION * 0.2 + 1);
-	const DFLOAT max_speed = 1 + (pl->power * 0.14);
+	const double max_speed = 1 + (pl->power * 0.14);
 	const int32_t max_life = 3 + (int32_t)(pl->power * 0.35);
 	static int32_t keep_rand;
 	int32_t this_rand = (((keep_rand >>= 2) ? (keep_rand)
@@ -95,7 +95,7 @@ void Record_shove(player_t *pl, player_t *pusher, int32_t time)
 /* Calculates the effect of a collision between two objects */
 void Delta_mv(object_t *obj1, object_t *obj2)
 {
-	DFLOAT vx, vy, m;
+	double vx, vy, m;
 
 	m = obj1->mass + ABS(obj2->mass);
 	vx = (obj1->vel.x * obj1->mass + obj2->vel.x * obj2->mass) / m;
@@ -119,7 +119,7 @@ void Delta_mv(object_t *obj1, object_t *obj2)
 /* took the inelastic ballpopper from ng-465 -pgm */
 void Ship_object_repel(object_t *obj1, object_t *obj2, int32_t repel_dist)
 {
-	DFLOAT xd, yd, dvx1, dvy1, dvx2, dvy2, m;
+	double xd, yd, dvx1, dvy1, dvx2, dvy2, m;
 
 	xd = WRAP_DX(obj2->pos.x - obj1->pos.x);
 	yd = WRAP_DY(obj2->pos.y - obj1->pos.y);
@@ -156,13 +156,13 @@ void Ship_object_repel(object_t *obj1, object_t *obj2, int32_t repel_dist)
 	obj2->vel.y = dvy2;
 }
 
-void Make_wreckage(objposition_t *pos, DFLOAT velx, DFLOAT vely, player_t *pl, team_t *team, DFLOAT min_mass, DFLOAT max_mass,
-				   DFLOAT total_mass, int32_t status, int32_t color, int32_t max_wreckage, int32_t min_dir, int32_t max_dir,
-				   DFLOAT min_speed, DFLOAT max_speed, int32_t min_life, int32_t max_life)
+void Make_wreckage(objposition_t *pos, double velx, double vely, player_t *pl, team_t *team, double min_mass, double max_mass,
+				   double total_mass, int32_t status, int32_t color, int32_t max_wreckage, int32_t min_dir, int32_t max_dir,
+				   double min_speed, double max_speed, int32_t min_life, int32_t max_life)
 {
 	object_t *wreckage;
 	int32_t i, life, size;
-	DFLOAT mass, sum_mass = 0.0;
+	double mass, sum_mass = 0.0;
 
 	if (!useWreckage)
 	{
@@ -197,7 +197,7 @@ void Make_wreckage(objposition_t *pos, DFLOAT velx, DFLOAT vely, player_t *pl, t
 
 	for (i = 0; i < max_wreckage && sum_mass < total_mass; i++)
 	{
-		DFLOAT speed;
+		double speed;
 		int32_t dir, radius;
 
 		wreckage = Object_add();
@@ -296,9 +296,9 @@ void Player_explode(player_t *pl)
 }
 
 /* Create debris particles */
-void Make_debris(objposition_t *pos, DFLOAT velx, DFLOAT vely, player_t *pl, team_t *team, int32_t type, DFLOAT mass,
+void Make_debris(objposition_t *pos, double velx, double vely, player_t *pl, team_t *team, int32_t type, double mass,
 				 int32_t status, int32_t color, int32_t radius, int32_t min_debris, int32_t max_debris, int32_t min_dir, int32_t max_dir,
-				 DFLOAT min_speed, DFLOAT max_speed, int32_t min_life, int32_t max_life)
+				 double min_speed, double max_speed, int32_t min_life, int32_t max_life)
 {
 	object_t *debris;
 	int32_t i, num_debris, life;
@@ -339,7 +339,7 @@ void Make_debris(objposition_t *pos, DFLOAT velx, DFLOAT vely, player_t *pl, tea
 	}
 	for (i = 0; i < num_debris; i++)
 	{
-		DFLOAT speed, dx, dy, diroff;
+		double speed, dx, dy, diroff;
 		int32_t dir, dirplus;
 
 		debris = Object_add();

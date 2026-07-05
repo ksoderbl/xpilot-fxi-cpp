@@ -68,7 +68,7 @@ void Team_game_over(team_t *winning_team, const char *reason)
 	int32_t average_score;
 	int32_t num_best_players;
 	player_t **best_players;
-	DFLOAT best_ratio;
+	double best_ratio;
 
 	if (!(best_players = (player_t **)malloc(NumPlayers * sizeof(player_t *))))
 	{

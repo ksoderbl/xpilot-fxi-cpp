@@ -162,8 +162,8 @@ typedef struct player
     vector_t vel_interp;
     vector_t acc_interp;
 
-    DFLOAT max_speed;
-    DFLOAT mass;
+    double max_speed;
+    double mass;
     uint8_t type;
     int32_t info;       /* Miscellaneous info (e.g. wreckage) */
     int32_t obj_status; /* gravity, thrusting, etc. */
@@ -185,8 +185,8 @@ typedef struct player
     int32_t shot_delay_count;   /* ticks between two consecutive shots fired by one player */
     double shield_count;        /* Shields if no playerShielding */
 
-    DFLOAT velocity; /* Absolute speed */
-    DFLOAT velocity_interp;
+    double velocity; /* Absolute speed */
+    double velocity_interp;
 
     /*
      * Number of kills this round. A kill is accounted to a player iff (s)he kills another
@@ -201,16 +201,16 @@ typedef struct player
     int32_t have; /** Items you have **/
 
     pl_fuel_t fuel;          /* ship tanks and the stored fuel */
-    DFLOAT emptymass;        /* Mass of empty ship */
-    DFLOAT float_dir;        /* Direction, in float var */
-    DFLOAT turnvel;          /* Current velocity of turn (right) */
-    DFLOAT turnacc;          /* Current acceleration of turn */
-    DFLOAT power;            /* Force of thrust */
-    DFLOAT power_s;          /* Saved power fiks */
-    DFLOAT turnspeed;        /* How fast player acc-turns */
-    DFLOAT turnspeed_s;      /* Saved turnspeed */
-    DFLOAT turnresistance;   /* How much is lost in % */
-    DFLOAT turnresistance_s; /* Saved (see above) */
+    double emptymass;        /* Mass of empty ship */
+    double float_dir;        /* Direction, in float var */
+    double turnvel;          /* Current velocity of turn (right) */
+    double turnacc;          /* Current acceleration of turn */
+    double power;            /* Force of thrust */
+    double power_s;          /* Saved power fiks */
+    double turnspeed;        /* How fast player acc-turns */
+    double turnspeed_s;      /* Saved turnspeed */
+    double turnresistance;   /* How much is lost in % */
+    double turnresistance_s; /* Saved (see above) */
 
     int32_t score; /* Current score of player */
 
@@ -220,7 +220,7 @@ typedef struct player
 
     int32_t shots;     /* Number of active shots by player */
     int32_t shot_max;  /* Maximum number of shots active */
-    DFLOAT shot_speed; /* Speed of shots fired by player */
+    double shot_speed; /* Speed of shots fired by player */
     int32_t shot_time; /* Time (in ticks) of last shot fired by player */
 
     struct fuel *fs; /* Connected to fuel station fs */
@@ -233,7 +233,7 @@ typedef struct player
     {
         int32_t flags;    /* Flag, what is tagged? */
         void *object_ptr; /* Tagged object pointer */
-        DFLOAT distance;  /* Distance to object in pixels */
+        double distance;  /* Distance to object in pixels */
     } lock;
     void *lockbank[LOCKBANK_MAX]; /* Saved player locks */
 

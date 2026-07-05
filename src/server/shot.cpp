@@ -133,7 +133,7 @@ void Shot_add(player_t *pl)
 	int32_t fuse;
 	clpos_t shotpos;
 	object_t *shot;
-	DFLOAT speed = pl->shot_speed;
+	double speed = pl->shot_speed;
 	int32_t dir = pl->dir;
 
 	if (main_loops_slow < (pl->shot_time + fireRepeatRate))
@@ -163,7 +163,7 @@ void Shot_add(player_t *pl)
 	 * mounting points killing the player when they're firing.
 	 */
 
-	fuse = (int32_t)((2.0 * (DFLOAT)SHIP_SZ) / speed + 1.0);
+	fuse = (int32_t)((2.0 * (double)SHIP_SZ) / speed + 1.0);
 
 	shot->obj_life = SHOT_LIFE_TICKS;
 	shot->fuselife = shot->obj_life - fuse;
@@ -244,10 +244,10 @@ void Ball_move(object_t *ball)
 {
 	player_t *pl = ball->owner;
 	vector_t D;
-	DFLOAT length, force, ratio, accell, cosine, pl_damping, ball_damping;
-	DFLOAT k = ballConnectorSpringConstant;
-	DFLOAT b = ballConnectorDamping;
-	DFLOAT max_spring_ratio = maxBallConnectorRatio;
+	double length, force, ratio, accell, cosine, pl_damping, ball_damping;
+	double k = ballConnectorSpringConstant;
+	double b = ballConnectorDamping;
+	double max_spring_ratio = maxBallConnectorRatio;
 
 	/* compute the normalized vector between the ball and the player */
 	if (Frame_is_real())
@@ -273,7 +273,7 @@ void Ball_move(object_t *ball)
 	}
 
 	/* compute the ratio for the spring action */
-	ratio = (ballConnectorLength - length) / (DFLOAT)ballConnectorLength;
+	ratio = (ballConnectorLength - length) / (double)ballConnectorLength;
 
 	/* compute force by spring for this length */
 	force = k * ratio;

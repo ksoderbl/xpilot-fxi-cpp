@@ -30,7 +30,7 @@
 
 #define SWAP(_a, _b)      \
     {                     \
-        DFLOAT _tmp = _a; \
+        double _tmp = _a; \
         _a = _b;          \
         _b = _tmp;        \
     }

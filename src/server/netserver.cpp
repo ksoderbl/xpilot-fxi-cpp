@@ -1930,7 +1930,7 @@ static int32_t Receive_power(connection_t *connp)
     uint8_t ch;
     int16_t tmp;
     int32_t n;
-    DFLOAT power;
+    double power;
 
     if ((n = Packet_scanf(&connp->r, "%c%hd", &ch, &tmp)) <= 0)
     {
@@ -1940,7 +1940,7 @@ static int32_t Receive_power(connection_t *connp)
         }
         return n;
     }
-    power = (DFLOAT)tmp / 256.0F;
+    power = (double)tmp / 256.0F;
     pl = connp->pl;
 
     switch (ch)
@@ -2482,7 +2482,7 @@ static int32_t Receive_pointer_move(connection_t *connp)
     uint8_t ch;
     int16_t movement;
     int32_t n;
-    DFLOAT turnspeed, turndir;
+    double turnspeed, turndir;
     // long  last_loops;
     // struct timeval      tv1;
     // gettimeofday(&tv1, NULL);
@@ -2501,7 +2501,7 @@ static int32_t Receive_pointer_move(connection_t *connp)
 
     // printf("receive_pointer:%e main_loops:%d\n",timeval_to_seconds(tv1),last_loops);
 
-    turnspeed = (DFLOAT)movement * pl->turnspeed / (DFLOAT)MAX_PLAYER_TURNSPEED;
+    turnspeed = (double)movement * pl->turnspeed / (double)MAX_PLAYER_TURNSPEED;
 
     if (turnspeed < 0)
     {

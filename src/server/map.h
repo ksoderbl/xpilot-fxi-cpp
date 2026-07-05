@@ -213,8 +213,8 @@ static inline int32_t WRAP_DY(int32_t dy)
 											  : (dy));
 }
 
-DFLOAT Map_get_discrete_angle(objposition_t *p1, objposition_t *p2);
-DFLOAT Map_get_distance(objposition_t *p1, objposition_t *p2);
+double Map_get_discrete_angle(objposition_t *p1, objposition_t *p2);
+double Map_get_distance(objposition_t *p1, objposition_t *p2);
 
 void Map_compute_base_direction(void);
 base_t *Map_get_base_by_pos(objposition_t *pos);

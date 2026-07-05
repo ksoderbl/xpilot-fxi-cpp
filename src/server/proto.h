@@ -33,8 +33,8 @@
  */
 int32_t string_is_true(char *optval);
 int32_t string_is_false(char *optval);
-int32_t f2i(DFLOAT f);
-DFLOAT discrete_angle(DFLOAT x, DFLOAT y);
+int32_t f2i(double f);
+double discrete_angle(double x, double y);
 
 /*
  * Prototypes for id.c
@@ -82,7 +82,7 @@ void parseOptions(void);
 void Options_parse(void);
 void Options_free(void);
 bool Convert_string_to_int(const char *value_str, int32_t *int_ptr);
-bool Convert_string_to_float(const char *value_str, DFLOAT *float_ptr);
+bool Convert_string_to_float(const char *value_str, double *float_ptr);
 bool Convert_string_to_bool(const char *value_str, bool *bool_ptr);
 void Convert_list_to_string(TList list, char **string);
 void Convert_string_to_list(const char *value, TList *list_ptr);

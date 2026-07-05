@@ -278,7 +278,7 @@ static bool Check_robot_evade(player_t *pl, int32_t mine_i, player_t *pl2)
 	int32_t px[3], py[3];
 	int32_t dist;
 	int32_t dx, dy;
-	DFLOAT velocity;
+	double velocity;
 	robot_default_data_t *my_data = Robot_default_get_data(pl);
 
 	safe_width = (my_data->defense / 200) * SHIP_SZ;
@@ -883,7 +883,7 @@ static bool Ball_handler(player_t *pl)
 		ydist = (closest_t->pos.by) - OBJ_Y_IN_BLOCKS(ball);
 		for (dist = 0; clear_path && dist < (closest_t_dist - BLOCK_SZ); dist += BLOCK_SZ / 2)
 		{
-			DFLOAT fraction = (DFLOAT)dist / closest_t_dist;
+			double fraction = (double)dist / closest_t_dist;
 			dx = (int32_t)((fraction * xdist) + OBJ_X_IN_BLOCKS(ball));
 			dy = (int32_t)((fraction * ydist) + OBJ_Y_IN_BLOCKS(ball));
 			dx = WRAP_XBLOCK(dx);
@@ -1172,8 +1172,8 @@ static void Robot_default_play(player_t *pl)
 {
 	player_t *pl2, *pl3;
 	player_t *enemy_pl;
-	DFLOAT distance, ship_dist, enemy_dist; /* all distances in pixels */
-	DFLOAT speed, x_speed, y_speed;
+	double distance, ship_dist, enemy_dist; /* all distances in pixels */
+	double speed, x_speed, y_speed;
 	int32_t item_dist, mine_dist;
 	int32_t item_i, mine_i;
 	int32_t j, item_imp;
@@ -1273,7 +1273,7 @@ static void Robot_default_play(player_t *pl)
 	enemy_pl = NULL;
 
 	if (pl->fuel.sum > pl->fuel.l3)
-		enemy_dist = (DFLOAT)World.hypotenuse;
+		enemy_dist = (double)World.hypotenuse;
 	else
 		enemy_dist = VISIBILITY_DISTANCE;
 

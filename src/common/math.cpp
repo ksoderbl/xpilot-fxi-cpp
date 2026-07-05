@@ -32,13 +32,13 @@
 #include "xperror.h"
 #include "commonproto.h"
 
-DFLOAT tbl_sin[TABLE_SIZE];
-DFLOAT tbl_cos[TABLE_SIZE];
+double tbl_sin[TABLE_SIZE];
+double tbl_cos[TABLE_SIZE];
 
 int32_t string_is_true(char *optval);
 int32_t string_is_false(char *optval);
-int32_t f2i(DFLOAT f);
-DFLOAT discrete_angle(DFLOAT x, DFLOAT y);
+int32_t f2i(double f);
+double discrete_angle(double x, double y);
 
 int32_t string_is_true(char *optval)
 {
@@ -65,14 +65,14 @@ int32_t mod(int32_t x, int32_t y)
 	return x;
 }
 
-int32_t f2i(DFLOAT f)
+int32_t f2i(double f)
 {
 	return (f < 0) ? -(int32_t)(0.5f - f) : (int32_t)(f + 0.5f);
 }
 
-DFLOAT discrete_angle(DFLOAT x, DFLOAT y)
+double discrete_angle(double x, double y)
 {
-	DFLOAT angle;
+	double angle;
 
 	if (x != 0.0 || y != 0.0)
 	{

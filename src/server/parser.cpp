@@ -279,7 +279,7 @@ int32_t Parser_list_option(int32_t *index, char *buf)
 		break;
 	case valReal:
 		sprintf(buf, "%s:%g", options[i].name,
-				*(DFLOAT *)options[i].variable);
+				*(double *)options[i].variable);
 		break;
 	case valBool:
 		sprintf(buf, "%s:%s", options[i].name,
@@ -525,7 +525,7 @@ bool Parser(int32_t argc, char **argv)
 int32_t Tune_option(char *name, char *val)
 {
 	int32_t ival;
-	DFLOAT fval;
+	double fval;
 	option_desc *opt;
 
 	if (!(opt = Find_option_by_name(name)))
@@ -568,7 +568,7 @@ int32_t Tune_option(char *name, char *val)
 		{
 			return 0;
 		}
-		*(DFLOAT *)opt->variable = fval;
+		*(double *)opt->variable = fval;
 		(*opt->tuner)();
 		return 1;
 	case valString:
@@ -614,7 +614,7 @@ int32_t Get_option_value(const char *name, char *value, uint32_t size)
 		sprintf(value, "%d", *((int32_t *)opt->variable));
 		break;
 	case valReal:
-		sprintf(value, "%g", *((DFLOAT *)opt->variable));
+		sprintf(value, "%g", *((double *)opt->variable));
 		break;
 	case valBool:
 		sprintf(value, "%s", *((bool *)opt->variable) ? "true" : "false");

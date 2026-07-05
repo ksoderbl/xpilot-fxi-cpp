@@ -709,7 +709,7 @@ bool Convert_string_to_int(const char *value_str, int32_t *int_ptr)
 	return result;
 }
 
-bool Convert_string_to_float(const char *value_str, DFLOAT *float_ptr)
+bool Convert_string_to_float(const char *value_str, double *float_ptr)
 {
 	char *end_ptr = NULL;
 	double value;
@@ -718,7 +718,7 @@ bool Convert_string_to_float(const char *value_str, DFLOAT *float_ptr)
 	value = strtod(value_str, (char **)(&end_ptr));
 
 	/* store value regardless of error. */
-	*float_ptr = (DFLOAT)value;
+	*float_ptr = (double)value;
 
 	/* if at least one digit was found we're satisfied. */
 	if (end_ptr > value_str)
@@ -882,7 +882,7 @@ static void Option_parse_node(hash_node *np)
 
 	case valReal:
 	{
-		DFLOAT *ptr = (DFLOAT *)desc->variable;
+		double *ptr = (double *)desc->variable;
 
 		if (Convert_string_to_float(value, ptr) != true)
 		{

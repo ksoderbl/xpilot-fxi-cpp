@@ -150,10 +150,10 @@ void Update_player_thrust(player_t *pl)
 
 	if (BIT(pl->obj_status, THRUSTING))
 	{
-		DFLOAT power = pl->power;
-		DFLOAT f = pl->power * 0.0008; /* 1/(FUEL_SCALE*MIN_POWER) */
+		double power = pl->power;
+		double f = pl->power * 0.0008; /* 1/(FUEL_SCALE*MIN_POWER) */
 		int32_t a = pl->item[ITEM_AFTERBURNER];
-		DFLOAT inert = pl->mass;
+		double inert = pl->mass;
 
 		if (a)
 		{

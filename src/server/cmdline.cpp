@@ -42,10 +42,10 @@
 #include "map.h"
 
 TList expandList;  /* List of predefined settings. */
-DFLOAT ShipMass;   /* Default mass of ship */
-DFLOAT ballMass;   /* Default mass of balls */
-DFLOAT ShotsMass;  /* Default mass of shots */
-DFLOAT ShotsSpeed; /* Default speed of shots */
+double ShipMass;   /* Default mass of ship */
+double ballMass;   /* Default mass of balls */
+double ShotsMass;  /* Default mass of shots */
+double ShotsSpeed; /* Default speed of shots */
 int32_t ShotsLife; /* Default number of ticks */
 /* each shot will live */
 
@@ -86,12 +86,12 @@ bool shotsWallBounce;                /* Do shots bounce off walls? */
 bool sparksWallBounce;               /* Do sparks bounce off walls? */
 bool debrisWallBounce;               /* Do sparks bounce off walls? */
 bool ballCollisions;                 /* Do balls participate in colls.? */
-DFLOAT maxObjectWallBounceSpeed;     /* max object bounce speed */
-DFLOAT maxShieldedWallBounceSpeed;   /* max shielded bounce speed */
-DFLOAT maxUnshieldedWallBounceSpeed; /* max unshielded bounce speed */
-DFLOAT playerWallBrakeFactor;        /* wall lowers speed if less than 1 */
-DFLOAT objectWallBrakeFactor;        /* wall lowers speed if less than 1 */
-DFLOAT objectWallBounceLifeFactor;   /* reduce object life */
+double maxObjectWallBounceSpeed;     /* max object bounce speed */
+double maxShieldedWallBounceSpeed;   /* max shielded bounce speed */
+double maxUnshieldedWallBounceSpeed; /* max unshielded bounce speed */
+double playerWallBrakeFactor;        /* wall lowers speed if less than 1 */
+double objectWallBrakeFactor;        /* wall lowers speed if less than 1 */
+double objectWallBounceLifeFactor;   /* reduce object life */
 bool limitedLives;                   /* Are lives limited? */
 int32_t worldLives;                  /* If so, what's the max? */
 bool endOfRoundReset;                /* Reset the world when round ends? */
@@ -128,10 +128,10 @@ bool treasureCollisionDestroys; /* Do balls pop after collision with players? */
 bool treasureCollisionMayKill;  /* Do unshielded players always die after collision with balls? */
 bool wreckageCollisionMayKill;  /* Do unshielded players always die after collision with wreckage? */
 
-DFLOAT ballConnectorSpringConstant;
-DFLOAT ballConnectorDamping;
-DFLOAT maxBallConnectorRatio;
-DFLOAT ballConnectorLength;
+double ballConnectorSpringConstant;
+double ballConnectorDamping;
+double maxBallConnectorRatio;
+double ballConnectorLength;
 
 bool lockOtherTeam; /* lock ply from other teams when dead? */
 bool useWreckage;   /* destroyed ships leave wreckage? */

@@ -95,10 +95,10 @@ void Score_players(player_t *winner, int32_t winner_score,
 	SCORE(loser, loser_score, &loser->pos, loser_msg);
 }
 
-void Score_compute_end_of_round(int32_t *average_score, int32_t *num_best_players, DFLOAT *best_ratio, player_t **best_players)
+void Score_compute_end_of_round(int32_t *average_score, int32_t *num_best_players, double *best_ratio, player_t **best_players)
 {
 	int32_t i;
-	DFLOAT ratio;
+	double ratio;
 	player_t *pl;
 
 	/* Initialize everything */
@@ -123,7 +123,7 @@ void Score_compute_end_of_round(int32_t *average_score, int32_t *num_best_player
 		}
 
 		*average_score += pl->score;
-		ratio = (DFLOAT)pl->kills / (pl->deaths + 1);
+		ratio = (double)pl->kills / (pl->deaths + 1);
 
 		if (ratio > *best_ratio)
 		{
@@ -141,7 +141,7 @@ void Score_compute_end_of_round(int32_t *average_score, int32_t *num_best_player
 }
 
 void Score_give_bonus(int32_t average_score, int32_t num_best_players,
-					  DFLOAT best_ratio, player_t **best_players)
+					  double best_ratio, player_t **best_players)
 {
 	int32_t i;
 	int32_t points;
@@ -168,7 +168,7 @@ void Score_give_bonus(int32_t average_score, int32_t num_best_players,
 		{
 			player_t *bp = best_players[i];
 			int32_t ratio = Rate(bp->score, average_score);
-			DFLOAT score = (DFLOAT)(ratio + num_best_players) / num_best_players;
+			double score = (double)(ratio + num_best_players) / num_best_players;
 
 			if (msg[0])
 			{
@@ -202,10 +202,10 @@ void Score_give_bonus(int32_t average_score, int32_t num_best_players,
 
 void Score_give_individual_bonus(player_t *pl, int32_t average_score)
 {
-	DFLOAT ratio;
+	double ratio;
 	int32_t points;
 
-	ratio = (DFLOAT)pl->kills / (pl->deaths + 1);
+	ratio = (double)pl->kills / (pl->deaths + 1);
 	points = (int32_t)(ratio * Rate(pl->score, average_score));
 	SCORE(pl, points, &pl->pos, "[Winner]");
 }
